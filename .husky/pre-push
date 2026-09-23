@@ -1,0 +1,2 @@
+#!/bin/sh
+pnpm audit --audit-level=high
