@@ -1,0 +1,34 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "sns-project",
+	// Built by @sveltejs/adapter-cloudflare — do not point these elsewhere.
+	"main": ".svelte-kit/cloudflare/_worker.js",
+	"assets": {
+		"binding": "ASSETS",
+		"directory": ".svelte-kit/cloudflare",
+	},
+	"compatibility_date": "2026-08-28",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"observability": {
+		"enabled": true
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "sns-db",
+			// Run `npx wrangler d1 create sns-db` and paste the id it prints.
+			"database_id": "62ca9c9c-512d-41d0-b651-eed3d24d9a18",
+			// drizzle-kit generates SQL here; `wrangler d1 migrations apply` reads it.
+			"migrations_dir": "drizzle",
+		},
+	],
+	"kv_namespaces": [
+		{
+			"binding": "KV",
+			// Run `npx wrangler kv namespace create KV` and paste the id it prints.
+			"id": "c4363b5070c94b5382c9f9cdd663c696",
+		},
+	],
+}
