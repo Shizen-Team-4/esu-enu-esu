@@ -2,9 +2,10 @@
   "name": "sns-monorepo",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@12.5.1",
   "scripts": {
-    "dev": "pnpm --parallel run dev",
-    "build": "pnpm --recursive run build",
+    "dev": "vite dev",
+    "build": "vite build",
     "lint": "pnpm --recursive run lint",
     "prepush": "pnpm audit --audit-level=high",
     "preview": "wrangler dev",
@@ -20,7 +21,7 @@
   },
   "engines": {
     "node": ">=20",
-    "pnpm": ">=9"
+    "pnpm": ">=10"
   },
   "devDependencies": {
     "@sveltejs/adapter-cloudflare": "^7.2.9",
