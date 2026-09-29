@@ -19,7 +19,9 @@
 		"sonarcloud",
 		"shizen",
 		"esu",
-		"enu"
+		"enu",
+		"esbuild",
+		"eykorban"
 	],
 	"ignorePaths": [
 		"**/node_modules/**",
