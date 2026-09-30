@@ -24,14 +24,26 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run tests with coverage
+      - name: Lint
+        run: pnpm lint
+
+      - name: Spell check
+        run: pnpm spellcheck
+
+      - name: Type check
+        run: pnpm check
+
+      - name: Test with coverage
         run: pnpm test:coverage
+
+      - name: Build
+        run: pnpm build
 
       - name: Security audit
         run: pnpm audit --audit-level=high
 
       - name: SonarCloud scan
-        uses: SonarSource/sonarcloud-github-action@master
+        uses: SonarSource/sonarqube-scan-action@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

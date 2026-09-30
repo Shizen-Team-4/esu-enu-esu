@@ -1,7 +1,7 @@
-import { describe, it, expect } from 'vitest';
-import { parseAcceptLanguage } from './accept-language';
+import { describe, it, expect } from 'vitest'
+import { parseAcceptLanguage } from './accept-language'
 
-const SUPPORTED = ['en', 'km', 'ja'] as const;
+const SUPPORTED = ['en', 'km', 'ja'] as const
 
 describe('parseAcceptLanguage', () => {
 	it.each([
@@ -16,8 +16,8 @@ describe('parseAcceptLanguage', () => {
 		['zzz;;;,,', null],
 		['', null],
 		[null, null],
-		[undefined, null]
+		[undefined, null],
 	])('%s -> %s', (header, expected) => {
-		expect(parseAcceptLanguage(header, SUPPORTED)).toBe(expected);
-	});
-});
+		expect(parseAcceptLanguage(header, SUPPORTED)).toBe(expected)
+	})
+})

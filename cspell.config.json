@@ -22,7 +22,8 @@
 		"enu",
 		"esbuild",
 		"eykorban",
-		"undici"
+		"undici",
+		"qualitygate"
 	],
 	"ignorePaths": [
 		"**/node_modules/**",
@@ -31,6 +32,7 @@
 		"**/.svelte-kit/**",
 		"**/.wrangler/**",
 		"pnpm-lock.yaml",
-		"*.min.js"
+		"*.min.js",
+		"**/locales/km.json"
 	]
 }
