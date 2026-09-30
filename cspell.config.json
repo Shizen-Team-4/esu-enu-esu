@@ -21,7 +21,8 @@
 		"esu",
 		"enu",
 		"esbuild",
-		"eykorban"
+		"eykorban",
+		"undici"
 	],
 	"ignorePaths": [
 		"**/node_modules/**",
