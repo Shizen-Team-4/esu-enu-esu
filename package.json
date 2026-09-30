@@ -1,14 +1,21 @@
 {
-  "name": "sns-monorepo",
-  "private": true,
-  "scripts": {
-    "dev": "pnpm --parallel run dev",
-    "build": "pnpm --recursive run build",
-    "lint": "pnpm --recursive run lint",
-    "prepush": "pnpm audit --audit-level=high"
-  },
-  "engines": {
-    "node": ">=20",
-    "pnpm": ">=9"
-  }
+	"name": "sns-monorepo",
+	"private": true,
+	"scripts": {
+		"dev": "pnpm --parallel run dev",
+		"build": "pnpm --recursive run build",
+		"lint": "prettier --check . && pnpm --recursive run lint",
+		"format": "prettier --write .",
+		"spellcheck": "cspell .",
+		"prepush": "pnpm audit --audit-level=high"
+	},
+	"engines": {
+		"node": ">=20",
+		"pnpm": ">=9"
+	},
+	"devDependencies": {
+		"cspell": "^10.3.5",
+		"prettier": "^3.9.9",
+		"prettier-plugin-svelte": "^4.1.1"
+	}
 }

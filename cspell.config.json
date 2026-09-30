@@ -1,0 +1,33 @@
+{
+	"version": "0.2",
+	"language": "en",
+	"useGitignore": true,
+	"words": [
+		"SvelteKit",
+		"sveltekit",
+		"Turso",
+		"D1",
+		"libsql",
+		"drizzle",
+		"wrangler",
+		"workerd",
+		"Cloudflare",
+		"pnpm",
+		"vite",
+		"vitest",
+		"tailwindcss",
+		"sonarcloud",
+		"shizen",
+		"esu",
+		"enu"
+	],
+	"ignorePaths": [
+		"**/node_modules/**",
+		"**/dist/**",
+		"**/build/**",
+		"**/.svelte-kit/**",
+		"**/.wrangler/**",
+		"pnpm-lock.yaml",
+		"*.min.js"
+	]
+}
