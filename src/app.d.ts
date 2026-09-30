@@ -9,6 +9,9 @@ declare global {
 			caches: CacheStorage
 			cf?: IncomingRequestCfProperties
 		}
+		interface Locals {
+			lang: string
+		}
 	}
 }
 

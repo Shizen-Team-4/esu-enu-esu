@@ -4,8 +4,9 @@
 	"type": "module",
 	"packageManager": "pnpm@12.5.1",
 	"scripts": {
-		"dev": "vite dev && pnpm --recursive run dev",
-		"build": "vite build && pnpm --recursive run build",
+		"dev": "vite dev",
+		"check:i18n": "node scripts/check-translations.js",
+		"build": "pnpm check:i18n && vite build",
 		"lint": "prettier --check . && pnpm --recursive run lint",
 		"format": "prettier --write .",
 		"spellcheck": "cspell .",
@@ -39,5 +40,8 @@
 		"typescript": "^5.0.0",
 		"vite": "^7.0.0",
 		"wrangler": "^4.0.0"
+	},
+	"dependencies": {
+		"svelte-i18n": "^4.0.1"
 	}
 }
