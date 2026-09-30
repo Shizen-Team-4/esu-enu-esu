@@ -3,8 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "pnpm --parallel run dev",
-    "build": "pnpm --recursive run build",
+    "dev": "vite dev",
+    "check:i18n": "node scripts/check-translations.js",
+    "build": "pnpm check:i18n && vite build",
     "lint": "pnpm --recursive run lint",
     "prepush": "pnpm audit --audit-level=high",
     "preview": "wrangler dev",
@@ -33,5 +34,8 @@
     "typescript": "^5.0.0",
     "vite": "^7.0.0",
     "wrangler": "^4.0.0"
+  },
+  "dependencies": {
+    "svelte-i18n": "^4.0.1"
   }
 }
