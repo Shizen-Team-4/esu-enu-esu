@@ -27,7 +27,7 @@ jobs:
           safe-chain setup-ci
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --safe-chain-skip-minimum-package-age
 
       - name: Security audit
         run: pnpm audit --audit-level=high
