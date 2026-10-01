@@ -1,12 +1,12 @@
 {
-  "auth": {
-    "login": "ログイン",
-    "register": "新規登録",
-    "logout": "ログアウト"
-  },
-  "post": {
-    "like": "いいね",
-    "comment": "コメント",
-    "share": "シェア"
-  }
+	"auth": {
+		"login": "ログイン",
+		"register": "新規登録",
+		"logout": "ログアウト"
+	},
+	"post": {
+		"like": "いいね",
+		"comment": "コメント",
+		"share": "シェア"
+	}
 }
