@@ -4,12 +4,15 @@
 declare global {
 	namespace App {
 		interface Platform {
-			env: Env;
-			ctx: ExecutionContext;
-			caches: CacheStorage;
-			cf?: IncomingRequestCfProperties;
+			env: Env
+			ctx: ExecutionContext
+			caches: CacheStorage
+			cf?: IncomingRequestCfProperties
+		}
+		interface Locals {
+			lang: string
 		}
 	}
 }
 
-export {};
+export {}
