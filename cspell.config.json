@@ -23,7 +23,19 @@
 		"esbuild",
 		"eykorban",
 		"undici",
-		"qualitygate"
+		"qualitygate",
+		"nika",
+		"bunleap",
+		"thida",
+		"sreysor",
+		"dara",
+		"sokha",
+		"kenji",
+		"kobayashi",
+		"kampot",
+		"siem",
+		"shibuya",
+		"timelapse"
 	],
 	"ignorePaths": [
 		"**/node_modules/**",
