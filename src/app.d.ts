@@ -4,7 +4,6 @@
 declare global {
 	namespace App {
 		interface Platform {
-<<<<<<< HEAD
 			env: Env
 			ctx: ExecutionContext
 			caches: CacheStorage
@@ -12,18 +11,8 @@ declare global {
 		}
 		interface Locals {
 			lang: string
-=======
-			env: Env;
-			ctx: ExecutionContext;
-			caches: CacheStorage;
-			cf?: IncomingRequestCfProperties;
->>>>>>> 7ddb244 (feat: initialize SvelteKit project with Cloudflare adapter and database setup)
 		}
 	}
 }
 
-<<<<<<< HEAD
 export {}
-=======
-export {};
->>>>>>> 7ddb244 (feat: initialize SvelteKit project with Cloudflare adapter and database setup)
