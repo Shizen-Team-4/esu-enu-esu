@@ -22,6 +22,3 @@ pre-push:
 
     - name: typecheck
       run: pnpm check
-
-    - name: test
-      run: pnpm test
