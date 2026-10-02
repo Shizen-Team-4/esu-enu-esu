@@ -18,17 +18,40 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
 
+      - name: Setup safe-chain
+        run: |
+          npm i -g @aikidosec/safe-chain
+          safe-chain setup-ci
+
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --safe-chain-skip-minimum-package-age
+
+      - name: Generate Cloudflare types
+        run: pnpm types
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Spell check
+        run: pnpm spellcheck
+
+      - name: Type check
+        run: pnpm check
+
+      - name: Test with coverage
+        run: pnpm test:coverage
+
+      - name: Build
+        run: pnpm build
 
       - name: Security audit
         run: pnpm audit --audit-level=high
 
       - name: SonarCloud scan
-        uses: SonarSource/sonarcloud-github-action@master
+        uses: SonarSource/sonarqube-scan-action@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
