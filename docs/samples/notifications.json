@@ -1,0 +1,93 @@
+{
+	"items": [
+		{
+			"id": "ntf_505",
+			"type": "like",
+			"actor": {
+				"id": "usr_02",
+				"username": "mei_k",
+				"displayName": "Mei Kobayashi",
+				"avatarUrl": "https://cdn.example.com/avatars/usr_02.webp"
+			},
+			"post": {
+				"id": "pst_104",
+				"type": "post",
+				"thumbnailUrl": "https://cdn.example.com/media/med_401_thumb.webp"
+			},
+			"comment": null,
+			"message": null,
+			"read": false,
+			"createdAt": "2026-09-30T13:00:00.000Z"
+		},
+		{
+			"id": "ntf_506",
+			"type": "reply",
+			"actor": {
+				"id": "usr_03",
+				"username": "sokha_travel",
+				"displayName": "Sokha",
+				"avatarUrl": null
+			},
+			"post": {
+				"id": "pst_102",
+				"type": "post",
+				"thumbnailUrl": "https://cdn.example.com/media/med_201.webp"
+			},
+			"comment": {
+				"id": "cmt_312",
+				"excerpt": "I want to go too!"
+			},
+			"message": null,
+			"read": false,
+			"createdAt": "2026-09-28T02:30:00.000Z"
+		},
+		{
+			"id": "ntf_503",
+			"type": "comment",
+			"actor": {
+				"id": "usr_02",
+				"username": "mei_k",
+				"displayName": "Mei Kobayashi",
+				"avatarUrl": "https://cdn.example.com/avatars/usr_02.webp"
+			},
+			"post": {
+				"id": "pst_101",
+				"type": "post",
+				"thumbnailUrl": null
+			},
+			"comment": {
+				"id": "cmt_201",
+				"excerpt": "Welcome!"
+			},
+			"message": null,
+			"read": true,
+			"createdAt": "2026-09-27T10:30:00.000Z"
+		},
+		{
+			"id": "ntf_504",
+			"type": "follow",
+			"actor": {
+				"id": "usr_03",
+				"username": "sokha_travel",
+				"displayName": "Sokha",
+				"avatarUrl": null
+			},
+			"post": null,
+			"comment": null,
+			"message": null,
+			"read": true,
+			"createdAt": "2026-09-20T05:00:00.000Z"
+		},
+		{
+			"id": "ntf_501",
+			"type": "system",
+			"actor": null,
+			"post": null,
+			"comment": null,
+			"message": "Welcome to SNS! Complete your profile to get started.",
+			"read": true,
+			"createdAt": "2026-09-01T03:00:00.000Z"
+		}
+	],
+	"nextCursor": null
+}

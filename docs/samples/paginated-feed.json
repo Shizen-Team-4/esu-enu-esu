@@ -1,0 +1,110 @@
+{
+	"items": [
+		{
+			"id": "pst_107",
+			"type": "post",
+			"author": {
+				"id": "usr_03",
+				"username": "sokha_travel",
+				"displayName": "Sokha",
+				"avatarUrl": null
+			},
+			"caption": "Followers only: the hidden waterfall near Kampot (edited to fix the name).",
+			"media": [
+				{
+					"id": "med_701",
+					"type": "image",
+					"url": "https://cdn.example.com/media/med_701.webp",
+					"thumbnailUrl": null,
+					"width": 1080,
+					"height": 1350,
+					"durationSec": null
+				}
+			],
+			"visibility": "followers",
+			"counts": {
+				"likes": 4,
+				"comments": 0
+			},
+			"viewer": {
+				"liked": true,
+				"saved": false,
+				"isAuthor": false
+			},
+			"shareUrl": "https://sns.eykorban.me/p/pst_107",
+			"createdAt": "2026-10-01T23:40:00.000Z",
+			"editedAt": "2026-10-02T00:05:00.000Z"
+		},
+		{
+			"id": "pst_106",
+			"type": "reel",
+			"author": {
+				"id": "usr_02",
+				"username": "mei_k",
+				"displayName": "Mei Kobayashi",
+				"avatarUrl": "https://cdn.example.com/avatars/usr_02.webp"
+			},
+			"caption": "Shibuya crossing timelapse. Wide video shown in reel layout.",
+			"media": [
+				{
+					"id": "med_601",
+					"type": "video",
+					"url": "https://cdn.example.com/media/med_601.mp4",
+					"thumbnailUrl": "https://cdn.example.com/media/med_601_thumb.webp",
+					"width": 1920,
+					"height": 1080,
+					"durationSec": 22.5
+				}
+			],
+			"visibility": "public",
+			"counts": {
+				"likes": 31,
+				"comments": 0
+			},
+			"viewer": {
+				"liked": false,
+				"saved": true,
+				"isAuthor": false
+			},
+			"shareUrl": "https://sns.eykorban.me/p/pst_106",
+			"createdAt": "2026-10-01T15:20:00.000Z",
+			"editedAt": null
+		},
+		{
+			"id": "pst_105",
+			"type": "reel",
+			"author": {
+				"id": "usr_04",
+				"username": "kenji_dev",
+				"displayName": "Kenji",
+				"avatarUrl": "https://cdn.example.com/avatars/usr_04.webp"
+			},
+			"caption": "Building a tiny robot in 30 seconds #maker",
+			"media": [
+				{
+					"id": "med_501",
+					"type": "video",
+					"url": "https://cdn.example.com/media/med_501.mp4",
+					"thumbnailUrl": "https://cdn.example.com/media/med_501_thumb.webp",
+					"width": 1080,
+					"height": 1920,
+					"durationSec": 29.8
+				}
+			],
+			"visibility": "public",
+			"counts": {
+				"likes": 120,
+				"comments": 0
+			},
+			"viewer": {
+				"liked": true,
+				"saved": false,
+				"isAuthor": false
+			},
+			"shareUrl": "https://sns.eykorban.me/p/pst_105",
+			"createdAt": "2026-10-01T09:00:00.000Z",
+			"editedAt": null
+		}
+	],
+	"nextCursor": "eyJjIjoiMjAyNi0xMC0wMVQwOTowMDowMC4wMDBaIiwiaSI6InBzdF8xMDUifQ"
+}

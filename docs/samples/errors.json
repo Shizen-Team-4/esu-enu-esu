@@ -1,0 +1,60 @@
+{
+	"VALIDATION_FAILED": {
+		"status": 400,
+		"body": {
+			"error": {
+				"code": "VALIDATION_FAILED",
+				"message": "caption must be at most 2200 characters",
+				"fields": { "caption": "TOO_LONG", "mediaIds": "TOO_MANY" }
+			}
+		}
+	},
+	"UNAUTHENTICATED": {
+		"status": 401,
+		"body": { "error": { "code": "UNAUTHENTICATED", "message": "Login required" } }
+	},
+	"INVALID_CREDENTIALS": {
+		"status": 401,
+		"body": { "error": { "code": "INVALID_CREDENTIALS", "message": "Email or password is wrong" } }
+	},
+	"FORBIDDEN": {
+		"status": 403,
+		"body": { "error": { "code": "FORBIDDEN", "message": "Only the author can edit this post" } }
+	},
+	"EMAIL_NOT_VERIFIED": {
+		"status": 403,
+		"body": { "error": { "code": "EMAIL_NOT_VERIFIED", "message": "Verify your email first" } }
+	},
+	"NOT_FOUND": {
+		"status": 404,
+		"body": { "error": { "code": "NOT_FOUND", "message": "Post pst_999 not found" } }
+	},
+	"CONFLICT": {
+		"status": 409,
+		"body": {
+			"error": {
+				"code": "CONFLICT",
+				"message": "Username is already taken",
+				"fields": { "username": "TAKEN" }
+			}
+		}
+	},
+	"PAYLOAD_TOO_LARGE": {
+		"status": 413,
+		"body": { "error": { "code": "PAYLOAD_TOO_LARGE", "message": "Video must be at most 100 MB" } }
+	},
+	"UNSUPPORTED_MEDIA_TYPE": {
+		"status": 415,
+		"body": { "error": { "code": "UNSUPPORTED_MEDIA_TYPE", "message": "image/gif is not allowed" } }
+	},
+	"RATE_LIMITED": {
+		"status": 429,
+		"body": {
+			"error": { "code": "RATE_LIMITED", "message": "Too many requests", "retryAfterSec": 60 }
+		}
+	},
+	"INTERNAL": {
+		"status": 500,
+		"body": { "error": { "code": "INTERNAL", "message": "Something went wrong" } }
+	}
+}
