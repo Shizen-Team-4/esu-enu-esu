@@ -1,0 +1,97 @@
+{
+	"tray": {
+		"items": [
+			{
+				"user": {
+					"id": "usr_01",
+					"username": "dara",
+					"displayName": "Dara",
+					"avatarUrl": "https://cdn.example.com/avatars/usr_01.webp"
+				},
+				"hasUnseen": false,
+				"latestAt": "2026-10-01T20:00:00.000Z",
+				"stories": [
+					{
+						"id": "sty_401",
+						"author": {
+							"id": "usr_01",
+							"username": "dara",
+							"displayName": "Dara",
+							"avatarUrl": "https://cdn.example.com/avatars/usr_01.webp"
+						},
+						"media": {
+							"id": "med_941",
+							"type": "image",
+							"url": "https://cdn.example.com/media/med_941.webp",
+							"thumbnailUrl": null,
+							"width": 1080,
+							"height": 1920,
+							"durationSec": null
+						},
+						"createdAt": "2026-10-01T20:00:00.000Z",
+						"viewer": {
+							"seen": true
+						}
+					}
+				]
+			},
+			{
+				"user": {
+					"id": "usr_04",
+					"username": "kenji_dev",
+					"displayName": "Kenji",
+					"avatarUrl": "https://cdn.example.com/avatars/usr_04.webp"
+				},
+				"hasUnseen": true,
+				"latestAt": "2026-10-02T01:00:00.000Z",
+				"stories": [
+					{
+						"id": "sty_402",
+						"author": {
+							"id": "usr_04",
+							"username": "kenji_dev",
+							"displayName": "Kenji",
+							"avatarUrl": "https://cdn.example.com/avatars/usr_04.webp"
+						},
+						"media": {
+							"id": "med_942",
+							"type": "video",
+							"url": "https://cdn.example.com/media/med_942.mp4",
+							"thumbnailUrl": "https://cdn.example.com/media/med_942_thumb.webp",
+							"width": 1080,
+							"height": 1920,
+							"durationSec": 12.0
+						},
+						"createdAt": "2026-10-01T18:00:00.000Z",
+						"viewer": {
+							"seen": true
+						}
+					},
+					{
+						"id": "sty_403",
+						"author": {
+							"id": "usr_04",
+							"username": "kenji_dev",
+							"displayName": "Kenji",
+							"avatarUrl": "https://cdn.example.com/avatars/usr_04.webp"
+						},
+						"media": {
+							"id": "med_943",
+							"type": "image",
+							"url": "https://cdn.example.com/media/med_943.webp",
+							"thumbnailUrl": null,
+							"width": 1080,
+							"height": 1920,
+							"durationSec": null
+						},
+						"createdAt": "2026-10-02T01:00:00.000Z",
+						"viewer": {
+							"seen": false
+						}
+					}
+				]
+			}
+		],
+		"nextCursor": null
+	}
+}

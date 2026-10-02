@@ -1,0 +1,114 @@
+{
+	"topLevel": {
+		"items": [
+			{
+				"id": "cmt_302",
+				"postId": "pst_102",
+				"author": {
+					"id": "usr_04",
+					"username": "kenji_dev",
+					"displayName": "Kenji",
+					"avatarUrl": "https://cdn.example.com/avatars/usr_04.webp"
+				},
+				"body": "Where is this café?",
+				"parentId": null,
+				"replyToUser": null,
+				"replyCount": 0,
+				"viewer": {
+					"canDelete": false
+				},
+				"createdAt": "2026-09-28T04:00:00.000Z"
+			},
+			{
+				"id": "cmt_301",
+				"postId": "pst_102",
+				"author": {
+					"id": "usr_01",
+					"username": "dara",
+					"displayName": "Dara",
+					"avatarUrl": "https://cdn.example.com/avatars/usr_01.webp"
+				},
+				"body": "Looks amazing!",
+				"parentId": null,
+				"replyToUser": null,
+				"replyCount": 3,
+				"viewer": {
+					"canDelete": true
+				},
+				"createdAt": "2026-09-28T02:00:00.000Z"
+			}
+		],
+		"nextCursor": null
+	},
+	"repliesByParent": {
+		"cmt_301": {
+			"items": [
+				{
+					"id": "cmt_311",
+					"postId": "pst_102",
+					"author": {
+						"id": "usr_02",
+						"username": "mei_k",
+						"displayName": "Mei Kobayashi",
+						"avatarUrl": "https://cdn.example.com/avatars/usr_02.webp"
+					},
+					"body": "Thank you! It was so good.",
+					"parentId": "cmt_301",
+					"replyToUser": null,
+					"replyCount": 0,
+					"viewer": {
+						"canDelete": false
+					},
+					"createdAt": "2026-09-28T02:10:00.000Z"
+				},
+				{
+					"id": "cmt_312",
+					"postId": "pst_102",
+					"author": {
+						"id": "usr_03",
+						"username": "sokha_travel",
+						"displayName": "Sokha",
+						"avatarUrl": null
+					},
+					"body": "I want to go too!",
+					"parentId": "cmt_301",
+					"replyToUser": {
+						"id": "usr_02",
+						"username": "mei_k",
+						"displayName": "Mei Kobayashi",
+						"avatarUrl": "https://cdn.example.com/avatars/usr_02.webp"
+					},
+					"replyCount": 0,
+					"viewer": {
+						"canDelete": false
+					},
+					"createdAt": "2026-09-28T02:30:00.000Z"
+				},
+				{
+					"id": "cmt_313",
+					"postId": "pst_102",
+					"author": {
+						"id": "usr_01",
+						"username": "dara",
+						"displayName": "Dara",
+						"avatarUrl": "https://cdn.example.com/avatars/usr_01.webp"
+					},
+					"body": "Let's all go next weekend.",
+					"parentId": "cmt_301",
+					"replyToUser": {
+						"id": "usr_03",
+						"username": "sokha_travel",
+						"displayName": "Sokha",
+						"avatarUrl": null
+					},
+					"replyCount": 0,
+					"viewer": {
+						"canDelete": true
+					},
+					"createdAt": "2026-09-28T03:00:00.000Z"
+				}
+			],
+			"nextCursor": null
+		}
+	}
+}

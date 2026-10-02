@@ -1,0 +1,12 @@
+{
+	"id": "usr_01",
+	"username": "dara",
+	"displayName": "Dara",
+	"avatarUrl": "https://cdn.example.com/avatars/usr_01.webp",
+	"bio": "Coffee, code, and Phnom Penh sunsets.",
+	"counts": { "posts": 3, "followers": 2, "following": 3 },
+	"viewer": { "isMe": true, "following": false },
+	"createdAt": "2026-09-01T03:00:00.000Z",
+	"email": "dara@example.com",
+	"emailVerified": true
+}

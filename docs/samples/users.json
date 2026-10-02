@@ -1,0 +1,42 @@
+[
+	{
+		"id": "usr_01",
+		"username": "dara",
+		"displayName": "Dara",
+		"avatarUrl": "https://cdn.example.com/avatars/usr_01.webp",
+		"bio": "Coffee, code, and Phnom Penh sunsets.",
+		"counts": { "posts": 3, "followers": 2, "following": 3 },
+		"viewer": { "isMe": true, "following": false },
+		"createdAt": "2026-09-01T03:00:00.000Z"
+	},
+	{
+		"id": "usr_02",
+		"username": "mei_k",
+		"displayName": "Mei Kobayashi",
+		"avatarUrl": "https://cdn.example.com/avatars/usr_02.webp",
+		"bio": "Photos from Tokyo and everywhere else.",
+		"counts": { "posts": 2, "followers": 2, "following": 1 },
+		"viewer": { "isMe": false, "following": true },
+		"createdAt": "2026-09-03T08:12:00.000Z"
+	},
+	{
+		"id": "usr_03",
+		"username": "sokha_travel",
+		"displayName": "Sokha",
+		"avatarUrl": null,
+		"bio": "",
+		"counts": { "posts": 2, "followers": 1, "following": 1 },
+		"viewer": { "isMe": false, "following": true },
+		"createdAt": "2026-09-10T11:45:00.000Z"
+	},
+	{
+		"id": "usr_04",
+		"username": "kenji_dev",
+		"displayName": "Kenji",
+		"avatarUrl": "https://cdn.example.com/avatars/usr_04.webp",
+		"bio": "Reels about building things.",
+		"counts": { "posts": 1, "followers": 1, "following": 1 },
+		"viewer": { "isMe": false, "following": true },
+		"createdAt": "2026-09-15T00:30:00.000Z"
+	}
+]
