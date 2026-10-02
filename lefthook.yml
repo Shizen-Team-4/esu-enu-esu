@@ -1,0 +1,27 @@
+# Git hooks, installed automatically by `pnpm install` (lefthook postinstall).
+# Skip once with LEFTHOOK=0 git commit ... / git push --no-verify.
+
+pre-commit:
+  parallel: true
+  jobs:
+    - name: format
+      run: pnpm exec prettier --write --ignore-unknown {staged_files}
+      stage_fixed: true
+
+    - name: spellcheck
+      run: pnpm exec cspell --no-progress --no-must-find-files {staged_files}
+
+pre-push:
+  parallel: true
+  jobs:
+    - name: audit
+      run: pnpm audit --audit-level=high
+
+    - name: i18n
+      run: pnpm check:i18n
+
+    - name: typecheck
+      run: pnpm check
+
+    - name: test
+      run: pnpm test
