@@ -109,19 +109,19 @@ Every error uses this envelope:
 - `fields` (only for `VALIDATION_FAILED` and `CONFLICT`): field name → field error code. The form shows the error under that field.
 - `retryAfterSec` (only for `RATE_LIMITED`): seconds until the user can try again.
 
-| Status | `code`                   | When                                                |
-| ------ | ------------------------ | --------------------------------------------------- |
+| Status | `code`                   | When                                               |
+| ------ | ------------------------ | -------------------------------------------------- |
 | 400    | `VALIDATION_FAILED`      | Input breaks a rule in [2.6](#26-input-validation) |
-| 401    | `UNAUTHENTICATED`        | Not logged in, or session expired                   |
-| 401    | `INVALID_CREDENTIALS`    | Wrong email or password                             |
-| 403    | `FORBIDDEN`              | Logged in but not allowed                           |
-| 403    | `EMAIL_NOT_VERIFIED`     | Action needs a verified email                       |
-| 404    | `NOT_FOUND`              | Does not exist, or the viewer can't see it          |
-| 409    | `CONFLICT`               | Already exists (email, username, already reported)  |
-| 413    | `PAYLOAD_TOO_LARGE`      | Upload is bigger than the limit                     |
-| 415    | `UNSUPPORTED_MEDIA_TYPE` | File type not allowed                               |
-| 429    | `RATE_LIMITED`           | Too many requests                                   |
-| 500    | `INTERNAL`               | Unexpected server error                             |
+| 401    | `UNAUTHENTICATED`        | Not logged in, or session expired                  |
+| 401    | `INVALID_CREDENTIALS`    | Wrong email or password                            |
+| 403    | `FORBIDDEN`              | Logged in but not allowed                          |
+| 403    | `EMAIL_NOT_VERIFIED`     | Action needs a verified email                      |
+| 404    | `NOT_FOUND`              | Does not exist, or the viewer can't see it         |
+| 409    | `CONFLICT`               | Already exists (email, username, already reported) |
+| 413    | `PAYLOAD_TOO_LARGE`      | Upload is bigger than the limit                    |
+| 415    | `UNSUPPORTED_MEDIA_TYPE` | File type not allowed                              |
+| 429    | `RATE_LIMITED`           | Too many requests                                  |
+| 500    | `INTERNAL`               | Unexpected server error                            |
 
 Field error codes: `REQUIRED`, `TOO_SHORT`, `TOO_LONG`, `TOO_MANY`, `INVALID_FORMAT`, `NOT_ALLOWED`, `TAKEN`.
 
@@ -437,7 +437,6 @@ Files are uploaded **directly to Cloudflare R2 with a presigned URL**. They do n
 
 - Stories have **no caption**. A `caption` field in the request → `400 VALIDATION_FAILED` (`caption` `NOT_ALLOWED`).
 - Tray order: your own stories first, then users with unseen stories, then the rest. Within each group, the newest `latestAt` comes first.
-
 
 ### 4.8 Preferences
 
