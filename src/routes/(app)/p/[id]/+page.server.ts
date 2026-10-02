@@ -27,15 +27,11 @@ export const actions: Actions = {
 		const services = requireServices(locals)
 		const data = await request.formData()
 		try {
-			const post = await services.posts.updatePost(
-				optionalViewer(user),
-				params.id,
-				data.get('caption'),
-			)
-			return { post }
+			await services.posts.updatePost(optionalViewer(user), params.id, data.get('caption'))
 		} catch (cause) {
 			return toActionFailure(cause)
 		}
+		redirect(303, '/?notice=edited')
 	},
 	delete: async ({ locals, params }) => {
 		const user = requireUser(locals)
@@ -45,7 +41,7 @@ export const actions: Actions = {
 		} catch (cause) {
 			return toActionFailure(cause)
 		}
-		redirect(303, '/profile')
+		redirect(303, '/?notice=deleted')
 	},
 	comment: async ({ locals, params, request }) => {
 		const user = requireUser(locals)

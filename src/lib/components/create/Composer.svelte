@@ -13,6 +13,7 @@
 	import ComposerMediaPreview from './ComposerMediaPreview.svelte'
 	import ComposerToolbar from './ComposerToolbar.svelte'
 	import CreateHeader from './CreateHeader.svelte'
+	import { enhance } from '$app/forms'
 
 	type Props = {
 		me: UserSummary | null
@@ -28,19 +29,21 @@
 	let items = $state<MediaItem[]>([])
 	let limitError = $state<ApiError | null>(null)
 	let counter = 0
+	let submitting = $state(false)
 
 	const uploading = $derived(items.some((item) => item.status === 'uploading'))
 	const failedItem = $derived(items.find((item) => item.status === 'failed'))
 	const error = $derived(limitError ?? failedItem?.error ?? serverError)
 	const ready = $derived(items.filter((item) => item.status === 'ready'))
 	const canPost = $derived(
-		canPublish({
-			type,
-			caption,
-			mediaCount: items.length,
-			uploading,
-			failed: failedItem !== undefined,
-		}),
+		!submitting &&
+			canPublish({
+				type,
+				caption,
+				mediaCount: items.length,
+				uploading,
+				failed: failedItem !== undefined,
+			}),
 	)
 	const pickDisabled = $derived(uploading || items.length >= maxFiles(type))
 
@@ -95,6 +98,20 @@
 		method="POST"
 		action={type === 'story' ? '?/story' : '?/post'}
 		class="grid gap-4 bg-surface p-3.5 md:border md:border-line md:p-6"
+		use:enhance={({ cancel }) => {
+			if (submitting) {
+				cancel()
+				return
+			}
+			submitting = true
+			return async ({ update }) => {
+				try {
+					await update()
+				} finally {
+					submitting = false
+				}
+			}
+		}}
 	>
 		<ComposerAuthor {me} bind:type locked={lockType || items.length > 0} />
 		<input type="hidden" name="type" value={type} />
@@ -129,3 +146,18 @@
 	</form>
 	<p class="mt-3 hidden text-meta text-fg-muted md:block">{$_('create.hint')}</p>
 </div>
+{#if submitting}
+	<div
+		class="fixed inset-0 z-50 grid place-items-center bg-black/40"
+		role="status"
+		aria-live="polite"
+	>
+		<div class="flex items-center gap-3 bg-surface px-5 py-4 text-fg">
+			<span
+				class="h-5 w-5 animate-spin rounded-full border-2 border-current border-t-transparent"
+				aria-hidden="true"
+			></span>
+			<span>Posting…</span>
+		</div>
+	</div>
+{/if}
