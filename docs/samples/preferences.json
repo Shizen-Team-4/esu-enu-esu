@@ -1,10 +1,5 @@
 {
 	"theme": "system",
 	"language": "en",
-	"notifications": {
-		"inApp": true,
-		"email": true,
-		"push": false
-	},
 	"updatedAt": "2026-09-01T03:00:00.000Z"
 }

@@ -29,7 +29,6 @@
 							"durationSec": null
 						},
 						"createdAt": "2026-10-01T20:00:00.000Z",
-						"expiresAt": "2026-10-02T20:00:00.000Z",
 						"viewer": {
 							"seen": true
 						}
@@ -64,7 +63,6 @@
 							"durationSec": 12.0
 						},
 						"createdAt": "2026-10-01T18:00:00.000Z",
-						"expiresAt": "2026-10-02T18:00:00.000Z",
 						"viewer": {
 							"seen": true
 						}
@@ -87,7 +85,6 @@
 							"durationSec": null
 						},
 						"createdAt": "2026-10-02T01:00:00.000Z",
-						"expiresAt": "2026-10-03T01:00:00.000Z",
 						"viewer": {
 							"seen": false
 						}
@@ -96,28 +93,5 @@
 			}
 		],
 		"nextCursor": null
-	},
-	"expiredStory": {
-		"id": "sty_400",
-		"author": {
-			"id": "usr_02",
-			"username": "mei_k",
-			"displayName": "Mei Kobayashi",
-			"avatarUrl": "https://cdn.example.com/avatars/usr_02.webp"
-		},
-		"media": {
-			"id": "med_940",
-			"type": "image",
-			"url": "https://cdn.example.com/media/med_940.webp",
-			"thumbnailUrl": null,
-			"width": 1080,
-			"height": 1920,
-			"durationSec": null
-		},
-		"createdAt": "2026-09-30T10:00:00.000Z",
-		"expiresAt": "2026-10-01T10:00:00.000Z",
-		"viewer": {
-			"seen": true
-		}
 	}
 }

@@ -9,7 +9,7 @@
 				"displayName": "Sokha",
 				"avatarUrl": null
 			},
-			"caption": "Followers only: the hidden waterfall near Kampot (edited to fix the name).",
+			"caption": "The hidden waterfall near Kampot (edited to fix the name).",
 			"media": [
 				{
 					"id": "med_701",
@@ -21,7 +21,6 @@
 					"durationSec": null
 				}
 			],
-			"visibility": "followers",
 			"counts": {
 				"likes": 4,
 				"comments": 0
@@ -56,7 +55,6 @@
 					"durationSec": 22.5
 				}
 			],
-			"visibility": "public",
 			"counts": {
 				"likes": 31,
 				"comments": 0
@@ -91,7 +89,6 @@
 					"durationSec": 29.8
 				}
 			],
-			"visibility": "public",
 			"counts": {
 				"likes": 120,
 				"comments": 0

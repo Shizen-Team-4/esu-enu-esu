@@ -8,7 +8,7 @@
 			"displayName": "Dara",
 			"avatarUrl": "https://cdn.example.com/avatars/usr_01.webp"
 		},
-		"caption": "Draft ideas for the next trip. Only I can see this.",
+		"caption": "Ideas for the next trip.",
 		"media": [
 			{
 				"id": "med_801",
@@ -20,7 +20,6 @@
 				"durationSec": null
 			}
 		],
-		"visibility": "private",
 		"counts": {
 			"likes": 0,
 			"comments": 0
@@ -43,7 +42,7 @@
 			"displayName": "Sokha",
 			"avatarUrl": null
 		},
-		"caption": "Followers only: the hidden waterfall near Kampot (edited to fix the name).",
+		"caption": "The hidden waterfall near Kampot (edited to fix the name).",
 		"media": [
 			{
 				"id": "med_701",
@@ -55,7 +54,6 @@
 				"durationSec": null
 			}
 		],
-		"visibility": "followers",
 		"counts": {
 			"likes": 4,
 			"comments": 0
@@ -90,7 +88,6 @@
 				"durationSec": 22.5
 			}
 		],
-		"visibility": "public",
 		"counts": {
 			"likes": 31,
 			"comments": 0
@@ -125,7 +122,6 @@
 				"durationSec": 29.8
 			}
 		],
-		"visibility": "public",
 		"counts": {
 			"likes": 120,
 			"comments": 0
@@ -160,7 +156,6 @@
 				"durationSec": 41.0
 			}
 		],
-		"visibility": "public",
 		"counts": {
 			"likes": 6,
 			"comments": 0
@@ -276,7 +271,6 @@
 				"durationSec": null
 			}
 		],
-		"visibility": "public",
 		"counts": {
 			"likes": 58,
 			"comments": 0
@@ -311,7 +305,6 @@
 				"durationSec": null
 			}
 		],
-		"visibility": "public",
 		"counts": {
 			"likes": 12,
 			"comments": 5
@@ -336,7 +329,6 @@
 		},
 		"caption": "Hello SNS! This is my first text-only post.",
 		"media": [],
-		"visibility": "public",
 		"counts": {
 			"likes": 3,
 			"comments": 1
