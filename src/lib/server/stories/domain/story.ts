@@ -4,6 +4,12 @@ import type { Story, StoryTrayItem } from '$lib/contract'
 export type { Story, StoryTrayItem }
 
 export const STORY_LIFETIME_MS = 24 * 60 * 60 * 1000
+
+export const storyExpiresAt = (now: Date): Date => new Date(now.getTime() + STORY_LIFETIME_MS)
+
+export const isStoryActive = (story: { expiresAt: string }, now: Date): boolean =>
+	new Date(story.expiresAt).getTime() > now.getTime()
+
 export function validateStory(input: unknown): string {
 	if (!input || typeof input !== 'object') throw new AppError('VALIDATION_FAILED')
 	const value = input as Record<string, unknown>

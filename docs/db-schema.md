@@ -23,7 +23,7 @@ Related: [`backend-requirements.md`](./backend-requirements.md) explains the rul
 ```text
 user ─┬─< session, account                 (BetterAuth)
       ├─< media ─┬─ post_media >─ posts ─┬─< likes, saves, comments, reports, post_edits
-      │          └─ stories ─< story_views
+      │          └─ stories ─< story_views, story_likes
       ├─< follows (follower_id, followee_id)
       └── preferences (1 : 1)
 rate_limit, verification                   (BetterAuth, not linked to user)
@@ -38,7 +38,7 @@ rate_limit, verification                   (BetterAuth, not linked to user)
 | `follows`                                    | follow operations (4.2), `Profile.viewer.following`, story access                | **none yet**  |
 | `likes`, `saves`                             | like / save operations (4.5), `Post.viewer.liked/saved`                          | **none yet**  |
 | `comments`                                   | `Comment`, comment operations (4.6)                                              | **none yet**  |
-| `stories`, `story_views`                     | `Story`, `StoryTrayItem`, story operations (4.7)                                 | **none yet**  |
+| `stories`, `story_views`, `story_likes`      | `Story`, `StoryTrayItem`, story operations (4.7)                                 | **none yet**  |
 | `reports`                                    | `reportPost`, `listReports`, `resolveReport` (proposed, not in the contract yet) | #19           |
 | `preferences`                                | `Preferences`, `getPreferences`, `updatePreferences`                             | #21, #22, #26 |
 
@@ -321,7 +321,8 @@ export const stories = sqliteTable(
 			.notNull()
 			.unique()
 			.references(() => media.id),
-		createdAt: ts('created_at').notNull().default(now), // no expiry: kept until deleted
+		createdAt: ts('created_at').notNull().default(now),
+		expiresAt: ts('expires_at').notNull(), // created_at + 24 h; expired rows are filtered out
 	},
 	(t) => [index('stories_author_idx').on(t.authorId, t.createdAt, t.id)], // tray, listUserStories
 )
@@ -338,6 +339,20 @@ export const storyViews = sqliteTable(
 		seenAt: ts('seen_at').notNull().default(now),
 	},
 	(t) => [primaryKey({ columns: [t.storyId, t.viewerId] })],
+)
+
+export const storyLikes = sqliteTable(
+	'story_likes',
+	{
+		storyId: text('story_id')
+			.notNull()
+			.references(() => stories.id, { onDelete: 'cascade' }),
+		userId: text('user_id')
+			.notNull()
+			.references(() => user.id, { onDelete: 'cascade' }),
+		createdAt: ts('created_at').notNull().default(now),
+	},
+	(t) => [primaryKey({ columns: [t.storyId, t.userId] })],
 )
 
 // ─── Reports (#19) ───────────────────────────────────────────────────────────
@@ -422,9 +437,10 @@ export const rateLimit = sqliteTable('rate_limit', {
 - `parent_id` always points to a **top-level** comment (flatten rule). Its `ON DELETE CASCADE` deletes replies with their parent.
 - SQLite only enforces cascades when `PRAGMA foreign_keys = ON`. D1 enables it by default. Do not turn it off in migrations.
 
-### `stories`, `story_views`
+### `stories`, `story_views`, `story_likes`
 
-- Stories **do not expire** (contract 3.5). There is no `expires_at` column; a row lives until the author deletes it. Deleting a story cascades to `story_views`, and the app deletes its media row and R2 object.
+- Stories **expire after 24 h** (contract 3.5). `expires_at` = `created_at` + 24 h; every story query filters `expires_at > now`. Deleting a story cascades to `story_views` and `story_likes`, and the app deletes its media row and R2 object.
+- `story_likes` has one row per user per story (`story_id`, `user_id`, `created_at`). `INSERT OR IGNORE` / `DELETE` make `likeStory` idempotent.
 - `story_views` has one row per viewer per story. `INSERT OR IGNORE` makes `markStorySeen` idempotent.
 
 ### `rate_limit`

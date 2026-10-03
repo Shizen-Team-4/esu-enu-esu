@@ -5,9 +5,9 @@
 </script>
 
 <section aria-label={$_('story.title')} class="mb-6 flex gap-4 overflow-x-auto py-2">
-	{#each items as item (item.author.id)}
+	{#each items as item (item.user.id)}
 		<a
-			href="/stories/{encodeURIComponent(item.author.username || item.author.id)}"
+			href="/stories/{encodeURIComponent(item.user.username || item.user.id)}"
 			class="grid min-w-20 justify-items-center gap-2 text-sm text-fg"
 		>
 			<div
@@ -15,17 +15,17 @@
 					? 'border-primary'
 					: 'border-line'}"
 			>
-				{#if item.author.avatarUrl}<img
-						src={item.author.avatarUrl}
+				{#if item.user.avatarUrl}<img
+						src={item.user.avatarUrl}
 						width="56"
 						height="56"
 						alt=""
 						class="size-full rounded-full object-cover"
 					/>{:else}<span class="grid size-full place-items-center rounded-full bg-bubble-in text-lg"
-						>{item.author.displayName.slice(0, 1)}</span
+						>{item.user.displayName.slice(0, 1)}</span
 					>{/if}
 			</div>
-			<span class="max-w-24 truncate">{item.author.username || item.author.displayName}</span>
+			<span class="max-w-24 truncate">{item.user.username || item.user.displayName}</span>
 		</a>
 	{/each}
 </section>

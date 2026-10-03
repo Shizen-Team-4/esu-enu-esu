@@ -11,7 +11,7 @@ export interface Story {
 	likes: number
 }
 export interface StoryTrayItem {
-	author: UserSummary
+	user: UserSummary
 	hasUnseen: boolean
 	storyCount: number
 	latestAt: string

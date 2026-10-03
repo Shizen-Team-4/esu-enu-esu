@@ -6,7 +6,7 @@ This document defines shared data shapes, operation inputs/results and rules, so
 
 For this SvelteKit app, `+page.server.ts` loads read data and form actions handle mutations through server-side services/repositories. They do not need to fetch the app's own `/api` routes. SvelteKit handles the request and data transfer, but does not automatically create REST endpoints. Add `+server.ts` endpoints only when needed, such as incremental feed loading or browser-initiated uploads. These adapters use the same operations below; their paths are implementation details.
 
-Server repositories receive the current session/viewer from trusted server context, never from a client-supplied user ID. Database access and credentials remain server-only. Notifications, post visibility settings and automatic story expiration are out of scope for now.
+Server repositories receive the current session/viewer from trusted server context, never from a client-supplied user ID. Database access and credentials remain server-only. Notifications and post visibility settings are out of scope for now.
 
 Items marked **(proposed)** are suggested defaults. They have not been agreed by the whole team yet. Change them in this file first, then in code.
 
@@ -269,20 +269,22 @@ Story {
   author: UserSummary
   media: Media            // exactly one image or video; stories have NO caption
   createdAt: string
-  viewer: { seen: boolean }
+  expiresAt: string       // createdAt + 24 h
+  viewer: { seen: boolean; liked: boolean }
+  likes: number
 }
 
 StoryTrayItem {           // one circle in the story tray
   user: UserSummary
   hasUnseen: boolean      // ring is highlighted when true
   latestAt: string
-  stories: Story[]        // oldest first, i.e. play order
+  storyCount: number      // active stories; load them with listUserStories
 }
 ```
 
 Who can see a story **(proposed)**: the author and the author's followers.
 
-Stories do not expire automatically. They remain available until the author deletes them. There is no expiration field, archive or expired-story state.
+Stories expire **24 hours** after creation (`expiresAt` = `createdAt` + 24 h). An expired story is hidden everywhere (tray, `listUserStories`, `markStorySeen`, `likeStory`) and behaves as `NOT_FOUND`. The author can also delete a story earlier. There is no archive.
 
 ### 3.6 Preferences
 
@@ -352,13 +354,15 @@ Files are uploaded **directly to Cloudflare R2 with a presigned URL**. They do n
 4. createPost / createStory / updateMe with the mediaId(s)
 ```
 
-| Operation        | Auth | Input                                                                                               | Result                                                                                  | Errors                                                                                   |
-| ---------------- | ---- | --------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `createUpload`   | 🔒   | `{ purpose: "post" \| "reel" \| "story" \| "avatar", mimeType, sizeBytes }`                         | `{ mediaId, uploadUrl, method: "PUT", headers: { "Content-Type": string }, expiresAt }` | `VALIDATION_FAILED`, `PAYLOAD_TOO_LARGE`, `UNSUPPORTED_MEDIA_TYPE`                       |
-| `completeUpload` | 🔒   | `{ mediaId, width, height, durationSec: number \| null }` (dimensions/duration read by the browser) | `Media`                                                                                 | `NOT_FOUND`, `VALIDATION_FAILED` (file missing or does not match `mimeType`/`sizeBytes`) |
+| Operation        | Auth | Input                                                                                               | Result                                                                                                                                            | Errors                                                                                   |
+| ---------------- | ---- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `createUpload`   | 🔒   | `{ purpose: "post" \| "reel" \| "story" \| "avatar", mimeType, sizeBytes, thumbnailSizeBytes? }`    | `{ mediaId, uploadUrl, method: "PUT", headers: { "Content-Type": string, "If-None-Match": "*" }, expiresAt, thumbnailUploadUrl: string \| null }` | `VALIDATION_FAILED`, `PAYLOAD_TOO_LARGE`, `UNSUPPORTED_MEDIA_TYPE`                       |
+| `completeUpload` | 🔒   | `{ mediaId, width, height, durationSec: number \| null }` (dimensions/duration read by the browser) | `Media`                                                                                                                                           | `NOT_FOUND`, `VALIDATION_FAILED` (file missing or does not match `mimeType`/`sizeBytes`) |
 
 - The browser sends raw file bytes to R2 with the supplied headers. R2 returns `200` on success or `403` if the signed URL has expired; the upload adapter handles these separately from domain errors.
 - The upload URL is valid for **15 minutes** **(proposed)**. Its `expiresAt` is a security limit, not story expiration.
+- Uploads are write-once: send `If-None-Match: *` with the PUT. A second PUT to the same key is rejected.
+- For video, `thumbnailSizeBytes` (exact byte length of the poster) is required. The poster is `image/webp` and at most **1 MB**, otherwise `PAYLOAD_TOO_LARGE`. The result then carries `thumbnailUploadUrl`, a second signed PUT URL for the poster (same headers rule, `Content-Type: image/webp`). For images `thumbnailUploadUrl` is `null` and `thumbnailSizeBytes` is ignored.
 - Media that is not attached to a post, story or avatar within 24 h is deleted **(proposed)**.
 - `purpose: "reel"` only allows video. `"avatar"` only allows images.
 - Only the upload owner can complete or attach media. The server checks the real file type, not only the extension (#18).
@@ -414,10 +418,12 @@ Files are uploaded **directly to Cloudflare R2 with a presigned URL**. They do n
 | `listStoryTray`   | 🔒   | `{ cursor?, limit? }` | `Page<StoryTrayItem>`               | none                                                        |
 | `listUserStories` | 🔒   | `{ username }`        | `{ items: Story[] }` (oldest first) | `NOT_FOUND` (user missing or viewer is not author/follower) |
 | `markStorySeen`   | 🔒   | `{ id }`              | `void`                              | `NOT_FOUND`                                                 |
+| `likeStory`       | 🔒   | `{ id, active }`      | `{ liked, likes }`                  | `NOT_FOUND`                                                 |
 | `deleteStory`     | 🔒   | `{ id }`              | `void`                              | `FORBIDDEN`, `NOT_FOUND`                                    |
 
 - Stories have **no caption**. A `caption` field in the input → `VALIDATION_FAILED` (`caption` `NOT_ALLOWED`).
-- Stories remain until deleted by the author; lists have no time-based expiration filter.
+- Stories expire 24 h after `createdAt` (`expiresAt`). Expired stories are excluded from the tray and lists, and `markStorySeen`, `likeStory` and `deleteStory` return `NOT_FOUND` for them.
+- `likeStory` sets (`active: true`) or clears (`active: false`) the viewer's like. It is idempotent and returns the new `liked` state and total `likes`. Only viewers who can see the story can like it.
 - The tray contains your own stories and stories by people you follow. Read and seen operations enforce author/follower access on the server; inaccessible stories return `NOT_FOUND`.
 - Tray order: your own stories first, then users with unseen stories, then the rest. Within each group, the newest `latestAt` comes first.
 

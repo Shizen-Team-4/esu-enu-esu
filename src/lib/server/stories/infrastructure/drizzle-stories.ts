@@ -131,7 +131,7 @@ export function createStoryRepository(
 				last = page.at(-1)
 			return {
 				items: page.map((row) => ({
-					author: {
+					user: {
 						id: row.id,
 						username: row.username ?? '',
 						displayName: row.name,
