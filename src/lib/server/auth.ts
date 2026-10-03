@@ -10,7 +10,7 @@ import type { Lang } from '$lib/i18n/config'
 
 export function createAuth(
 	db: ReturnType<typeof getDb>,
-	env: Env & SmtpConfig,
+	env: Omit<Env, 'BETTER_AUTH_URL'> & { BETTER_AUTH_URL?: string } & SmtpConfig,
 	email: EmailSender,
 	language: Lang,
 	development = false,

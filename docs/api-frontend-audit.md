@@ -33,7 +33,7 @@ Still open for the frontend plan: 4, 5 (UI), 6, 7, 8, 12. New findings:
 - [x] Phase 2: comments backend (domain/app/infra, container, /p/[id] actions, comment API endpoints) — item 7
 - [x] Phase 3: users backend (updateMe, listFollowers/listFollowing, username rule shared with auth, /onboard guard) — item 8
 - [x] Phase 4: expose post use cases in routes (like/save actions everywhere, edit/delete on /p/[id], /bookmarks load) — items 5, 6
-- [ ] Phase 5: full pre-PR gate + final doc update
+- [x] Phase 5: full pre-PR gate + final doc update (2026-10-04: install, lint, spellcheck, check, check:i18n, test:coverage — 501 tests, 99.83% lines — build, audit all pass)
 
 Frontend UI work (4, 12, UI halves of 5–8, full happy-path e2e) is left for the frontend plan.
 
