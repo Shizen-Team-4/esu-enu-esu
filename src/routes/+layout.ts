@@ -7,5 +7,6 @@ export const load: LayoutLoad = async ({ data }) => {
 	await waitLocale()
 	return {
 		lang: data.lang,
+		theme: data.theme,
 	}
 }

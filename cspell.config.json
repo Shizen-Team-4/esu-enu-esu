@@ -3,6 +3,11 @@
 	"language": "en",
 	"useGitignore": true,
 	"words": [
+		"fontsource",
+		"ftypisom",
+		"Grotesk",
+		"nosniff",
+		"wordmark",
 		"SvelteKit",
 		"sveltekit",
 		"Turso",
@@ -46,7 +51,10 @@
 		"actioned",
 		"subsecond",
 		"ftyp",
-		"Unfollowing"
+		"Unfollowing",
+		"minmax",
+		"autoincrement",
+		"ខ្មែរ"
 	],
 	"ignorePaths": [
 		"**/.git/**",

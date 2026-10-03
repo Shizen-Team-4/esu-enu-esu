@@ -1,0 +1,143 @@
+@import 'tailwindcss';
+@import '@fontsource/space-grotesk/400.css';
+@import '@fontsource/space-grotesk/600.css';
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+	font-family: 'Space Grotesk', system-ui, sans-serif;
+	font-size: 16px;
+	color-scheme: light;
+	--primary: #12a9f2;
+	--on-primary: #0b1b2b;
+	--primary-soft: #e6f6fe;
+	--link: #0369a1;
+	--background: #f5f5f5;
+	--surface: #ffffff;
+	--elevated: #ffffff;
+	--bubble-in: #ebebeb;
+	--fg: #1c1c1e;
+	--fg-muted: #6b6b70;
+	--line: #e5e5ea;
+	--accent: #ff3040;
+	--danger: #ef4444;
+	--success: #22c55e;
+	--text: var(--fg);
+	--border: var(--line);
+}
+.dark {
+	color-scheme: dark;
+	--primary-soft: #0f2a3a;
+	--link: #5cc4f7;
+	--background: #0f0f12;
+	--surface: #1c1c1f;
+	--elevated: #2a2a2e;
+	--bubble-in: #2c2c30;
+	--fg: #f2f2f7;
+	--fg-muted: #9a9aa1;
+	--line: #2e2e33;
+	--accent: #ff4d5e;
+	--danger: #f87171;
+	--success: #4ade80;
+}
+@theme inline {
+	--color-primary: var(--primary);
+	--color-on-primary: var(--on-primary);
+	--color-primary-soft: var(--primary-soft);
+	--color-link: var(--link);
+	--color-background: var(--background);
+	--color-surface: var(--surface);
+	--color-elevated: var(--elevated);
+	--color-bubble-in: var(--bubble-in);
+	--color-fg: var(--fg);
+	--color-fg-muted: var(--fg-muted);
+	--color-line: var(--line);
+	--color-accent: var(--accent);
+	--color-danger: var(--danger);
+	--color-success: var(--success);
+	--radius-card: 1.5rem;
+}
+* {
+	box-sizing: border-box;
+}
+body {
+	margin: 0;
+	background: var(--background);
+	color: var(--text);
+}
+img,
+video {
+	max-width: 100%;
+	height: auto;
+}
+button,
+input,
+select,
+textarea {
+	font: inherit;
+}
+button,
+select,
+input,
+.button {
+	min-height: 44px;
+}
+button,
+.button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.7rem 1.2rem;
+	border: 1px solid var(--border);
+	border-radius: 0.75rem;
+	background: var(--surface);
+	color: var(--text);
+	cursor: pointer;
+	text-decoration: none;
+}
+a {
+	color: var(--link);
+}
+button[type='submit'],
+.primary {
+	background: var(--primary);
+	color: var(--on-primary);
+}
+input,
+select,
+textarea {
+	background: var(--elevated);
+	color: var(--fg);
+}
+button[aria-pressed='true'] {
+	color: var(--accent);
+}
+[role='alert'] {
+	color: var(--danger);
+}
+:focus-visible {
+	outline: 3px solid var(--primary);
+	outline-offset: 3px;
+}
+.container {
+	width: min(100% - 2rem, 72rem);
+	margin-inline: auto;
+}
+.panel {
+	background: var(--surface);
+	padding: clamp(1rem, 4vw, 2rem);
+	border: 1px solid var(--border);
+	border-radius: 1.5rem;
+}
+h1 {
+	font-size: clamp(2rem, 1rem + 4vw, 3.5rem);
+	overflow-wrap: anywhere;
+}
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation: none !important;
+		transition: none !important;
+		scroll-behavior: auto !important;
+	}
+}

@@ -1,0 +1,121 @@
+import { getDb } from './db'
+import { createAuth } from './auth'
+import { getPreferences } from './preferences/application/get-preferences'
+import { updatePreferences } from './preferences/application/update-preferences'
+import { createPreferencesRepository } from './preferences/infrastructure/drizzle-preferences'
+import { createPreferencesCache } from './preferences/infrastructure/kv-preferences'
+import { createPostRepository } from './posts/infrastructure/drizzle-posts'
+import { createPost } from './posts/application/create-post'
+import { getPost } from './posts/application/get-post'
+import { updatePost } from './posts/application/update-post'
+import { deletePost } from './posts/application/delete-post'
+import { listPosts } from './posts/application/list-posts'
+import { reactToPost } from './posts/application/react-to-post'
+import { createSmtpSender, type SmtpConfig } from './auth/infrastructure/smtp-email'
+import type { Lang } from '$lib/i18n/config'
+import { createUserRepository } from './users/infrastructure/drizzle-users'
+import { getMe } from './users/application/get-me'
+import { getProfile } from './users/application/get-profile'
+import { searchUsers } from './users/application/search-users'
+import { followUser } from './users/application/follow-user'
+import { createMediaRepository } from './media/infrastructure/drizzle-media'
+import { createR2Storage, type R2Config } from './media/infrastructure/r2-storage'
+import { createUpload } from './media/application/create-upload'
+import { completeUpload } from './media/application/complete-upload'
+import { getMediaFile } from './media/application/get-media-file'
+import { createStoryRepository } from './stories/infrastructure/drizzle-stories'
+import { createStory } from './stories/application/create-story'
+import { listUserStories } from './stories/application/list-user-stories'
+import { listStoryTray } from './stories/application/list-story-tray'
+import { markStorySeen } from './stories/application/mark-story-seen'
+import { likeStory } from './stories/application/like-story'
+import { deleteStory } from './stories/application/delete-story'
+import { validateGuestPreferences } from './preferences/application/validate-guest-preferences'
+import { createLocalUploadReceiver } from './media/infrastructure/local-upload'
+
+export function createContainer(
+	env: Env & SmtpConfig & R2Config,
+	ctx: ExecutionContext,
+	origin: string,
+	language: Lang,
+	development = false,
+) {
+	const db = getDb(env.DB)
+	const repository = createPreferencesRepository(db)
+	const cache = createPreferencesCache(env.KV)
+	const clock = { now: () => new Date() }
+	const tasks = { run: (task: Promise<unknown>) => ctx.waitUntil(task) }
+	const users = createUserRepository(db)
+	const posts = createPostRepository(db, env.DB, {
+		origin,
+		media: env.MEDIA_PUBLIC_URL?.replace(/\/$/, '') ?? '/media',
+	})
+	const ids = {
+		generate: (prefix: string) => `${prefix}_${crypto.randomUUID().replaceAll('-', '')}`,
+	}
+	const mediaRepository = createMediaRepository(db)
+	const storage = createR2Storage(
+		env,
+		development && env.BETTER_AUTH_SECRET ? { origin, secret: env.BETTER_AUTH_SECRET } : undefined,
+	)
+	const stories = createStoryRepository(
+		db,
+		env.DB,
+		env.MEDIA_PUBLIC_URL?.replace(/\/$/, '') ?? '/media',
+	)
+	return {
+		stories: {
+			createStory: createStory({ stories, clock, ids }),
+			listUserStories: listUserStories({ stories, clock }),
+			listStoryTray: listStoryTray({ stories, clock }),
+			markStorySeen: markStorySeen({ stories, clock }),
+			likeStory: likeStory({ stories, clock }),
+			deleteStory: deleteStory({ stories, clock }),
+		},
+		media: {
+			uploadLocalFile: createLocalUploadReceiver({
+				bucket: env.MEDIA,
+				secret: env.BETTER_AUTH_SECRET,
+				enabled: development,
+			}),
+			createUpload: createUpload({ repository: mediaRepository, storage, clock, ids }),
+			completeUpload: completeUpload({
+				repository: mediaRepository,
+				storage,
+				publicUrl: env.MEDIA_PUBLIC_URL?.replace(/\/$/, '') ?? '/media',
+			}),
+			getMediaFile: getMediaFile({ repository: mediaRepository, storage }),
+		},
+		auth: createAuth(
+			db,
+			{
+				...env,
+				BETTER_AUTH_URL: env.BETTER_AUTH_URL || (development ? 'http://localhost:5173' : undefined),
+			},
+			createSmtpSender(env),
+			language,
+			development,
+		),
+		users: {
+			getMe: getMe(users),
+			getProfile: getProfile(users),
+			searchUsers: searchUsers(users),
+			followUser: followUser({ users, clock }),
+		},
+		posts: {
+			createPost: createPost({ posts, clock, ids }),
+			getPost: getPost(posts),
+			updatePost: updatePost({ posts, clock }),
+			deletePost: deletePost({ posts, clock }),
+			listFeed: listPosts(posts),
+			reactToPost: reactToPost({ posts, clock }),
+		},
+		preferences: {
+			validateGuestPreferences,
+			getPreferences: getPreferences({ repository, cache, clock, tasks }),
+			updatePreferences: updatePreferences({ repository, cache, clock }),
+		},
+	}
+}
+
+export type Services = ReturnType<typeof createContainer>
