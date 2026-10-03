@@ -9,8 +9,15 @@ import { createPost } from './posts/application/create-post'
 import { getPost } from './posts/application/get-post'
 import { updatePost } from './posts/application/update-post'
 import { deletePost } from './posts/application/delete-post'
-import { listPosts } from './posts/application/list-posts'
-import { reactToPost } from './posts/application/react-to-post'
+import { listFeed } from './posts/application/list-feed'
+import { listReels } from './posts/application/list-reels'
+import { listUserPosts } from './posts/application/list-user-posts'
+import { listSavedPosts } from './posts/application/list-saved-posts'
+import { likePost } from './posts/application/like-post'
+import { unlikePost } from './posts/application/unlike-post'
+import { savePost } from './posts/application/save-post'
+import { unsavePost } from './posts/application/unsave-post'
+import type { AuthorDirectory } from './posts/application/ports'
 import { createSmtpSender, type SmtpConfig } from './auth/infrastructure/smtp-email'
 import type { Lang } from '$lib/i18n/config'
 import { createUserRepository } from './users/infrastructure/drizzle-users'
@@ -34,6 +41,12 @@ import { validateGuestPreferences } from './preferences/application/validate-gue
 import { createLocalUploadReceiver } from './media/infrastructure/local-upload'
 import { createHealthCheck } from './health/infrastructure/health-check'
 import { normalizeMediaUrl } from './shared/infrastructure/media-public-url'
+
+function authorDirectory(users: ReturnType<typeof createUserRepository>): AuthorDirectory {
+	return {
+		findIdByUsername: async (username) => (await users.find({ username }, null))?.id ?? null,
+	}
+}
 
 export function createContainer(
 	env: Env & SmtpConfig & R2Config,
@@ -107,8 +120,14 @@ export function createContainer(
 			getPost: getPost(posts),
 			updatePost: updatePost({ posts, clock }),
 			deletePost: deletePost({ posts, clock }),
-			listFeed: listPosts(posts),
-			reactToPost: reactToPost({ posts, clock }),
+			listFeed: listFeed(posts),
+			listReels: listReels(posts),
+			listUserPosts: listUserPosts({ posts, authors: authorDirectory(users) }),
+			listSavedPosts: listSavedPosts(posts),
+			likePost: likePost({ posts, clock }),
+			unlikePost: unlikePost({ posts, clock }),
+			savePost: savePost({ posts, clock }),
+			unsavePost: unsavePost({ posts, clock }),
 		},
 		preferences: {
 			validateGuestPreferences,

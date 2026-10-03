@@ -10,9 +10,10 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
 	try {
 		const profile = await services.users.getProfile(viewer, params.username)
 		const type = url.searchParams.get('type') === 'reel' ? 'reel' : 'post'
-		const posts = await services.posts.listFeed(viewer, {
-			authorId: profile.id,
-			...(type === 'reel' ? { type } : {}),
+		const posts = await services.posts.listUserPosts(viewer, {
+			username: params.username,
+			type,
+			cursor: url.searchParams.get('cursor') ?? undefined,
 		})
 		return { profile, posts, type }
 	} catch (cause) {

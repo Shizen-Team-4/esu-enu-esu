@@ -48,12 +48,9 @@ export const actions: Actions = {
 		const services = requireServices(locals)
 		const data = await request.formData()
 		try {
-			await services.posts.reactToPost(
-				optionalViewer(user),
-				String(data.get('id')),
-				'like',
-				data.get('active') === 'true',
-			)
+			const active = data.get('active') === 'true'
+			const react = active ? services.posts.likePost : services.posts.unlikePost
+			await react(optionalViewer(user), String(data.get('id')))
 		} catch (cause) {
 			return toActionFailure(cause)
 		}

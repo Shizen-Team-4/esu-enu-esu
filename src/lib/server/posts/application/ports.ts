@@ -8,7 +8,7 @@ export interface PostRepository {
 	list(input: {
 		viewerId: string | null
 		scope: 'all' | 'following' | 'saved'
-		type?: 'reel'
+		type?: 'post' | 'reel'
 		authorId?: string
 		cursor?: Cursor
 		limit: number
@@ -25,4 +25,8 @@ export interface PostRepository {
 	): Promise<void>
 	checkMedia(ids: string[], ownerId: string, type: 'post' | 'reel'): Promise<boolean>
 	creationWindow(authorId: string, since: Date): Promise<{ count: number; oldest: Date | null }>
+}
+
+export interface AuthorDirectory {
+	findIdByUsername(username: string): Promise<string | null>
 }

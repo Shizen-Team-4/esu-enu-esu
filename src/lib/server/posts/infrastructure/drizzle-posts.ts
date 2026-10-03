@@ -85,7 +85,7 @@ export function createPostRepository(
 			if (saved) conditions.push(sql`s.user_id = ${input.viewerId}`)
 			if (input.scope === 'following')
 				conditions.push(
-					sql`EXISTS (SELECT 1 FROM follows WHERE follower_id = ${input.viewerId} AND followee_id = p.author_id)`,
+					sql`(p.author_id = ${input.viewerId} OR EXISTS (SELECT 1 FROM follows WHERE follower_id = ${input.viewerId} AND followee_id = p.author_id))`,
 				)
 			if (input.type) conditions.push(sql`p.type = ${input.type}`)
 			if (input.authorId) conditions.push(sql`p.author_id = ${input.authorId}`)
