@@ -8,9 +8,16 @@ import type { SmtpConfig } from './auth/infrastructure/smtp-email'
 import { USERNAME_MAX, USERNAME_MIN, USERNAME_PATTERN } from './users/domain/profile'
 import type { Lang } from '$lib/i18n/config'
 
+// Secrets come from `.env` / `wrangler secret`, so `pnpm types` only sees them when `.env` exists.
+export interface AuthSecrets {
+	BETTER_AUTH_SECRET: string
+	GOOGLE_CLIENT_ID?: string
+	GOOGLE_CLIENT_SECRET?: string
+}
+
 export function createAuth(
 	db: ReturnType<typeof getDb>,
-	env: Omit<Env, 'BETTER_AUTH_URL'> & { BETTER_AUTH_URL?: string } & SmtpConfig,
+	env: Omit<Env, 'BETTER_AUTH_URL'> & { BETTER_AUTH_URL?: string } & SmtpConfig & AuthSecrets,
 	email: EmailSender,
 	language: Lang,
 	development = false,

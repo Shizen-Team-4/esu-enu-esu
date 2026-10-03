@@ -1,5 +1,5 @@
 import { getDb } from './db'
-import { createAuth } from './auth'
+import { createAuth, type AuthSecrets } from './auth'
 import { getPreferences } from './preferences/application/get-preferences'
 import { updatePreferences } from './preferences/application/update-preferences'
 import { createPreferencesRepository } from './preferences/infrastructure/drizzle-preferences'
@@ -80,7 +80,7 @@ function avatarMedia(media: MediaRepository, publicUrl: string): AvatarMedia {
 }
 
 export function createContainer(
-	env: Env & SmtpConfig & R2Config,
+	env: Env & SmtpConfig & R2Config & AuthSecrets,
 	ctx: ExecutionContext,
 	origin: string,
 	language: Lang,
