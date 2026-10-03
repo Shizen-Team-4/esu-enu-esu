@@ -13,7 +13,7 @@ const setup = () => ({
 describe('deletePost', () => {
 	it('deletes an owned post', async () => {
 		const deps = setup()
-		await deletePost(deps)(viewer, 'pst_1')
+		await expect(deletePost(deps)(viewer, 'pst_1')).resolves.toBeUndefined()
 		expect(await deps.posts.find('pst_1', null)).toBe(null)
 	})
 

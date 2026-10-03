@@ -21,15 +21,15 @@ The first backend pass has landed. Per tracking item:
 
 Still open for the frontend plan: 4, 5 (UI), 6, 7, 8, 12. New findings:
 
-- ⬜ `local-upload` validates every upload as `purpose: 'post'` (dev-only path)
+- ✅ ~~`local-upload` validates every upload as `purpose: 'post'` (dev-only path)~~ (fixed 2026-10-04: capability carries `purpose`)
 - ✅ `markStorySeen` on own story records a view (docs changed to match code)
-- ⬜ Story create's invalid-media / rate-limit errors are only enforced in SQL
+- ✅ ~~Story create's invalid-media / rate-limit errors are only enforced in SQL~~ (fixed 2026-10-04: checked in `create-story.ts`, shared `creation-rate-limit.ts`, SQL kept as race backstop)
 - ⬜ Full login -> post -> like -> follow -> story e2e is missing
 - ⬜ Notifications nav slot decided as a placeholder page
 
 ## Backend-first finishing plan (2026-10-04)
 
-- [ ] Phase 1: small backend fixes (local-upload purpose, story create rules out of SQL, deletePost returns void, shared rate-limit config)
+- [x] Phase 1: small backend fixes (local-upload purpose, story create rules out of SQL, deletePost returns void, shared rate-limit config)
 - [ ] Phase 2: comments backend (domain/app/infra, container, /p/[id] actions, comment API endpoints) — item 7
 - [ ] Phase 3: users backend (updateMe, listFollowers/listFollowing, username rule shared with auth, /onboard guard) — item 8
 - [ ] Phase 4: expose post use cases in routes (like/save actions everywhere, edit/delete on /p/[id], /bookmarks load) — items 5, 6

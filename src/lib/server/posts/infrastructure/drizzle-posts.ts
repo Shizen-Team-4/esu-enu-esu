@@ -2,6 +2,10 @@ import { sql } from 'drizzle-orm'
 import type { getDb } from '../../db'
 import { AppError } from '../../shared/domain/app-error'
 import { encodeCursor } from '../../shared/domain/cursor'
+import {
+	CREATION_RATE_LIMIT,
+	CREATION_RATE_WINDOW_MS,
+} from '../../shared/domain/creation-rate-limit'
 import type { PostRepository } from '../application/ports'
 import type { Media } from '../domain/post'
 import { toPost, type PostRow } from './post-mapper'
@@ -127,7 +131,7 @@ export function createPostRepository(
 			const mediaGuard = input.mediaIds.length
 				? `AND (SELECT COUNT(*) FROM media WHERE id IN (${placeholders}) AND owner_id = ? AND status = 'ready' AND purpose = ? ${input.type === 'reel' ? "AND type = 'video'" : ''}) = ?`
 				: ''
-			const since = now.getTime() - 3600000
+			const since = now.getTime() - CREATION_RATE_WINDOW_MS
 			const parameters = [
 				id,
 				authorId,
@@ -145,7 +149,7 @@ export function createPostRepository(
 			const statements = [
 				d1
 					.prepare(
-						`INSERT INTO posts (id, author_id, type, caption, created_at) SELECT ?, ?, ?, ?, ? WHERE (SELECT COUNT(*) FROM (SELECT id FROM posts WHERE author_id = ? AND created_at > ? UNION ALL SELECT id FROM stories WHERE author_id = ? AND created_at > ?)) < 30 ${mediaGuard}`,
+						`INSERT INTO posts (id, author_id, type, caption, created_at) SELECT ?, ?, ?, ?, ? WHERE (SELECT COUNT(*) FROM (SELECT id FROM posts WHERE author_id = ? AND created_at > ? UNION ALL SELECT id FROM stories WHERE author_id = ? AND created_at > ?)) < ${CREATION_RATE_LIMIT} ${mediaGuard}`,
 					)
 					.bind(...parameters),
 			]
@@ -168,7 +172,7 @@ export function createPostRepository(
 			const result = await d1.batch(statements)
 			if (!result[0].meta.changes) {
 				const window = await this.creationWindow(authorId, new Date(since))
-				throw window.count >= 30
+				throw window.count >= CREATION_RATE_LIMIT
 					? new AppError('RATE_LIMITED')
 					: new AppError('VALIDATION_FAILED', { mediaIds: 'INVALID_FORMAT' })
 			}

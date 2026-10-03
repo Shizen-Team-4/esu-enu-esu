@@ -7,6 +7,7 @@ const bytes = new Uint8Array([1, 2, 3, 4])
 const farFuture = Date.now() + 60 * 60 * 1000
 const capability = {
 	key: `${viewer.id}/med_1.jpg`,
+	purpose: 'post' as const,
 	mimeType: 'image/jpeg',
 	sizeBytes: bytes.byteLength,
 	expiresAt: farFuture,
@@ -79,6 +80,51 @@ describe('verifyLocalUpload', () => {
 
 	it('rejects an unsupported media type', async () => {
 		const token = await signLocalUpload(secret, { ...capability, mimeType: 'text/html' })
+
+		await expect(verifyLocalUpload(secret, token, Date.now())).rejects.toMatchObject({
+			code: 'FORBIDDEN',
+		})
+	})
+
+	it('validates the capability with its own purpose', async () => {
+		const story = { ...capability, purpose: 'story' as const }
+		const token = await signLocalUpload(secret, story)
+
+		expect(await verifyLocalUpload(secret, token, Date.now())).toEqual(story)
+	})
+
+	it('applies the purpose rules: an avatar must be an image', async () => {
+		const token = await signLocalUpload(secret, {
+			...capability,
+			key: `${viewer.id}/med_1.mp4`,
+			mimeType: 'video/mp4',
+			purpose: 'avatar',
+		})
+
+		await expect(verifyLocalUpload(secret, token, Date.now())).rejects.toMatchObject({
+			code: 'FORBIDDEN',
+		})
+	})
+
+	it('applies the purpose rules: a reel must be a video', async () => {
+		const token = await signLocalUpload(secret, { ...capability, purpose: 'reel' })
+
+		await expect(verifyLocalUpload(secret, token, Date.now())).rejects.toMatchObject({
+			code: 'FORBIDDEN',
+		})
+	})
+
+	it('rejects a capability with an unknown purpose', async () => {
+		const token = await signLocalUpload(secret, { ...capability, purpose: 'admin' as never })
+
+		await expect(verifyLocalUpload(secret, token, Date.now())).rejects.toMatchObject({
+			code: 'FORBIDDEN',
+		})
+	})
+
+	it('rejects a capability without a purpose', async () => {
+		const { purpose: _purpose, ...legacy } = capability
+		const token = await signLocalUpload(secret, legacy as never)
 
 		await expect(verifyLocalUpload(secret, token, Date.now())).rejects.toMatchObject({
 			code: 'FORBIDDEN',

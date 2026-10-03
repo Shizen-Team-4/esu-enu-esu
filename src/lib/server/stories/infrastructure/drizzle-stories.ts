@@ -2,6 +2,11 @@ import { sql } from 'drizzle-orm'
 import type { getDb } from '../../db'
 import { AppError } from '../../shared/domain/app-error'
 import { encodeCursor } from '../../shared/domain/cursor'
+import {
+	CREATION_RATE_LIMIT,
+	CREATION_RATE_WINDOW_MS,
+	retryAfterSec,
+} from '../../shared/domain/creation-rate-limit'
 import type { Story, StoryRepository } from '../application/ports'
 
 type StoryRow = {
@@ -60,12 +65,24 @@ export function createStoryRepository(
 		likes: row.likes,
 	})
 	return {
+		async checkMedia(mediaId, ownerId) {
+			const row = await db.get<{ id: string }>(
+				sql`SELECT id FROM media WHERE id = ${mediaId} AND owner_id = ${ownerId} AND purpose = 'story' AND status = 'ready'`,
+			)
+			return Boolean(row)
+		},
+		async creationWindow(authorId, since) {
+			const result = await db.get<{ count: number; oldest: number | null }>(
+				sql`SELECT COUNT(*) AS count, MIN(created_at) AS oldest FROM (SELECT created_at FROM posts WHERE author_id = ${authorId} AND created_at > ${since.getTime()} UNION ALL SELECT created_at FROM stories WHERE author_id = ${authorId} AND created_at > ${since.getTime()})`,
+			)
+			return { count: result?.count ?? 0, oldest: result?.oldest ? new Date(result.oldest) : null }
+		},
 		async create(id, authorId, mediaId, now, expiresAt) {
-			const since = now.getTime() - 3600000
+			const since = now.getTime() - CREATION_RATE_WINDOW_MS
 			const result = await d1.batch([
 				d1
 					.prepare(
-						"INSERT INTO stories (id, author_id, media_id, created_at, expires_at) SELECT ?, ?, id, ?, ? FROM media WHERE id = ? AND owner_id = ? AND purpose = 'story' AND status = 'ready' AND (SELECT COUNT(*) FROM (SELECT id FROM posts WHERE author_id = ? AND created_at > ? UNION ALL SELECT id FROM stories WHERE author_id = ? AND created_at > ?)) < 30",
+						`INSERT INTO stories (id, author_id, media_id, created_at, expires_at) SELECT ?, ?, id, ?, ? FROM media WHERE id = ? AND owner_id = ? AND purpose = 'story' AND status = 'ready' AND (SELECT COUNT(*) FROM (SELECT id FROM posts WHERE author_id = ? AND created_at > ? UNION ALL SELECT id FROM stories WHERE author_id = ? AND created_at > ?)) < ${CREATION_RATE_LIMIT}`,
 					)
 					.bind(
 						id,
@@ -86,11 +103,9 @@ export function createStoryRepository(
 					.bind(mediaId, id, mediaId),
 			])
 			if (!result[0].meta.changes) {
-				const count = await db.get<{ count: number }>(
-					sql`SELECT COUNT(*) AS count FROM (SELECT id FROM posts WHERE author_id = ${authorId} AND created_at > ${since} UNION ALL SELECT id FROM stories WHERE author_id = ${authorId} AND created_at > ${since})`,
-				)
-				throw count && count.count >= 30
-					? new AppError('RATE_LIMITED')
+				const window = await this.creationWindow(authorId, new Date(since))
+				throw window.count >= CREATION_RATE_LIMIT
+					? new AppError('RATE_LIMITED', undefined, retryAfterSec(window.oldest, now))
 					: new AppError('VALIDATION_FAILED', { mediaId: 'INVALID_FORMAT' })
 			}
 		},

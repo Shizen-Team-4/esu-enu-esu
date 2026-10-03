@@ -20,6 +20,8 @@ const pair = (a: string, b: string) => `${a}|${b}`
 
 export class InMemoryStoryRepository implements StoryRepository {
 	stories: StoredStory[]
+	mediaValid = true
+	window: { count: number; oldest: Date | null } = { count: 0, oldest: null }
 	private readonly follows: Set<string>
 	private readonly views: Set<string>
 	private readonly likes: Set<string>
@@ -29,6 +31,14 @@ export class InMemoryStoryRepository implements StoryRepository {
 		this.follows = new Set((seed.follows ?? []).map(([a, b]) => pair(a, b)))
 		this.views = new Set((seed.views ?? []).map(([a, b]) => pair(a, b)))
 		this.likes = new Set((seed.likes ?? []).map(([a, b]) => pair(a, b)))
+	}
+
+	async checkMedia() {
+		return this.mediaValid
+	}
+
+	async creationWindow() {
+		return this.window
 	}
 
 	async create(id: string, authorId: string, mediaId: string, now: Date, expiresAt: Date) {

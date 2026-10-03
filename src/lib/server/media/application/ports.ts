@@ -1,4 +1,4 @@
-import type { Upload } from '../domain/upload'
+import type { Purpose, Upload } from '../domain/upload'
 
 export interface MediaRepository {
 	find(id: string): Promise<Upload | null>
@@ -11,7 +11,13 @@ export interface MediaRepository {
 	): Promise<boolean>
 }
 export interface MediaStorage {
-	sign(key: string, mimeType: string, sizeBytes: number, expiresAt: Date): Promise<string>
+	sign(
+		key: string,
+		mimeType: string,
+		sizeBytes: number,
+		expiresAt: Date,
+		purpose: Purpose,
+	): Promise<string>
 	head(key: string): Promise<{ size: number } | null>
 	read(key: string): Promise<Uint8Array>
 	delete(key: string): Promise<void>

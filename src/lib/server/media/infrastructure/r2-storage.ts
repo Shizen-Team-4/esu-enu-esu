@@ -20,12 +20,13 @@ export function createR2Storage(
 		return config.MEDIA
 	}
 	return {
-		async sign(key, mimeType, sizeBytes, expiresAt) {
+		async sign(key, mimeType, sizeBytes, expiresAt, purpose) {
 			if (local) {
 				const token = await signLocalUpload(local.secret, {
 					key,
 					mimeType,
 					sizeBytes,
+					purpose,
 					expiresAt: expiresAt.getTime(),
 				})
 				return `${local.origin}/api/dev/uploads?token=${encodeURIComponent(token)}`

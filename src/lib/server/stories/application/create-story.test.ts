@@ -39,6 +39,47 @@ describe('createStory', () => {
 		})
 	})
 
+	it('rejects media that is not the viewer ready story media', async () => {
+		const deps = setup()
+		deps.stories.mediaValid = false
+
+		await expect(createStory(deps)(viewer, { mediaId: 'med_9' })).rejects.toMatchObject({
+			code: 'VALIDATION_FAILED',
+			fields: { mediaId: 'INVALID_FORMAT' },
+		})
+		expect(deps.stories.stories).toHaveLength(0)
+	})
+
+	it('allows a story when 29 posts and stories were created in the last hour', async () => {
+		const deps = setup()
+		deps.stories.window = { count: 29, oldest: new Date('2026-10-02T23:30:00Z') }
+
+		await expect(createStory(deps)(viewer, { mediaId: 'med_9' })).resolves.toMatchObject({
+			id: 'sty_1',
+		})
+	})
+
+	it('rejects the 31st creation in an hour and says when to retry', async () => {
+		const deps = setup()
+		deps.stories.window = { count: 30, oldest: new Date('2026-10-02T23:30:00Z') }
+
+		await expect(createStory(deps)(viewer, { mediaId: 'med_9' })).rejects.toMatchObject({
+			code: 'RATE_LIMITED',
+			retryAfterSec: 1800,
+		})
+		expect(deps.stories.stories).toHaveLength(0)
+	})
+
+	it('checks the rate limit before the media', async () => {
+		const deps = setup()
+		deps.stories.window = { count: 30, oldest: null }
+		deps.stories.mediaValid = false
+
+		await expect(createStory(deps)(viewer, { mediaId: 'med_9' })).rejects.toMatchObject({
+			code: 'RATE_LIMITED',
+		})
+	})
+
 	it('rejects a caption', async () => {
 		await expect(
 			createStory(setup())(viewer, { mediaId: 'med_9', caption: 'hi' }),

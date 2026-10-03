@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { retryAfterSec } from './post-rate-limit'
+import { retryAfterSec } from './creation-rate-limit'
 
 const now = new Date('2026-10-03T12:00:00Z')
 

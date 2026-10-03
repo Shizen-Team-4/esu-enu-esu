@@ -14,7 +14,13 @@ export const createUpload =
 			key = `${actor.id}/${id}.${mimeTypes[value.mimeType]}`
 		const thumbnailKey = value.type === 'video' ? `${actor.id}/${id}.poster.webp` : null
 		const expiresAt = new Date(now.getTime() + 900000)
-		const uploadUrl = await deps.storage.sign(key, value.mimeType, value.sizeBytes, expiresAt)
+		const uploadUrl = await deps.storage.sign(
+			key,
+			value.mimeType,
+			value.sizeBytes,
+			expiresAt,
+			value.purpose,
+		)
 		// The exact thumbnail length is declared by the browser and signed too.
 		const thumbnailSize =
 			input && typeof input === 'object' && 'thumbnailSizeBytes' in input
@@ -33,6 +39,7 @@ export const createUpload =
 				'image/webp',
 				thumbnail.sizeBytes,
 				expiresAt,
+				'post',
 			)
 		}
 		const upload: Upload = {
