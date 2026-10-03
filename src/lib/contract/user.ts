@@ -14,3 +14,6 @@ export interface Me extends Profile {
 	email: string
 	emailVerified: boolean
 }
+export interface FollowListItem extends UserSummary {
+	viewer: { isMe: boolean; following: boolean }
+}

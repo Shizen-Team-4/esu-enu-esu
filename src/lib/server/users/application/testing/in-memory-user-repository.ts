@@ -1,6 +1,7 @@
 import { encodeCursor, type Cursor } from '../../../shared/domain/cursor'
 import type { Me } from '../../domain/user'
-import type { UserRepository } from '../ports'
+import { AppError } from '../../../shared/domain/app-error'
+import type { FollowListItem, PageRequest, UserRepository, UserUpdate } from '../ports'
 
 export type StoredUser = Omit<Me, 'viewer'>
 
@@ -37,11 +38,14 @@ const fromHex = (value: string) =>
 
 export class InMemoryUserRepository implements UserRepository {
 	users: StoredUser[]
-	private readonly follows: Set<string>
+	/** `follower|followee` maps to creation order (higher is newer). */
+	private readonly follows: Map<string, number>
+	/** When set, `update` fails as if another request took the username first. */
+	raceUsername: string | null = null
 
 	constructor(seed: InMemoryUserSeed = {}) {
 		this.users = [...(seed.users ?? [])]
-		this.follows = new Set((seed.follows ?? []).map(([a, b]) => `${a}|${b}`))
+		this.follows = new Map((seed.follows ?? []).map(([a, b], index) => [`${a}|${b}`, index]))
 	}
 
 	async find(input: { id?: string; username?: string }, viewerId: string | null) {
@@ -77,13 +81,66 @@ export class InMemoryUserRepository implements UserRepository {
 	}
 
 	async follow(viewerId: string, userId: string, active: boolean) {
-		if (active) this.follows.add(`${viewerId}|${userId}`)
+		if (active) this.follows.set(`${viewerId}|${userId}`, this.follows.size + 1000)
 		else this.follows.delete(`${viewerId}|${userId}`)
 		return this.followerCount(userId)
 	}
 
+	async update(id: string, patch: UserUpdate) {
+		const user = this.users.find((candidate) => candidate.id === id)
+		if (!user) return
+		if (patch.username && patch.username === this.raceUsername)
+			throw new AppError('CONFLICT', { username: 'TAKEN' })
+		if (patch.username !== undefined) user.username = patch.username
+		if (patch.displayName !== undefined) user.displayName = patch.displayName
+		if (patch.bio !== undefined) user.bio = patch.bio
+		if (patch.avatar !== undefined) user.avatarUrl = patch.avatar?.url ?? null
+	}
+
+	async isUsernameTaken(username: string, exceptUserId: string) {
+		return this.users.some((user) => user.username === username && user.id !== exceptUserId)
+	}
+
+	listFollowers(userId: string, viewerId: string | null, page: PageRequest) {
+		return this.listFollows(viewerId, page, (key) => {
+			const [follower, followee] = key.split('|')
+			return followee === userId ? follower : null
+		})
+	}
+
+	listFollowing(userId: string, viewerId: string | null, page: PageRequest) {
+		return this.listFollows(viewerId, page, (key) => {
+			const [follower, followee] = key.split('|')
+			return follower === userId ? followee : null
+		})
+	}
+
+	private async listFollows(
+		viewerId: string | null,
+		page: PageRequest,
+		pick: (key: string) => string | null,
+	) {
+		const rows = [...this.follows]
+			.map(([key, order]) => ({ order, user: this.users.find((u) => u.id === pick(key)) }))
+			.filter((row): row is { order: number; user: StoredUser } => !!row.user?.username)
+			.sort((a, b) => b.order - a.order)
+			.filter((row) => !page.cursor || row.order < page.cursor.time)
+		const items = rows.slice(0, page.limit),
+			last = items.at(-1)
+		return {
+			items: items.map(({ user }): FollowListItem => {
+				const { id, username, displayName, avatarUrl, viewer } = this.view(user, viewerId)
+				return { id, username, displayName, avatarUrl, viewer }
+			}),
+			nextCursor:
+				rows.length > page.limit && last
+					? encodeCursor({ time: last.order, id: last.user.id })
+					: null,
+		}
+	}
+
 	private followerCount(userId: string) {
-		return [...this.follows].filter((key) => key.endsWith(`|${userId}`)).length
+		return [...this.follows.keys()].filter((key) => key.endsWith(`|${userId}`)).length
 	}
 
 	private isFollowing(viewerId: string | null, userId: string) {
@@ -108,7 +165,7 @@ export class InMemoryUserRepository implements UserRepository {
 	}
 
 	private view(user: StoredUser, viewerId: string | null): Me {
-		const following = [...this.follows].filter((key) => key.startsWith(`${user.id}|`)).length
+		const following = [...this.follows.keys()].filter((key) => key.startsWith(`${user.id}|`)).length
 		return {
 			...user,
 			counts: { ...user.counts, followers: this.followerCount(user.id), following },

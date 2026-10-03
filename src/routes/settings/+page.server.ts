@@ -1,14 +1,35 @@
 import { redirect } from '@sveltejs/kit'
+import { optionalViewer } from '$lib/server/auth/viewer'
+import { profileFormInput } from '$lib/server/shared/http/profile-form'
 import { toActionFailure } from '$lib/server/shared/http/error-response'
-import { requireServices } from '$lib/server/shared/http/guards'
+import { requireServices, requireUser } from '$lib/server/shared/http/guards'
 import type { Actions, PageServerLoad } from './$types'
 
-export const load: PageServerLoad = ({ locals }) => ({
-	preferences: locals.preferences ?? { theme: locals.theme, language: locals.lang },
-})
+export const load: PageServerLoad = async ({ locals }) => {
+	const me = locals.user
+		? await locals.services?.users.getMe(optionalViewer(locals.user)).catch(() => null)
+		: null
+	return {
+		preferences: locals.preferences ?? { theme: locals.theme, language: locals.lang },
+		profile: me ? { username: me.username, displayName: me.displayName, bio: me.bio } : null,
+	}
+}
 
 export const actions: Actions = {
-	default: async ({ locals, request, cookies, url }) => {
+	profile: async ({ locals, request }) => {
+		const user = requireUser(locals)
+		const services = requireServices(locals)
+		try {
+			await services.users.updateMe(
+				optionalViewer(user),
+				profileFormInput(await request.formData()),
+			)
+		} catch (cause) {
+			return toActionFailure(cause)
+		}
+		redirect(303, '/settings')
+	},
+	preferences: async ({ locals, request, cookies, url }) => {
 		const services = requireServices(locals)
 		const form = await request.formData(),
 			input = { theme: form.get('theme'), language: form.get('language') }

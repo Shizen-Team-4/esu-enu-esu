@@ -5,6 +5,7 @@ import * as schema from './db/schema'
 import { username, admin } from 'better-auth/plugins'
 import { sendVerification, sendPasswordReset, type EmailSender } from './auth/application/email'
 import type { SmtpConfig } from './auth/infrastructure/smtp-email'
+import { USERNAME_MAX, USERNAME_MIN, USERNAME_PATTERN } from './users/domain/profile'
 import type { Lang } from '$lib/i18n/config'
 
 export function createAuth(
@@ -24,9 +25,9 @@ export function createAuth(
 				: [],
 		plugins: [
 			username({
-				minUsernameLength: 3,
-				maxUsernameLength: 30,
-				usernameValidator: (value) => /^[a-z0-9_]{3,30}$/.test(value),
+				minUsernameLength: USERNAME_MIN,
+				maxUsernameLength: USERNAME_MAX,
+				usernameValidator: (value) => USERNAME_PATTERN.test(value),
 			}),
 			admin(),
 		],

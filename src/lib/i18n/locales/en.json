@@ -66,6 +66,17 @@
 		"home": "Home",
 		"profile": "Profile"
 	},
+	"account": {
+		"title": "Profile",
+		"bio": "Bio",
+		"removeAvatar": "Remove profile photo",
+		"save": "Save profile"
+	},
+	"onboard": {
+		"title": "Choose a username",
+		"description": "Pick a username to finish setting up your account.",
+		"submit": "Continue"
+	},
 	"error": {
 		"VALIDATION_FAILED": "Please check the highlighted fields and try again.",
 		"UNAUTHENTICATED": "Please log in to continue.",

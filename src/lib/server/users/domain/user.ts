@@ -1,1 +1,1 @@
-export type { UserSummary, Profile, Me } from '$lib/contract'
+export type { UserSummary, Profile, Me, FollowListItem } from '$lib/contract'

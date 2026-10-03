@@ -1,4 +1,4 @@
-export type { UserSummary, Profile, Me } from './user'
+export type { UserSummary, Profile, Me, FollowListItem } from './user'
 export type { Media } from './media'
 export type { Post } from './post'
 export type { Comment } from './comment'

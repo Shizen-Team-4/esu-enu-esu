@@ -31,6 +31,11 @@ import { getMe } from './users/application/get-me'
 import { getProfile } from './users/application/get-profile'
 import { searchUsers } from './users/application/search-users'
 import { followUser } from './users/application/follow-user'
+import { updateMe } from './users/application/update-me'
+import { listFollowers } from './users/application/list-followers'
+import { listFollowing } from './users/application/list-following'
+import type { AvatarMedia } from './users/application/ports'
+import type { MediaRepository } from './media/application/ports'
 import { createMediaRepository } from './media/infrastructure/drizzle-media'
 import { createR2Storage, type R2Config } from './media/infrastructure/r2-storage'
 import { createUpload } from './media/application/create-upload'
@@ -59,6 +64,17 @@ function postLookup(posts: ReturnType<typeof createPostRepository>): PostLookup 
 		find: async (postId) => {
 			const post = await posts.find(postId, null)
 			return post ? { authorId: post.author.id } : null
+		},
+	}
+}
+
+function avatarMedia(media: MediaRepository, publicUrl: string): AvatarMedia {
+	return {
+		findUsable: async (mediaId, ownerId) => {
+			const upload = await media.find(mediaId)
+			const usable =
+				upload?.ownerId === ownerId && upload.purpose === 'avatar' && upload.status === 'ready'
+			return usable ? { url: `${publicUrl}/${upload.key}` } : null
 		},
 	}
 }
@@ -131,6 +147,9 @@ export function createContainer(
 			getProfile: getProfile(users),
 			searchUsers: searchUsers(users),
 			followUser: followUser({ users, clock }),
+			updateMe: updateMe({ users, avatars: avatarMedia(mediaRepository, mediaPublicUrl) }),
+			listFollowers: listFollowers(users),
+			listFollowing: listFollowing(users),
 		},
 		posts: {
 			createPost: createPost({ posts, clock, ids }),

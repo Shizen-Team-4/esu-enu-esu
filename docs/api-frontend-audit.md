@@ -31,7 +31,7 @@ Still open for the frontend plan: 4, 5 (UI), 6, 7, 8, 12. New findings:
 
 - [x] Phase 1: small backend fixes (local-upload purpose, story create rules out of SQL, deletePost returns void, shared rate-limit config)
 - [x] Phase 2: comments backend (domain/app/infra, container, /p/[id] actions, comment API endpoints) — item 7
-- [ ] Phase 3: users backend (updateMe, listFollowers/listFollowing, username rule shared with auth, /onboard guard) — item 8
+- [x] Phase 3: users backend (updateMe, listFollowers/listFollowing, username rule shared with auth, /onboard guard) — item 8
 - [ ] Phase 4: expose post use cases in routes (like/save actions everywhere, edit/delete on /p/[id], /bookmarks load) — items 5, 6
 - [ ] Phase 5: full pre-PR gate + final doc update
 
@@ -51,8 +51,8 @@ Frontend UI work (4, 12, UI halves of 5–8, full happy-path e2e) is left for th
 | 🟡 `likePost`/`unlikePost`                                                    | ~~`reactToPost` returns full `Post`, not `{liked, likes}`~~ (fixed, verified 2026-10-04: `likePost` returns `{liked, likes}`; use cases not yet exposed in routes except `/dashboard`)                                                                                                    | like only on `/dashboard`; full redirect, no optimistic update; `/`, `/p/[id]`, `/reels` read-only |
 | 🟡 `savePost`/`unsavePost`/`listSavedPosts`                                   | `savePost`/`unsavePost`/`listSavedPosts` use cases exist and are wired; ~~`scope:'saved'` leaks into public `/api/feed`~~ (fixed, verified 2026-10-04)                                                                                                                                    | no route, no UI, no Bookmarks page                                                                 |
 | 🟡 Comments (`listComments`, `listReplies`, `createComment`, `deleteComment`) | ~~table exists, **no domain/app/infra**~~ (fixed 2026-10-04: `comments/` feature, `/p/[id]` actions, `GET /api/posts/[id]/comments`, `GET /api/comments/[id]/replies`)                                                                                                                    | no UI                                                                                              |
-| ⬜ `updateMe`, OAuth username onboarding (`username: ""`)                     | missing                                                                                                                                                                                                                                                                                   | missing                                                                                            |
-| ⬜ `listFollowers` / `listFollowing`                                          | missing                                                                                                                                                                                                                                                                                   | counts not clickable                                                                               |
+| 🟡 `updateMe`, OAuth username onboarding (`username: ""`)                     | ~~missing~~ (fixed 2026-10-04: `updateMe`, hooks redirect to `/onboard`)                                                                                                                                                                                                                  | `/onboard` form and settings profile form exist; avatar upload UI open                             |
+| 🟡 `listFollowers` / `listFollowing`                                          | ~~missing~~ (fixed 2026-10-04: use cases + `GET /api/users/[username]/followers` and `/following`)                                                                                                                                                                                        | counts not clickable                                                                               |
 | ⬜ `getMe` in nav/header                                                      | —                                                                                                                                                                                                                                                                                         | header has no avatar/logout; `/` shows "Log in" even when logged in                                |
 | ⬜ Share                                                                      | —                                                                                                                                                                                                                                                                                         | `<a href={shareUrl}>` instead of Web Share API / clipboard                                         |
 
@@ -108,7 +108,7 @@ Frontend UI work (4, 12, UI halves of 5–8, full happy-path e2e) is left for th
 - [ ] 🟡 5. (backend done) Like/save/share actions everywhere + optimistic update
 - [ ] 🟡 6. (use cases wired, no route/UI) Post edit & delete hookup
 - [ ] 🟡 7. Comments feature end-to-end (backend done)
-- [ ] ⬜ 8. Users: `updateMe`, OAuth username onboarding, followers/following lists
+- [ ] 🟡 8. Users: `updateMe`, OAuth username onboarding, followers/following lists (backend done)
 - [x] 9. Error envelope end-to-end
 - [ ] 🟡 10. (done, except feed unification in 4) Architecture cleanup per CLAUDE.md §1–3
 - [ ] 🟡 11. (done, full e2e open) Test coverage gaps
@@ -323,11 +323,11 @@ Frontend UI work (4, 12, UI halves of 5–8, full happy-path e2e) is left for th
 
 **Acceptance criteria:**
 
-- [ ] `updateMe` use case (domain: validation; app: availability check; infra: Drizzle save)
-- [ ] OAuth flow redirects new user to `/onboard` to set username before completing login
-- [ ] `/onboard` validates username and calls `updateMe`
-- [ ] `listFollowers` / `listFollowing` use cases with pagination
-- [ ] Routes `/api/users/me` (PATCH), `/api/users/[id]/followers`, `/api/users/[id]/following`
+- [x] `updateMe` use case (domain: validation; app: availability check; infra: Drizzle save)
+- [x] OAuth flow redirects new user to `/onboard` to set username before completing login
+- [x] `/onboard` validates username and calls `updateMe`
+- [x] `listFollowers` / `listFollowing` use cases with pagination
+- [x] Routes: `updateMe` as `/settings?/profile` and `/onboard` actions; `GET /api/users/[username]/followers` and `/following`
 - [ ] Followers/following counts clickable on profile (show modal or page)
 - [ ] Settings page lets user edit profile, avatar, bio
 - [ ] Header shows avatar + username + logout button

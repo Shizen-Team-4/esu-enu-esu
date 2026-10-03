@@ -18,6 +18,7 @@ export default defineConfig({
 				'src/lib/server/comments/infrastructure/comment-mapper.ts',
 				'src/lib/server/auth/application/**/*.ts',
 				'src/lib/server/users/infrastructure/user-search-condition.ts',
+				'src/lib/server/users/infrastructure/unique-violation.ts',
 				'src/lib/media/video-duration.ts',
 				'src/lib/server/users/{domain,application}/**/*.ts',
 				'src/lib/server/stories/{domain,application}/**/*.ts',

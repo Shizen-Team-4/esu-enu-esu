@@ -66,6 +66,17 @@
 		"home": "ホーム",
 		"profile": "プロフィール"
 	},
+	"account": {
+		"title": "プロフィール",
+		"bio": "自己紹介",
+		"removeAvatar": "プロフィール写真を削除",
+		"save": "プロフィールを保存"
+	},
+	"onboard": {
+		"title": "ユーザー名を選択",
+		"description": "アカウントの設定を完了するためにユーザー名を選んでください。",
+		"submit": "続ける"
+	},
 	"error": {
 		"VALIDATION_FAILED": "入力内容を確認してもう一度お試しください。",
 		"UNAUTHENTICATED": "続けるにはログインしてください。",

@@ -5,6 +5,7 @@ import { DEFAULT_LANG, SUPPORTED_LANGS, isSupported, type Lang } from '$lib/i18n
 import type { Preferences } from '$lib/server/preferences/domain/preferences'
 import { createContainer } from '$lib/server/container'
 import { isProtectedPath } from '$lib/server/shared/http/protected-routes'
+import { needsOnboarding } from '$lib/server/shared/http/onboarding'
 
 type Theme = App.Locals['theme']
 
@@ -46,6 +47,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 	event.locals.preferences = preferences
 
 	if (isProtectedPath(event.url.pathname) && !event.locals.user) redirect(303, '/login')
+
+	if (needsOnboarding(event.locals.user, event.url.pathname)) redirect(303, '/onboard')
 
 	const lang = preferences?.language ?? appearance.lang
 	const theme = preferences?.theme ?? appearance.theme
