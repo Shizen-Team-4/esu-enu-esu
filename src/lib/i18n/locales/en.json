@@ -7,6 +7,64 @@
 	"post": {
 		"like": "Like",
 		"comment": "Comment",
-		"share": "Share"
+		"share": "Share",
+		"save": "Save",
+		"menu": "Post options",
+		"edit": "Edit",
+		"delete": "Delete",
+		"report": "Report",
+		"edited": "edited"
+	},
+	"common": {
+		"back": "Back",
+		"close": "Close",
+		"retry": "Try again",
+		"loading": "Loading",
+		"more": "More",
+		"less": "Less"
+	},
+	"error": {
+		"VALIDATION_FAILED": "Some of the information is not valid. Please check it and try again.",
+		"UNAUTHENTICATED": "Please log in to continue.",
+		"INVALID_CREDENTIALS": "The email or password is wrong.",
+		"FORBIDDEN": "You are not allowed to do this.",
+		"EMAIL_NOT_VERIFIED": "Please verify your email first.",
+		"NOT_FOUND": "We could not find what you are looking for.",
+		"CONFLICT": "This already exists.",
+		"PAYLOAD_TOO_LARGE": "The file is too large.",
+		"UNSUPPORTED_MEDIA_TYPE": "This file type is not supported.",
+		"RATE_LIMITED": "Too many requests. Please wait a moment and try again.",
+		"INTERNAL": "Something went wrong. Please try again."
+	},
+	"field": {
+		"REQUIRED": "This field is required.",
+		"TOO_SHORT": "This is too short.",
+		"TOO_LONG": "This is too long.",
+		"TOO_MANY": "There are too many items.",
+		"INVALID_FORMAT": "The format is not valid.",
+		"NOT_ALLOWED": "This value is not allowed.",
+		"TAKEN": "This is already taken."
+	},
+	"empty": {
+		"posts": "No posts yet"
+	},
+	"nav": {
+		"home": "Home",
+		"search": "Search",
+		"create": "Create",
+		"reels": "Reels",
+		"profile": "Profile",
+		"label": "Main navigation"
+	},
+	"media": {
+		"previous": "Previous",
+		"next": "Next",
+		"position": "{current} / {total}",
+		"loadFailed": "Could not load this media",
+		"gallery": "Post media"
+	},
+	"video": {
+		"play": "Play video",
+		"pause": "Pause video"
 	}
 }
