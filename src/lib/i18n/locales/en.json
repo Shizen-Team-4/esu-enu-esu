@@ -9,7 +9,12 @@
 		"username": "Username",
 		"password": "Password",
 		"success": "Check your email, or sign in with your updated password.",
-		"email": "Email"
+		"email": "Email",
+		"showPassword": "Show",
+		"hidePassword": "Hide"
+	},
+	"common": {
+		"back": "Back"
 	},
 	"post": {
 		"like": "Like",
@@ -64,6 +69,7 @@
 	"feed": {
 		"more": "Load more",
 		"empty": "No posts yet",
+		"tabs": "Feed",
 		"forYou": "For you",
 		"following": "Following",
 		"emptyAll": "No posts yet. Be the first to share something.",

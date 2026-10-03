@@ -9,7 +9,12 @@
 		"username": "ユーザー名",
 		"password": "パスワード",
 		"success": "メールを確認するか、更新したパスワードでログインしてください。",
-		"email": "メールアドレス"
+		"email": "メールアドレス",
+		"showPassword": "表示",
+		"hidePassword": "非表示"
+	},
+	"common": {
+		"back": "戻る"
 	},
 	"post": {
 		"like": "いいね",
@@ -64,6 +69,7 @@
 	"feed": {
 		"more": "もっと見る",
 		"empty": "まだ投稿がありません",
+		"tabs": "フィード",
 		"forYou": "おすすめ",
 		"following": "フォロー中",
 		"emptyAll": "まだ投稿がありません。最初の投稿をシェアしましょう。",
