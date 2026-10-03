@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { _ } from 'svelte-i18n'
-	import type { Post } from '$lib/server/posts/domain/post'
+	import type { Post } from '$lib/contract'
 	let { post, interactive = false }: { post: Post; interactive?: boolean } = $props()
 </script>
 

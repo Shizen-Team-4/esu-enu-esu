@@ -1,7 +1,6 @@
 import { AppError } from '../../shared/domain/app-error'
 import { requireViewer, type Viewer } from '../../shared/domain/viewer'
-import type { Clock } from '../../shared/application/ports'
-import type { IdGenerator } from '../../posts/application/ports'
+import type { Clock, IdGenerator } from '../../shared/application/ports'
 import { validateStory, STORY_LIFETIME_MS } from '../domain/story'
 import type { StoryRepository } from './ports'
 

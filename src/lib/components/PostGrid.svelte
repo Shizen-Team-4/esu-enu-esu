@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Post } from '$lib/server/posts/domain/post'
+	import type { Post } from '$lib/contract'
 	let { posts }: { posts: Post[] } = $props()
 </script>
 

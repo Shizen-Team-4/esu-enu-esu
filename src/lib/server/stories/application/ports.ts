@@ -1,5 +1,5 @@
 import type { Story, StoryTrayItem } from '../domain/story'
-import type { Page } from '../../posts/application/ports'
+import type { Page } from '$lib/contract'
 import type { Cursor } from '../../shared/domain/cursor'
 
 export type { Story, StoryTrayItem } from '../domain/story'

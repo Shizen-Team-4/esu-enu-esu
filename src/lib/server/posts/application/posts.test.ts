@@ -1,4 +1,7 @@
 import { describe, expect, it } from 'vitest'
+import { fixedClock } from '../../shared/testing/fixed-clock'
+import { sequentialIds } from '../../shared/testing/sequential-ids'
+import { viewer, otherViewer } from '../../shared/testing/viewer'
 import { createPost } from './create-post'
 import { getPost } from './get-post'
 import { updatePost } from './update-post'
@@ -8,7 +11,6 @@ import { reactToPost } from './react-to-post'
 import type { PostRepository } from './ports'
 import type { Post } from '../domain/post'
 
-const viewer = { id: 'usr_1', role: 'user' as const }
 function setup() {
 	let post: Post | null = {
 		id: 'pst_1',
@@ -45,8 +47,8 @@ function setup() {
 	}
 	const deps = {
 		posts,
-		clock: { now: () => new Date('2026-10-03T00:00:00Z') },
-		ids: { generate: () => 'pst_1' },
+		clock: fixedClock(),
+		ids: sequentialIds(),
 	}
 	return {
 		...deps,
@@ -115,7 +117,7 @@ describe('post operations', () => {
 	})
 	it('rejects editing and deleting another author’s post', async () => {
 		const deps = setup()
-		const other = { id: 'usr_2', role: 'user' as const }
+		const other = otherViewer
 		await expect(updatePost(deps)(other, 'pst_1', 'Updated')).rejects.toMatchObject({
 			code: 'FORBIDDEN',
 		})

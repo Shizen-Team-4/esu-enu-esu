@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { _ } from 'svelte-i18n'
-	import type { StoryTrayItem } from '$lib/server/stories/application/ports'
+	import type { StoryTrayItem } from '$lib/contract'
 	let { items }: { items: StoryTrayItem[] } = $props()
 </script>
 

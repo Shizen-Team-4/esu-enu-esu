@@ -32,6 +32,7 @@ import { likeStory } from './stories/application/like-story'
 import { deleteStory } from './stories/application/delete-story'
 import { validateGuestPreferences } from './preferences/application/validate-guest-preferences'
 import { createLocalUploadReceiver } from './media/infrastructure/local-upload'
+import { normalizeMediaUrl } from './shared/infrastructure/media-public-url'
 
 export function createContainer(
 	env: Env & SmtpConfig & R2Config,
@@ -40,6 +41,7 @@ export function createContainer(
 	language: Lang,
 	development = false,
 ) {
+	const mediaPublicUrl = normalizeMediaUrl(env.MEDIA_PUBLIC_URL)
 	const db = getDb(env.DB)
 	const repository = createPreferencesRepository(db)
 	const cache = createPreferencesCache(env.KV)
@@ -48,7 +50,7 @@ export function createContainer(
 	const users = createUserRepository(db)
 	const posts = createPostRepository(db, env.DB, {
 		origin,
-		media: env.MEDIA_PUBLIC_URL?.replace(/\/$/, '') ?? '/media',
+		media: mediaPublicUrl,
 	})
 	const ids = {
 		generate: (prefix: string) => `${prefix}_${crypto.randomUUID().replaceAll('-', '')}`,
@@ -58,11 +60,7 @@ export function createContainer(
 		env,
 		development && env.BETTER_AUTH_SECRET ? { origin, secret: env.BETTER_AUTH_SECRET } : undefined,
 	)
-	const stories = createStoryRepository(
-		db,
-		env.DB,
-		env.MEDIA_PUBLIC_URL?.replace(/\/$/, '') ?? '/media',
-	)
+	const stories = createStoryRepository(db, env.DB, mediaPublicUrl)
 	return {
 		stories: {
 			createStory: createStory({ stories, clock, ids }),
@@ -82,7 +80,7 @@ export function createContainer(
 			completeUpload: completeUpload({
 				repository: mediaRepository,
 				storage,
-				publicUrl: env.MEDIA_PUBLIC_URL?.replace(/\/$/, '') ?? '/media',
+				publicUrl: mediaPublicUrl,
 			}),
 			getMediaFile: getMediaFile({ repository: mediaRepository, storage }),
 		},

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { _ } from 'svelte-i18n'
-	import type { Profile } from '$lib/server/users/application/ports'
+	import type { Profile } from '$lib/contract'
 	let { profile }: { profile: Profile } = $props()
 </script>
 

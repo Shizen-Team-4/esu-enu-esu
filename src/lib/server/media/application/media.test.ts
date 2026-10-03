@@ -1,4 +1,7 @@
 import { describe, expect, it } from 'vitest'
+import { fixedClock } from '../../shared/testing/fixed-clock'
+import { sequentialIds } from '../../shared/testing/sequential-ids'
+import { viewer, otherViewer } from '../../shared/testing/viewer'
 import { createUpload } from './create-upload'
 import { completeUpload } from './complete-upload'
 import { getMediaFile } from './get-media-file'
@@ -51,8 +54,8 @@ function setup() {
 	return {
 		repository,
 		storage,
-		clock: { now: () => new Date('2026-10-03T00:00:00Z') },
-		ids: { generate: () => 'med_1' },
+		clock: fixedClock(),
+		ids: sequentialIds(),
 		publicUrl: 'https://cdn.example.com',
 		setRow: (value: Upload | null) => {
 			row = value
@@ -65,7 +68,6 @@ function setup() {
 		},
 	}
 }
-const viewer = { id: 'usr_1', role: 'user' as const }
 const metadata = { mediaId: 'med_1', width: 10, height: 20, durationSec: null }
 describe('media operations', () => {
 	it('issues a write-once image URL and records pending media', async () => {

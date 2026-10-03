@@ -1,15 +1,6 @@
-export type ErrorCode =
-	| 'VALIDATION_FAILED'
-	| 'UNAUTHENTICATED'
-	| 'FORBIDDEN'
-	| 'NOT_FOUND'
-	| 'CONFLICT'
-	| 'RATE_LIMITED'
-	| 'INTERNAL'
-	| 'PAYLOAD_TOO_LARGE'
-	| 'UNSUPPORTED_MEDIA_TYPE'
-	| 'INVALID_CREDENTIALS'
-	| 'EMAIL_NOT_VERIFIED'
+import type { ErrorCode } from '$lib/contract'
+
+export type { ErrorCode }
 
 export class AppError extends Error {
 	constructor(

@@ -1,32 +1,7 @@
 import { AppError } from '../../shared/domain/app-error'
+import type { UserSummary, Media, Post } from '$lib/contract'
 
-export interface UserSummary {
-	id: string
-	username: string
-	displayName: string
-	avatarUrl: string | null
-}
-export interface Media {
-	id: string
-	type: 'image' | 'video'
-	url: string
-	thumbnailUrl: string | null
-	width: number
-	height: number
-	durationSec: number | null
-}
-export interface Post {
-	id: string
-	type: 'post' | 'reel'
-	author: UserSummary
-	caption: string
-	media: Media[]
-	counts: { likes: number; comments: number }
-	viewer: { liked: boolean; saved: boolean; isAuthor: boolean }
-	shareUrl: string
-	createdAt: string
-	editedAt: string | null
-}
+export type { UserSummary, Media, Post }
 export interface CreatePostInput {
 	type: 'post' | 'reel'
 	caption: string

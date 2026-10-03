@@ -1,7 +1,6 @@
-import type { Clock } from '../../shared/application/ports'
+import type { Clock, IdGenerator } from '../../shared/application/ports'
 import { AppError } from '../../shared/domain/app-error'
 import { requireViewer, type Viewer } from '../../shared/domain/viewer'
-import type { IdGenerator } from '../../posts/application/ports'
 import { mimeTypes, validateUpload, type Upload } from '../domain/upload'
 import type { MediaRepository, MediaStorage } from './ports'
 
