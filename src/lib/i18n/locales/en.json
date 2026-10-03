@@ -178,5 +178,15 @@
 		"handle": "@alex",
 		"caption": "Sunday morning walk by the river. Who wants to join next time?",
 		"tagline": "Share moments with the people who matter."
+	},
+	"editProfile": {
+		"title": "Edit profile",
+		"changePhoto": "Change photo",
+		"uploading": "Uploading…",
+		"bioHint": "Shown on your profile.",
+		"unsaved": "You have unsaved changes.",
+		"saved": "Profile saved.",
+		"cancel": "Cancel",
+		"save": "Save"
 	}
 }

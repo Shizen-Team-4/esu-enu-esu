@@ -12,7 +12,7 @@
 
 <div class="flex min-w-0 flex-1 flex-wrap items-center gap-2 md:flex-none">
 	{#if viewer.isMe}
-		<Button href="/settings" variant="secondary" class="flex-1 md:flex-none">
+		<Button href="/settings/profile" variant="secondary" class="flex-1 md:flex-none">
 			<svg
 				viewBox="0 0 24 24"
 				class="size-4"

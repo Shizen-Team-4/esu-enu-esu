@@ -4,7 +4,9 @@ export const USERNAME_PATTERN = /^[a-z0-9_]{3,30}$/
 export const USERNAME_MIN = 3
 export const USERNAME_MAX = 30
 export const DISPLAY_NAME_MAX = 50
-export const BIO_MAX = 160
+import { BIO_MAX } from '$lib/contract/limits'
+
+export { BIO_MAX }
 
 export interface ProfilePatch {
 	username?: string

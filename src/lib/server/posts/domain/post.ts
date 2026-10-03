@@ -1,5 +1,5 @@
 import { AppError } from '../../shared/domain/app-error'
-import type { UserSummary, Media, Post } from '$lib/contract'
+import { CAPTION_MAX, type UserSummary, type Media, type Post } from '$lib/contract'
 
 export type { UserSummary, Media, Post }
 export interface CreatePostInput {
@@ -12,7 +12,8 @@ export function validateCaption(value: unknown): string {
 	if (typeof value !== 'string')
 		throw new AppError('VALIDATION_FAILED', { caption: 'INVALID_FORMAT' })
 	const caption = value.trim()
-	if ([...caption].length > 2200) throw new AppError('VALIDATION_FAILED', { caption: 'TOO_LONG' })
+	if ([...caption].length > CAPTION_MAX)
+		throw new AppError('VALIDATION_FAILED', { caption: 'TOO_LONG' })
 	return caption
 }
 

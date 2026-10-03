@@ -26,7 +26,7 @@
 	<div class="col-span-2 row-start-3 grid gap-2 md:col-span-1 md:col-start-2">
 		<strong class="text-body font-bold">{profile.displayName}</strong>
 		{#if profile.bio}<p class="m-0 whitespace-pre-wrap break-words text-body">{profile.bio}</p>
-		{:else if profile.viewer.isMe}<a href="/settings" class="text-body text-primary"
+		{:else if profile.viewer.isMe}<a href="/settings/profile" class="text-body text-primary"
 				>{$_('profile.addBio')}</a
 			>{/if}
 	</div>

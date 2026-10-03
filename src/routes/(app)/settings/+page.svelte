@@ -5,7 +5,6 @@
 	import FieldError from '$lib/components/FieldError.svelte'
 	import { enhance } from '$app/forms'
 	let { data, form } = $props()
-	const profileFields = $derived(form?.error?.fields)
 </script>
 
 <svelte:head><title>{$_('preferences.title')} · {$_('app.name')}</title></svelte:head>
@@ -51,42 +50,9 @@
 		{#if form?.error?.code}<p role="alert">{$_(errorMessageKey(form.error.code))}</p>{/if}
 		<Button type="submit" variant="primary">{$_('preferences.save')}</Button>
 	</form>
-	{#if data.profile}
-		<form method="POST" action="?/profile" use:enhance class="panel mt-8 grid gap-4">
-			<h2 class="text-lg font-semibold">{$_('account.title')}</h2>
-			<label for="settings-username">{$_('auth.username')}</label>
-			<input
-				id="settings-username"
-				name="username"
-				value={data.profile.username}
-				autocapitalize="none"
-				aria-describedby={profileFields?.username ? 'settings-username-error' : undefined}
-			/>
-			<FieldError code={profileFields?.username} id="settings-username-error" />
-			<label for="settings-display-name">{$_('auth.name')}</label>
-			<input
-				id="settings-display-name"
-				name="displayName"
-				value={data.profile.displayName}
-				aria-describedby={profileFields?.displayName ? 'settings-display-name-error' : undefined}
-			/>
-			<FieldError code={profileFields?.displayName} id="settings-display-name-error" />
-			<label for="settings-bio">{$_('account.bio')}</label>
-			<textarea
-				id="settings-bio"
-				name="bio"
-				rows="3"
-				aria-describedby={profileFields?.bio ? 'settings-bio-error' : undefined}
-				>{data.profile.bio}</textarea
-			>
-			<FieldError code={profileFields?.bio} id="settings-bio-error" />
-			<label class="flex items-center gap-2"
-				><input type="checkbox" name="removeAvatar" class="min-h-0 accent-primary" /><span
-					>{$_('account.removeAvatar')}</span
-				></label
-			>
-			<FieldError code={profileFields?.avatarMediaId} id="settings-avatar-error" />
-			<Button type="submit" variant="primary">{$_('account.save')}</Button>
-		</form>
+	{#if data.signedIn}
+		<a href="/settings/profile" class="mt-8 inline-block text-body text-primary"
+			>{$_('profile.editProfile')}</a
+		>
 	{/if}
 </div>
