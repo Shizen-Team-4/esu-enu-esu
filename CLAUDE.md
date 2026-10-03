@@ -114,7 +114,7 @@ These are the design decisions from the design exports. Every UI change must fol
 
 ### Visual style
 
-- Use Geist for all text. Pages are white, surfaces are pale gray, borders are thin, and blue marks primary actions and selection. Don't add other accent colors.
+- Use the tokens from `docs/sns-color-palette.md` / `src/app.css`: Space Grotesk for all text, a gray page background, white surfaces, thin borders, and the `primary` blue for primary actions and selection. The red `accent` is only for the liked heart. The dark theme comes from the same tokens (`.dark`). Don't add other accent colors.
 - Define colors, spacing and type as shared tokens (Tailwind theme / CSS variables) and use the tokens. No hard-coded hex values or one-off spacing inside components.
 - Posts are flat: no shadows and no rounded cards. Only comment bubbles get rounded corners.
 
@@ -123,21 +123,28 @@ These are the design decisions from the design exports. Every UI change must fol
 - Build mobile-first. The reference width is **390px**, with **12px outer gutters**, and content starts **24px from the screen edge**.
 - Long mockups show scrolling content, not fixed page heights. Never set a fixed height on a page to match a mockup.
 - Don't draw the phone status bar or home indicator from the mockups. Use safe-area insets (`env(safe-area-inset-*)`) instead.
+- Breakpoints (see `docs/responsive-ui-rules.md`): below `md` (768px) is mobile with a bottom bar; `md` to `lg` is tablet with an icon rail; `lg` (1024px) and up is desktop.
+- Desktop follows the layout of `docs/design/sns-dashboard-mockup.html`: a top header (logo on the left; bell, avatar and menu on the right), a centered search input under the header, and a 3-column grid. The left sidebar has a "Your space" label, Home, Notifications, Bookmarks and a "Create post" primary button. The center column has left and right borders and holds the stories section, For you / Following tabs and flat posts separated by thin borders. The right column is reserved and empty for now.
+- When the mockup and these rules disagree on colors or fonts, the tokens win. The mockup sets the layout only.
 
 ### Post separation
 
-- Separate posts and major sections with the diagonal hatch band and thin borders. Build the band once as a shared component or class and reuse it.
+- Separate major sections (for example the story tray and the feed) with the diagonal hatch band. Separate posts from each other with thin borders, as in the mockup. Build the band once as a shared component or class and reuse it.
 - Use the same hatch pattern to fill unused space around media.
 
 ### Media
 
 - Keep the original aspect ratio. Never stretch or crop media (`object-fit: contain`, never `cover` or `fill`). Fill leftover space with the hatch pattern.
 - Carousels have previous/next arrows and an item counter (e.g. `2 / 5`).
+- Avatars are circles and may use `object-cover`. Post and story media are never cropped.
 
 ### Navigation
 
-- The bottom bar has exactly five destinations, in this order: Home, Search, Create, Notifications, Bookmarks.
-- Create is the prominent blue button. The other four are plain icons.
+- The mobile bottom bar has exactly five labelled destinations, in this order: Home, Search, Create, Notifications, Bookmarks.
+- Create is the raised blue button. The other four are plain labelled icons, and the active item shows a top indicator line.
+- Desktop (`lg` and up): the sidebar has Home, Notifications, Bookmarks and a "Create post" primary button. Search lives in the header.
+- Notifications is a placeholder page until a notifications backend exists.
+- Reels have no nav entry. They show in the home feed and in the profile Reels tab.
 
 ### Comments
 

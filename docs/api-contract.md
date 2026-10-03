@@ -6,7 +6,7 @@ This document defines shared data shapes, operation inputs/results and rules, so
 
 For this SvelteKit app, `+page.server.ts` loads read data and form actions handle mutations through server-side services/repositories. They do not need to fetch the app's own `/api` routes. SvelteKit handles the request and data transfer, but does not automatically create REST endpoints. Add `+server.ts` endpoints only when needed, such as incremental feed loading or browser-initiated uploads. These adapters use the same operations below; their paths are implementation details.
 
-Server repositories receive the current session/viewer from trusted server context, never from a client-supplied user ID. Database access and credentials remain server-only. Notifications and post visibility settings are out of scope for now.
+Server repositories receive the current session/viewer from trusted server context, never from a client-supplied user ID. Database access and credentials remain server-only. Notifications and post visibility settings are out of scope for now. The app shows a Notifications nav slot as a UI placeholder page only; there is no notifications API.
 
 Items marked **(proposed)** are suggested defaults. They have not been agreed by the whole team yet. Change them in this file first, then in code.
 
