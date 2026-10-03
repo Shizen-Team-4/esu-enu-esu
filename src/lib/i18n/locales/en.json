@@ -20,7 +20,12 @@
 		"media": "Photos and videos",
 		"delete": "Delete",
 		"uploading": "Uploading and verifying media…",
-		"type": "Content type"
+		"type": "Content type",
+		"comments": "Comments",
+		"unlike": "Remove like",
+		"save": "Save",
+		"unsave": "Remove from saved",
+		"copied": "Link copied"
 	},
 	"home": {
 		"description": "Share moments and connect with your community."
@@ -52,11 +57,18 @@
 		"previous": "Previous",
 		"expired": "This story has expired or is no longer available.",
 		"title": "Story",
-		"next": "Next"
+		"next": "Next",
+		"circle": "Stories from your circle",
+		"add": "Add story"
 	},
 	"feed": {
 		"more": "Load more",
-		"empty": "No posts yet"
+		"empty": "No posts yet",
+		"forYou": "For you",
+		"following": "Following",
+		"emptyAll": "No posts yet. Be the first to share something.",
+		"emptyFollowing": "Nothing here yet. Follow people to see their posts.",
+		"error": "We could not load your feed."
 	},
 	"bookmarks": {
 		"title": "Bookmarks",
@@ -131,5 +143,11 @@
 	},
 	"toast": {
 		"dismiss": "Dismiss"
+	},
+	"carousel": {
+		"label": "Media",
+		"previous": "Previous media",
+		"next": "Next media",
+		"counter": "{current} / {total}"
 	}
 }

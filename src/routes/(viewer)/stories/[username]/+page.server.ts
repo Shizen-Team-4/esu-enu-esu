@@ -53,6 +53,6 @@ export const actions: Actions = {
 		} catch (cause) {
 			return toActionFailure(cause)
 		}
-		redirect(303, '/dashboard')
+		redirect(303, '/')
 	},
 }

@@ -6,7 +6,7 @@ export const POST: RequestHandler = async ({ locals, request, url }) => {
 	const services = requireServices(locals)
 	const response = await services.auth.api.signInSocial({
 		headers: request.headers,
-		body: { provider: 'google', callbackURL: `${url.origin}/dashboard` },
+		body: { provider: 'google', callbackURL: `${url.origin}/` },
 		asResponse: true,
 	})
 	if (!response.ok) return response

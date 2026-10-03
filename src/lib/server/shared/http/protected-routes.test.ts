@@ -4,6 +4,7 @@ import { isProtectedPath } from './protected-routes'
 // cspell:ignore storiesx
 describe('isProtectedPath', () => {
 	it.each([
+		'/',
 		'/dashboard',
 		'/profile',
 		'/stories',
@@ -14,7 +15,6 @@ describe('isProtectedPath', () => {
 		'/notifications',
 	])('protects %s', (path) => expect(isProtectedPath(path)).toBe(true))
 	it.each([
-		'/',
 		'/storiesx',
 		'/profiles',
 		'/settings',

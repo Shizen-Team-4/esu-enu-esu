@@ -24,7 +24,7 @@
 <svelte:head><title>{$_('story.title')} · {$_('app.name')}</title></svelte:head>
 
 <main class="mx-auto w-full max-w-content px-gutter py-6">
-	<Button href="/dashboard">{$_('story.close')}</Button>
+	<Button href="/">{$_('story.close')}</Button>
 	{#if form?.error?.code}<p role="alert">{$_(errorMessageKey(form.error.code))}</p>{/if}
 	{#if current && !expired}
 		{#key current.id}<StorySeenForm id={current.id} pending={!current.viewer.seen} />{/key}

@@ -21,6 +21,7 @@
 	--accent: #ff3040;
 	--danger: #ef4444;
 	--success: #22c55e;
+	--media-max-height: 35rem;
 	--text: var(--fg);
 	--border: var(--line);
 }

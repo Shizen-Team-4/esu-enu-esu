@@ -22,7 +22,7 @@
 		success = response.ok
 		errorCode = response.ok ? null : response.code
 		fields = response.ok ? {} : (response.fields ?? {})
-		if (response.ok && operation === 'login') await goto('/dashboard', { invalidateAll: true })
+		if (response.ok && operation === 'login') await goto('/', { invalidateAll: true })
 	}
 	const invalid = (name: string) => (fields[name] ? 'true' : undefined)
 	const describedBy = (name: string) => (fields[name] ? `auth-${name}-error` : undefined)

@@ -4,15 +4,20 @@
 	import { ApiError } from '$lib/api/api-error'
 	import { errorMessageKey } from '$lib/errors/error-message'
 	import { uploadFile } from '$lib/media/upload-file'
+	import type { ComposerType } from '$lib/create/initial-post-type'
 	import FieldError from './FieldError.svelte'
 	import type { ErrorEnvelope } from '$lib/contract'
-	let { error: serverError }: { error?: ErrorEnvelope['error'] } = $props()
+	let {
+		error: serverError,
+		initialType = 'post',
+	}: { error?: ErrorEnvelope['error']; initialType?: ComposerType } = $props()
 	let ids = $state<string[]>([])
 	let pending = $state(false)
 	let uploadError = $state<ApiError | null>(null)
 	const error = $derived(uploadError ?? serverError)
 	const failed = $derived(uploadError !== null)
-	let type = $state<'post' | 'reel' | 'story'>('post')
+	// svelte-ignore state_referenced_locally
+	let type = $state<ComposerType>(initialType)
 	async function choose(event: Event) {
 		const files = [...((event.currentTarget as HTMLInputElement).files ?? [])]
 		pending = true

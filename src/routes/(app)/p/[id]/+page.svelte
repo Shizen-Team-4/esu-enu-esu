@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { _ } from 'svelte-i18n'
-	import PostCard from '$lib/components/PostCard.svelte'
+	import PostCard from '$lib/components/post/PostCard.svelte'
 	let { data } = $props()
 </script>
 

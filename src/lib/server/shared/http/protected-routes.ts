@@ -8,5 +8,8 @@ const protectedRoots = [
 ]
 
 export function isProtectedPath(pathname: string): boolean {
-	return protectedRoots.some((root) => pathname === root || pathname.startsWith(`${root}/`))
+	return (
+		pathname === '/' ||
+		protectedRoots.some((root) => pathname === root || pathname.startsWith(`${root}/`))
+	)
 }

@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test'
 
-test('home page renders', async ({ page }) => {
+test('logged-out home redirects to /login', async ({ page }) => {
 	await page.goto('/')
-	await expect(page.getByRole('heading', { level: 1 })).toHaveText('SNS')
+	expect(new URL(page.url()).pathname).toBe('/login')
 })
 
 // The browser's `locale` drives the Accept-Language header, which hooks.server.ts reads.
@@ -15,7 +15,7 @@ for (const [locale, lang] of [
 		test.use({ locale })
 
 		test(`renders <html lang="${lang}">`, async ({ page }) => {
-			await page.goto('/')
+			await page.goto('/login')
 			await expect(page.locator('html')).toHaveAttribute('lang', lang)
 		})
 	})
