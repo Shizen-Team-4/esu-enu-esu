@@ -14,10 +14,10 @@
 <div
 	role="radiogroup"
 	aria-label={label}
-	class="field inline-flex overflow-hidden max-sm:flex max-sm:w-full"
+	class="field inline-flex shrink-0 overflow-hidden max-sm:flex max-sm:w-full"
 >
 	{#each options as option, i (option.value)}
-		<label class="flex-1 {i > 0 ? 'border-l border-line' : ''}">
+		<label class="flex flex-1 {i > 0 ? 'border-l border-line' : ''}">
 			<input
 				type="radio"
 				{name}
@@ -30,7 +30,7 @@
 				class="peer sr-only"
 			/>
 			<span
-				class="flex min-h-11 cursor-pointer items-center justify-center gap-2 px-4 text-meta text-fg-muted peer-checked:bg-primary-soft peer-checked:font-semibold peer-checked:text-primary peer-focus-visible:outline-3 peer-focus-visible:-outline-offset-3 peer-focus-visible:outline-primary"
+				class="flex min-h-11 flex-1 cursor-pointer items-center justify-center gap-2 whitespace-nowrap px-4 text-meta text-fg-muted peer-checked:bg-primary-soft peer-checked:font-semibold peer-checked:text-primary peer-focus-visible:outline-3 peer-focus-visible:-outline-offset-3 peer-focus-visible:outline-primary"
 			>
 				{#if option.icon}
 					<svg

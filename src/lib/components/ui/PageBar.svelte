@@ -6,7 +6,9 @@
 		$props()
 </script>
 
-<header class="flex min-h-16 items-center gap-3 border-b border-line bg-surface px-gutter">
+<header
+	class="-mx-gutter flex min-h-16 items-center gap-3 border-b border-line bg-surface px-gutter"
+>
 	<a
 		href={backHref}
 		aria-label={$_('common.back')}
