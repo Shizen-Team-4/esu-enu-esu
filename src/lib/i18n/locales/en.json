@@ -9,8 +9,6 @@
 		"username": "Username",
 		"password": "Password",
 		"success": "Check your email, or sign in with your updated password.",
-		"unverified": "Please verify your email before signing in.",
-		"error": "Unable to complete your request. Please try again.",
 		"email": "Email"
 	},
 	"post": {
@@ -22,7 +20,6 @@
 		"media": "Photos and videos",
 		"delete": "Delete",
 		"uploading": "Uploading and verifying media…",
-		"uploadError": "Media upload failed. Please try again.",
 		"type": "Content type"
 	},
 	"home": {
@@ -30,7 +27,6 @@
 	},
 	"preferences": {
 		"dark": "Dark",
-		"error": "Unable to save preferences. Please check your selections.",
 		"theme": "Theme",
 		"save": "Save preferences",
 		"language": "Language",
@@ -38,8 +34,8 @@
 		"system": "System",
 		"light": "Light",
 		"en": "English",
-		"km": "?????",
-		"ja": "???"
+		"km": "ខ្មែរ",
+		"ja": "日本語"
 	},
 	"profile": {
 		"follow": "Follow",
@@ -69,5 +65,28 @@
 		"reels": "Reels",
 		"home": "Home",
 		"profile": "Profile"
+	},
+	"error": {
+		"VALIDATION_FAILED": "Please check the highlighted fields and try again.",
+		"UNAUTHENTICATED": "Please log in to continue.",
+		"FORBIDDEN": "You do not have permission to do that.",
+		"NOT_FOUND": "We could not find what you were looking for.",
+		"CONFLICT": "This conflicts with existing data.",
+		"RATE_LIMITED": "Too many attempts. Please wait a moment and try again.",
+		"INTERNAL": "Something went wrong. Please try again.",
+		"PAYLOAD_TOO_LARGE": "This file is too large.",
+		"UNSUPPORTED_MEDIA_TYPE": "This file type is not supported.",
+		"INVALID_CREDENTIALS": "Incorrect email or password.",
+		"EMAIL_NOT_VERIFIED": "Please verify your email before signing in.",
+		"UPLOAD_EXPIRED": "The upload link expired. Please try again.",
+		"field": {
+			"REQUIRED": "This field is required.",
+			"TOO_SHORT": "This is too short.",
+			"TOO_LONG": "This is too long.",
+			"TOO_MANY": "Too many items selected.",
+			"INVALID_FORMAT": "This format is not valid.",
+			"NOT_ALLOWED": "This value is not allowed.",
+			"TAKEN": "This is already taken."
+		}
 	}
 }

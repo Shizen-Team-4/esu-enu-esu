@@ -1,6 +1,7 @@
-import { readFiniteDuration } from './video-duration'
+import { ApiError, readApiError } from '$lib/api/api-error'
+import { readMetadata, type FileMetadata } from './read-metadata'
 
-interface UploadResult {
+export interface UploadResult {
 	id: string
 	type: 'image' | 'video'
 	url: string
@@ -10,107 +11,76 @@ interface UploadResult {
 	durationSec: number | null
 }
 
-async function readVideo(file: File) {
-	const video = document.createElement('video'),
-		objectUrl = URL.createObjectURL(file)
-	video.preload = 'auto'
-	video.muted = true
-	video.src = objectUrl
+type Fetch = typeof globalThis.fetch
+
+export interface UploadDeps {
+	fetch?: Fetch
+	readMetadata?: (file: File) => Promise<FileMetadata>
+}
+
+interface UploadTicket {
+	mediaId: string
+	uploadUrl: string
+	thumbnailUploadUrl: string | null
+	headers: Record<string, string>
+}
+
+async function send(fetchFn: Fetch, url: string, init: RequestInit): Promise<Response> {
 	try {
-		await new Promise<void>((resolve, reject) => {
-			const timeout = setTimeout(() => reject(new Error('Video metadata timed out')), 15000)
-			video.onloadeddata = () => {
-				clearTimeout(timeout)
-				resolve()
-			}
-			video.onerror = () => {
-				clearTimeout(timeout)
-				reject(new Error('Video cannot be decoded'))
-			}
-		})
-		const durationSec = await readFiniteDuration(video)
-		const canvas = document.createElement('canvas')
-		const scale = Math.min(1, 1280 / Math.max(video.videoWidth, video.videoHeight))
-		canvas.width = Math.round(video.videoWidth * scale)
-		canvas.height = Math.round(video.videoHeight * scale)
-		const context = canvas.getContext('2d')
-		if (!context) throw new Error('Poster cannot be created')
-		context.drawImage(video, 0, 0, canvas.width, canvas.height)
-		const poster = await new Promise<Blob>((resolve, reject) =>
-			canvas.toBlob(
-				(blob) => (blob ? resolve(blob) : reject(new Error('Poster cannot be created'))),
-				'image/webp',
-				0.8,
-			),
-		)
-		return {
-			width: video.videoWidth,
-			height: video.videoHeight,
-			durationSec,
-			poster,
-		}
-	} finally {
-		video.removeAttribute('src')
-		video.load()
-		URL.revokeObjectURL(objectUrl)
+		return await fetchFn(url, init)
+	} catch {
+		throw new ApiError('INTERNAL')
 	}
+}
+
+async function sendJson(fetchFn: Fetch, url: string, body: unknown): Promise<Response> {
+	const response = await send(fetchFn, url, {
+		method: 'POST',
+		headers: { 'content-type': 'application/json' },
+		body: JSON.stringify(body),
+	})
+	if (!response.ok) throw await readApiError(response)
+	return response
+}
+
+async function putObject(
+	fetchFn: Fetch,
+	url: string,
+	headers: Record<string, string>,
+	body: Blob,
+): Promise<void> {
+	const response = await send(fetchFn, url, { method: 'PUT', headers, body })
+	if (response.status === 403) throw new ApiError('UPLOAD_EXPIRED')
+	if (!response.ok) throw new ApiError('INTERNAL')
 }
 
 export async function uploadFile(
 	file: File,
 	purpose: 'post' | 'reel' | 'avatar' | 'story' = 'post',
+	deps: UploadDeps = {},
 ): Promise<UploadResult> {
-	const video = file.type.startsWith('video/')
-	const metadata = video
-		? await readVideo(file)
-		: await (async () => {
-				const image = await createImageBitmap(file)
-				try {
-					return { width: image.width, height: image.height, durationSec: null, poster: null }
-				} finally {
-					image.close()
-				}
-			})()
-	const response = await fetch('/api/uploads', {
-		method: 'POST',
-		headers: { 'content-type': 'application/json' },
-		body: JSON.stringify({
-			purpose,
-			mimeType: file.type,
-			sizeBytes: file.size,
-			...(metadata.poster ? { thumbnailSizeBytes: metadata.poster.size } : {}),
-		}),
+	const fetchFn = deps.fetch ?? globalThis.fetch.bind(globalThis)
+	const metadata = await (deps.readMetadata ?? readMetadata)(file)
+	const started = await sendJson(fetchFn, '/api/uploads', {
+		purpose,
+		mimeType: file.type,
+		sizeBytes: file.size,
+		...(metadata.poster ? { thumbnailSizeBytes: metadata.poster.size } : {}),
 	})
-	if (!response.ok) throw new Error('Upload could not be started')
-	const upload = (await response.json()) as {
-		mediaId: string
-		uploadUrl: string
-		thumbnailUploadUrl: string | null
-		headers: Record<string, string>
+	const ticket = (await started.json()) as UploadTicket
+	await putObject(fetchFn, ticket.uploadUrl, ticket.headers, file)
+	if (ticket.thumbnailUploadUrl && metadata.poster) {
+		await putObject(
+			fetchFn,
+			ticket.thumbnailUploadUrl,
+			{ 'Content-Type': 'image/webp', 'If-None-Match': '*' },
+			metadata.poster,
+		)
 	}
-	const transfer = await fetch(upload.uploadUrl, {
-		method: 'PUT',
-		headers: upload.headers,
-		body: file,
+	const complete = await sendJson(fetchFn, `/api/uploads/${ticket.mediaId}/complete`, {
+		width: metadata.width,
+		height: metadata.height,
+		durationSec: metadata.durationSec,
 	})
-	if (!transfer.ok) throw new Error('Upload transfer failed')
-	if (upload.thumbnailUploadUrl && metadata.poster) {
-		const poster = await fetch(upload.thumbnailUploadUrl, {
-			method: 'PUT',
-			headers: { 'Content-Type': 'image/webp', 'If-None-Match': '*' },
-			body: metadata.poster,
-		})
-		if (!poster.ok) throw new Error('Poster transfer failed')
-	}
-	const complete = await fetch(`/api/uploads/${upload.mediaId}/complete`, {
-		method: 'POST',
-		headers: { 'content-type': 'application/json' },
-		body: JSON.stringify({
-			width: metadata.width,
-			height: metadata.height,
-			durationSec: metadata.durationSec,
-		}),
-	})
-	if (!complete.ok) throw new Error('Upload could not be verified')
-	return complete.json() as Promise<UploadResult>
+	return (await complete.json()) as UploadResult
 }

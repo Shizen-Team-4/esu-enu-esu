@@ -1,20 +1,28 @@
 <script lang="ts">
 	import { _ } from 'svelte-i18n'
+	import { ApiError } from '$lib/api/api-error'
+	import { errorMessageKey } from '$lib/errors/error-message'
 	import { uploadFile } from '$lib/media/upload-file'
+	import FieldError from './FieldError.svelte'
+	import type { ErrorEnvelope } from '$lib/contract'
+	let { error: serverError }: { error?: ErrorEnvelope['error'] } = $props()
 	let ids = $state<string[]>([])
 	let pending = $state(false)
-	let failed = $state(false)
+	let uploadError = $state<ApiError | null>(null)
+	const error = $derived(uploadError ?? serverError)
+	const failed = $derived(uploadError !== null)
 	let type = $state<'post' | 'reel' | 'story'>('post')
 	async function choose(event: Event) {
 		const files = [...((event.currentTarget as HTMLInputElement).files ?? [])]
 		pending = true
-		failed = false
+		uploadError = null
 		ids = []
 		try {
-			if (files.length > (type === 'post' ? 10 : 1)) throw new Error('Too many files')
+			if (files.length > (type === 'post' ? 10 : 1))
+				throw new ApiError('VALIDATION_FAILED', { fields: { mediaIds: 'TOO_MANY' } })
 			for (const file of files) ids = [...ids, (await uploadFile(file, type)).id]
-		} catch {
-			failed = true
+		} catch (caught) {
+			uploadError = caught instanceof ApiError ? caught : new ApiError('INTERNAL')
 			ids = []
 		} finally {
 			pending = false
@@ -37,7 +45,12 @@
 					name="caption"
 					rows="4"
 					required={ids.length === 0}
-					class="w-full resize-y rounded-xl border border-line p-3"></textarea></label
+					aria-invalid={error?.fields?.caption ? 'true' : undefined}
+					aria-describedby={error?.fields?.caption ? 'composer-caption-error' : undefined}
+					class="w-full resize-y rounded-xl border border-line p-3"></textarea><FieldError
+					code={error?.fields?.caption}
+					id="composer-caption-error"
+				/></label
 			>{/if}
 		<label class="grid gap-2"
 			>{$_('post.media')}<input
@@ -48,12 +61,14 @@
 				multiple={type === 'post'}
 				disabled={pending}
 				onchange={choose}
-			/></label
+				aria-invalid={error?.fields?.mediaIds ? 'true' : undefined}
+				aria-describedby={error?.fields?.mediaIds ? 'composer-media-error' : undefined}
+			/><FieldError code={error?.fields?.mediaIds} id="composer-media-error" /></label
 		>
 		{#each ids as id}<input type="hidden" name="mediaId" value={id} />{/each}
 		{#if type === 'story'}<p class="text-fg-muted">{$_('story.expires')}</p>{/if}
 		{#if pending}<p role="status">{$_('post.uploading')}</p>{/if}
-		{#if failed}<p role="alert">{$_('post.uploadError')}</p>{/if}
+		{#if error}<p role="alert">{$_(errorMessageKey(error.code))}</p>{/if}
 		<button type="submit" disabled={pending || failed || (type !== 'post' && ids.length !== 1)}
 			>{$_('post.publish')}</button
 		>

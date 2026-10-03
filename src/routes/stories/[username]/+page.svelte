@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { _ } from 'svelte-i18n'
+	import { errorMessageKey } from '$lib/errors/error-message'
 	import { enhance } from '$app/forms'
+	import StorySeenForm from '$lib/components/StorySeenForm.svelte'
 	let { data, form } = $props()
 	let index = $state(0)
 	let current = $derived(data.items[index])
@@ -14,23 +16,15 @@
 			},
 			Math.max(0, Date.parse(current.expiresAt) - Date.now()),
 		)
-		if (!expired && !current.viewer.seen) {
-			const input = new FormData()
-			input.set('id', current.id)
-			void fetch('?/seen', {
-				method: 'POST',
-				body: input,
-				headers: { accept: 'application/json', 'x-sveltekit-action': 'true' },
-			})
-		}
 		return () => clearTimeout(timeout)
 	})
 </script>
 
 <main class="container py-6" style="max-width: 630px">
 	<a class="button" href="/dashboard">{$_('story.close')}</a>
-	{#if form?.error?.code}<p role="alert">{$_('auth.error')}</p>{/if}
+	{#if form?.error?.code}<p role="alert">{$_(errorMessageKey(form.error.code))}</p>{/if}
 	{#if current && !expired}
+		{#key current.id}<StorySeenForm id={current.id} pending={!current.viewer.seen} />{/key}
 		<header class="my-4 flex items-center justify-between">
 			<strong>@{current.author.username || current.author.displayName}</strong><span
 				class="text-fg-muted">{index + 1} / {data.items.length}</span

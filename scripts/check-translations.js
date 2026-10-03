@@ -11,6 +11,14 @@ function flatten(obj, prefix = '') {
 	})
 }
 
+function findPlaceholders(obj, prefix = '') {
+	return Object.entries(obj).flatMap(([key, value]) => {
+		const path = prefix ? `${prefix}.${key}` : key
+		if (value && typeof value === 'object') return findPlaceholders(value, path)
+		return typeof value === 'string' && /^\?{2,}$/.test(value) ? [path] : []
+	})
+}
+
 let failed = false
 const parsed = {}
 
@@ -26,6 +34,14 @@ for (const file of readdirSync(LOCALES_DIR).filter((f) => f.endsWith('.json'))) 
 if (!parsed[REFERENCE]) {
 	console.error(`Reference file ${REFERENCE} is missing or invalid`)
 	process.exit(1)
+}
+
+for (const [file, content] of Object.entries(parsed)) {
+	const broken = findPlaceholders(content)
+	if (broken.length) {
+		console.error(`${file}: value(s) made only of "?" (encoding damage): ${broken.join(', ')}`)
+		failed = true
+	}
 }
 
 const refKeys = new Set(flatten(parsed[REFERENCE]))

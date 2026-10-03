@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { _ } from 'svelte-i18n'
+	import { errorMessageKey } from '$lib/errors/error-message'
+	import FieldError from '$lib/components/FieldError.svelte'
 	import { enhance } from '$app/forms'
 	let { data, form } = $props()
 </script>
@@ -17,10 +19,12 @@
 							name="theme"
 							value={theme}
 							checked={data.preferences.theme === theme}
+							aria-describedby={form?.error?.fields?.theme ? 'settings-theme-error' : undefined}
 							class="min-h-0 accent-primary"
 						/><span>{$_(`preferences.${theme}`)}</span></label
 					>{/each}
 			</div>
+			<FieldError code={form?.error?.fields?.theme} id="settings-theme-error" />
 		</fieldset>
 		<fieldset>
 			<legend class="mb-3 text-lg font-semibold">{$_('preferences.language')}</legend>
@@ -32,12 +36,16 @@
 							name="language"
 							value={language}
 							checked={data.preferences.language === language}
+							aria-describedby={form?.error?.fields?.language
+								? 'settings-language-error'
+								: undefined}
 							class="min-h-0 accent-primary"
 						/><span>{$_(`preferences.${language}`)}</span></label
 					>{/each}
 			</div>
+			<FieldError code={form?.error?.fields?.language} id="settings-language-error" />
 		</fieldset>
-		{#if form?.error?.code}<p role="alert">{$_('preferences.error')}</p>{/if}
+		{#if form?.error?.code}<p role="alert">{$_(errorMessageKey(form.error.code))}</p>{/if}
 		<button type="submit">{$_('preferences.save')}</button>
 	</form>
 </main>

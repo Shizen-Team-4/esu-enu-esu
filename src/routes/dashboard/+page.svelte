@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { _ } from 'svelte-i18n'
+	import { errorMessageKey } from '$lib/errors/error-message'
 	import PostCard from '$lib/components/PostCard.svelte'
 	import Composer from '$lib/components/Composer.svelte'
 	import StoryTray from '$lib/components/StoryTray.svelte'
@@ -15,7 +16,7 @@
 		<a class="button" href="/">SNS</a>
 		<h1>{data.user.name}</h1>
 	</header>
-	<Composer />
+	<Composer error={form?.error} />
 	<StoryTray items={data.stories.items} />
 	<div class="feed">
 		{#each data.feed.items as post (post.id)}<PostCard {post} interactive />{/each}
@@ -39,7 +40,7 @@
 					>
 				</select>
 			</label>
-			{#if form?.error?.code}<p role="alert">{$_('preferences.error')}</p>{/if}
+			{#if form?.error?.code}<p role="alert">{$_(errorMessageKey(form.error.code))}</p>{/if}
 			<button type="submit">{$_('preferences.save')}</button>
 		</form>
 	</section>

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { _ } from 'svelte-i18n'
+	import { errorMessageKey } from '$lib/errors/error-message'
 	let { data } = $props()
 </script>
 
@@ -15,7 +16,7 @@
 			class="min-w-0 flex-1 rounded-xl border border-line p-3"
 		/><button type="submit">{$_('nav.search')}</button>
 	</form>
-	{#if data.invalid}<p role="alert">{$_('auth.error')}</p>{/if}
+	{#if data.invalid}<p role="alert">{$_(errorMessageKey('VALIDATION_FAILED'))}</p>{/if}
 	<ul class="grid gap-3">
 		{#each data.results.items as user (user.id)}<li class="panel">
 				<a href="/u/{user.username}"><strong>{user.displayName}</strong> @{user.username}</a>
