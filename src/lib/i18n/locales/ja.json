@@ -190,5 +190,23 @@
 		"saved": "プロフィールを保存しました。",
 		"cancel": "キャンセル",
 		"save": "保存"
+	},
+	"create": {
+		"title": "投稿を作成",
+		"cancel": "キャンセル",
+		"placeholder": "今日は何に気づきましたか?",
+		"addPhoto": "写真を追加",
+		"addVideo": "動画を追加",
+		"removeMedia": "メディアを削除",
+		"hint": "写真と動画はアップロード上限内にしてください。リールとストーリーは動画または写真を1つ選べます。",
+		"remaining": "残り{count}文字",
+		"over": "{count}文字オーバー",
+		"uploadingItem": "アップロード中…",
+		"failedItem": "アップロードに失敗しました",
+		"preview": "選択したメディア",
+		"typeLocked": "投稿の種類を変更するには、選択したメディアを削除してください。",
+		"post": "投稿",
+		"reel": "リール",
+		"story": "ストーリー"
 	}
 }

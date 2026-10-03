@@ -190,5 +190,23 @@
 		"saved": "Profile saved.",
 		"cancel": "Cancel",
 		"save": "Save"
+	},
+	"create": {
+		"title": "Create post",
+		"cancel": "Cancel",
+		"placeholder": "What did you notice today?",
+		"addPhoto": "Add photo",
+		"addVideo": "Add video",
+		"removeMedia": "Remove media",
+		"hint": "Photos and videos must be within the upload limit. Reels and stories take one video or photo.",
+		"remaining": "{count} characters remaining",
+		"over": "{count} characters over the limit",
+		"uploadingItem": "Uploading…",
+		"failedItem": "Upload failed",
+		"preview": "Selected media",
+		"typeLocked": "Remove the selected media to change the content type.",
+		"post": "Post",
+		"reel": "Reel",
+		"story": "Story"
 	}
 }
