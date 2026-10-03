@@ -2,6 +2,7 @@ import { sql } from 'drizzle-orm'
 import type { getDb } from '../../db'
 import { encodeCursor } from '../../shared/domain/cursor'
 import type { Me, UserRepository } from '../application/ports'
+import { userSearchCondition } from './user-search-condition'
 
 type UserRow = {
 	id: string
@@ -46,14 +47,9 @@ export function createUserRepository(db: ReturnType<typeof getDb>): UserReposito
 			return row ? map(row, viewerId) : null
 		},
 		async search(q, viewerId, limit, cursor) {
-			const escaped = q.replace(/[\\%_]/g, (char) => `\\${char}`) + '%'
 			const rank = sql`CASE WHEN u.username = ${q} THEN 0 WHEN EXISTS(SELECT 1 FROM follows WHERE follower_id = ${viewerId} AND followee_id = u.id) THEN 1 ELSE 2 END`
 			// Search cursors carry rank and the hex-encoded username followed by the user ID.
-			const conditions = [
-				sql`u.banned = 0`,
-				sql`u.username IS NOT NULL`,
-				sql`(u.username LIKE ${escaped} ESCAPE '\' OR lower(u.name) LIKE ${escaped} ESCAPE '\')`,
-			]
+			const conditions = [sql`u.banned = 0`, sql`u.username IS NOT NULL`, userSearchCondition(q)]
 			if (cursor) {
 				const [hexName, ...idParts] = cursor.id.split('_')
 				const name =

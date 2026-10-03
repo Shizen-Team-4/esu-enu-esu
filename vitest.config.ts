@@ -15,6 +15,7 @@ export default defineConfig({
 				'src/lib/server/posts/{domain,application}/**/*.ts',
 				'src/lib/server/posts/infrastructure/post-mapper.ts',
 				'src/lib/server/auth/application/**/*.ts',
+				'src/lib/server/users/infrastructure/user-search-condition.ts',
 				'src/lib/media/video-duration.ts',
 				'src/lib/server/users/{domain,application}/**/*.ts',
 				'src/lib/server/stories/{domain,application}/**/*.ts',
