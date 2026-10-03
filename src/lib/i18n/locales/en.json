@@ -58,6 +58,10 @@
 		"more": "Load more",
 		"empty": "No posts yet"
 	},
+	"bookmarks": {
+		"title": "Bookmarks",
+		"empty": "You have not saved any posts yet"
+	},
 	"nav": {
 		"search": "Search",
 		"label": "Main navigation",

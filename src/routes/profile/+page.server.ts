@@ -1,6 +1,7 @@
 import { optionalViewer } from '$lib/server/auth/viewer'
 import { requireServices, requireUser } from '$lib/server/shared/http/guards'
-import type { PageServerLoad } from './$types'
+import { like, save } from '$lib/server/shared/http/post-actions'
+import type { Actions, PageServerLoad } from './$types'
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	const viewer = optionalViewer(requireUser(locals))
@@ -17,3 +18,5 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		: { items: [], nextCursor: null }
 	return { profile, posts, type }
 }
+
+export const actions: Actions = { like, save }

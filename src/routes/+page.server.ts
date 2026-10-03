@@ -1,4 +1,5 @@
-import type { PageServerLoad } from './$types'
+import { like, save } from '$lib/server/shared/http/post-actions'
+import type { Actions, PageServerLoad } from './$types'
 
 export const load: PageServerLoad = async ({ locals }) => {
 	return {
@@ -7,3 +8,5 @@ export const load: PageServerLoad = async ({ locals }) => {
 			: { items: [], nextCursor: null },
 	}
 }
+
+export const actions: Actions = { like, save }

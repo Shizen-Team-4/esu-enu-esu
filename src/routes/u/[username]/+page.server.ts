@@ -2,6 +2,7 @@ import { redirect } from '@sveltejs/kit'
 import { optionalViewer } from '$lib/server/auth/viewer'
 import { toActionFailure, toHttpError } from '$lib/server/shared/http/error-response'
 import { requireServices, requireUser } from '$lib/server/shared/http/guards'
+import { like, save } from '$lib/server/shared/http/post-actions'
 import type { Actions, PageServerLoad } from './$types'
 
 export const load: PageServerLoad = async ({ locals, params, url }) => {
@@ -22,6 +23,8 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
 }
 
 export const actions: Actions = {
+	like,
+	save,
 	follow: async ({ locals, params, request }) => {
 		const user = requireUser(locals)
 		const services = requireServices(locals)

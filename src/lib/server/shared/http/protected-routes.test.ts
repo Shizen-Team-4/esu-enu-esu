@@ -3,10 +3,15 @@ import { isProtectedPath } from './protected-routes'
 
 // cspell:ignore storiesx
 describe('isProtectedPath', () => {
-	it.each(['/dashboard', '/profile', '/stories', '/stories/alice', '/create', '/create/post'])(
-		'protects %s',
-		(path) => expect(isProtectedPath(path)).toBe(true),
-	)
+	it.each([
+		'/dashboard',
+		'/profile',
+		'/stories',
+		'/stories/alice',
+		'/create',
+		'/create/post',
+		'/bookmarks',
+	])('protects %s', (path) => expect(isProtectedPath(path)).toBe(true))
 	it.each([
 		'/',
 		'/storiesx',

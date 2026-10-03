@@ -32,7 +32,7 @@ Still open for the frontend plan: 4, 5 (UI), 6, 7, 8, 12. New findings:
 - [x] Phase 1: small backend fixes (local-upload purpose, story create rules out of SQL, deletePost returns void, shared rate-limit config)
 - [x] Phase 2: comments backend (domain/app/infra, container, /p/[id] actions, comment API endpoints) — item 7
 - [x] Phase 3: users backend (updateMe, listFollowers/listFollowing, username rule shared with auth, /onboard guard) — item 8
-- [ ] Phase 4: expose post use cases in routes (like/save actions everywhere, edit/delete on /p/[id], /bookmarks load) — items 5, 6
+- [x] Phase 4: expose post use cases in routes (like/save actions everywhere, edit/delete on /p/[id], /bookmarks load) — items 5, 6
 - [ ] Phase 5: full pre-PR gate + final doc update
 
 Frontend UI work (4, 12, UI halves of 5–8, full happy-path e2e) is left for the frontend plan.
@@ -47,9 +47,9 @@ Frontend UI work (4, 12, UI halves of 5–8, full happy-path e2e) is left for th
 | 🟡 Feed pagination                                                            | `/api/feed` exists                                                                                                                                                                                                                                                                        | unused — no "load more"/infinite scroll on `/` or `/dashboard`                                     |
 | 🟡 `listReels`                                                                | ~~faked via `listFeed({type:'reel'})`~~ (fixed, verified 2026-10-04: `list-reels.ts` use case wired in container)                                                                                                                                                                         | `/reels` uses PostCard, not reel layout                                                            |
 | 🟡 `listUserPosts`                                                            | ~~missing; routes call `listFeed({authorId})` → no `NOT_FOUND`, and Posts tab passes no `type` so **reels show under Posts** (`u/[username]/+page.server.ts`, `profile/+page.server.ts`)~~ (fixed, verified 2026-10-04: `listUserPosts` with `type` and `NOT_FOUND`, used by both routes) | no pagination on grid                                                                              |
-| 🟡 `updatePost`, `deletePost`                                                 | wired in container                                                                                                                                                                                                                                                                        | no action / no UI                                                                                  |
-| 🟡 `likePost`/`unlikePost`                                                    | ~~`reactToPost` returns full `Post`, not `{liked, likes}`~~ (fixed, verified 2026-10-04: `likePost` returns `{liked, likes}`; use cases not yet exposed in routes except `/dashboard`)                                                                                                    | like only on `/dashboard`; full redirect, no optimistic update; `/`, `/p/[id]`, `/reels` read-only |
-| 🟡 `savePost`/`unsavePost`/`listSavedPosts`                                   | `savePost`/`unsavePost`/`listSavedPosts` use cases exist and are wired; ~~`scope:'saved'` leaks into public `/api/feed`~~ (fixed, verified 2026-10-04)                                                                                                                                    | no route, no UI, no Bookmarks page                                                                 |
+| 🟡 `updatePost`, `deletePost`                                                 | wired in container; `/p/[id]` actions `edit` and `delete` (2026-10-04)                                                                                                                                                                                                                    | no UI                                                                                              |
+| 🟡 `likePost`/`unlikePost`                                                    | ~~`reactToPost` returns full `Post`, not `{liked, likes}`~~ (fixed, verified 2026-10-04: `likePost` returns `{liked, likes}`; shared `like` action on `/`, `/p/[id]`, `/reels`, `/profile`, `/u/[username]`, `/dashboard`, 2026-10-04)                                                    | like only on `/dashboard`; full redirect, no optimistic update; `/`, `/p/[id]`, `/reels` read-only |
+| 🟡 `savePost`/`unsavePost`/`listSavedPosts`                                   | `savePost`/`unsavePost`/`listSavedPosts` use cases exist and are wired; ~~`scope:'saved'` leaks into public `/api/feed`~~ (fixed, verified 2026-10-04)                                                                                                                                    | ~~no route~~ shared `save` action + `/bookmarks` page (2026-10-04); no save button UI, no nav tab  |
 | 🟡 Comments (`listComments`, `listReplies`, `createComment`, `deleteComment`) | ~~table exists, **no domain/app/infra**~~ (fixed 2026-10-04: `comments/` feature, `/p/[id]` actions, `GET /api/posts/[id]/comments`, `GET /api/comments/[id]/replies`)                                                                                                                    | no UI                                                                                              |
 | 🟡 `updateMe`, OAuth username onboarding (`username: ""`)                     | ~~missing~~ (fixed 2026-10-04: `updateMe`, hooks redirect to `/onboard`)                                                                                                                                                                                                                  | `/onboard` form and settings profile form exist; avatar upload UI open                             |
 | 🟡 `listFollowers` / `listFollowing`                                          | ~~missing~~ (fixed 2026-10-04: use cases + `GET /api/users/[username]/followers` and `/following`)                                                                                                                                                                                        | counts not clickable                                                                               |
@@ -238,7 +238,7 @@ Frontend UI work (4, 12, UI halves of 5–8, full happy-path e2e) is left for th
 - [x] `savePost`/`unsavePost` return `{saved: boolean}` per contract
 - [ ] Like button on all posts (grid, feed, detail) with optimistic UI update via `use:enhance`
 - [ ] Save button on all posts with optimistic update
-- [ ] Bookmarks page at `/bookmarks` using `listSavedPosts`
+- [x] Bookmarks page at `/bookmarks` using `listSavedPosts` (minimal grid + load more; design pass open)
 - [ ] Bookmarks nav tab (one of five nav destinations per §5)
 - [ ] Share via Web Share API or clipboard (not just link)
 - [x] `/api/feed` rejects `scope=saved`
@@ -265,7 +265,7 @@ Frontend UI work (4, 12, UI halves of 5–8, full happy-path e2e) is left for th
 **Acceptance criteria:**
 
 - [ ] Edit/delete menu on own posts (three-dot menu or similar)
-- [ ] Route action calls `updatePost` or `deletePost` use case
+- [x] Route action calls `updatePost` or `deletePost` use case (`/p/[id]?/edit`, `?/delete`)
 - [ ] Only post author can see/use edit/delete buttons
 - [ ] Edit opens modal or inline form with caption
 - [ ] Delete shows confirmation and removes post from UI after success
