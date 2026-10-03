@@ -18,6 +18,11 @@ interface TrayEntry {
 
 const pair = (a: string, b: string) => `${a}|${b}`
 
+function trayRank(isOwn: boolean, hasUnseen: boolean): number {
+	if (isOwn) return 0
+	return hasUnseen ? 1 : 2
+}
+
 export class InMemoryStoryRepository implements StoryRepository {
 	stories: StoredStory[]
 	mediaValid = true
@@ -133,7 +138,7 @@ export class InMemoryStoryRepository implements StoryRepository {
 		const own = visible.filter((story) => story.author.id === user.id)
 		const hasUnseen = own.some((story) => !this.views.has(pair(story.id, viewerId)))
 		const latestAt = Math.max(...own.map((story) => Date.parse(story.createdAt)))
-		const rank = user.id === viewerId ? 0 : hasUnseen ? 1 : 2
+		const rank = trayRank(user.id === viewerId, hasUnseen)
 		const item: StoryTrayItem = {
 			user,
 			hasUnseen,

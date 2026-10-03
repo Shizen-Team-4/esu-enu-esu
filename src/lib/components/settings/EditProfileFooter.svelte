@@ -23,7 +23,8 @@
 		idle: 'text-fg-muted',
 	}
 	const key = $derived(keys[status])
-	const text = $derived(key ? $_(key) : status === 'error' ? message : '')
+	const fallback = $derived(status === 'error' ? message : '')
+	const text = $derived(key ? $_(key) : fallback)
 </script>
 
 <div

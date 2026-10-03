@@ -23,6 +23,11 @@ const envelope = (status: number, code: string) =>
 	new Response(JSON.stringify({ error: { code, message: code } }), { status })
 const ok = (body: unknown) => new Response(JSON.stringify(body), { status: 200 })
 
+function routeKey(url: string): 'start' | 'put' | 'complete' {
+	if (url === '/api/uploads') return 'start'
+	return url.includes('/complete') ? 'complete' : 'put'
+}
+
 function setup(routes: Partial<Record<'start' | 'put' | 'complete', Handler>> = {}) {
 	const calls: { url: string; init: RequestInit }[] = []
 	const defaults: Record<'start' | 'put' | 'complete', Handler> = {
@@ -32,8 +37,7 @@ function setup(routes: Partial<Record<'start' | 'put' | 'complete', Handler>> = 
 	}
 	const fetch = (async (input: string, init: RequestInit) => {
 		calls.push({ url: input, init })
-		const key =
-			input === '/api/uploads' ? 'start' : input.includes('/complete') ? 'complete' : 'put'
+		const key = routeKey(input)
 		return (routes[key] ?? defaults[key])(input, init)
 	}) as typeof globalThis.fetch
 	const readMetadata = async () => ({ width: 4, height: 3, durationSec: null, poster: null })
