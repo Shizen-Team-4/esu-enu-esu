@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Gather – Create post</title>
+		<style>
+			:root {
+				--blue: #1a56ff;
+				--ink: #14161a;
+				--mute: #6b7280;
+				--line: #e5e7eb;
+				--soft: #f3f6ff;
+			}
+			* {
+				box-sizing: border-box;
+				margin: 0;
+				padding: 0;
+			}
+			body {
+				font-family: 'Helvetica Neue', Arial, sans-serif;
+				color: var(--ink);
+				font-size: 13px;
+				background: #f8f8f9;
+				min-height: 100vh;
+			}
+			button,
+			textarea,
+			select {
+				font: inherit;
+				color: inherit;
+			}
+			button {
+				cursor: pointer;
+			}
+			svg {
+				width: 18px;
+				height: 18px;
+				fill: none;
+				stroke: currentColor;
+				stroke-width: 1.6;
+				stroke-linecap: round;
+				stroke-linejoin: round;
+			}
+			:focus-visible {
+				outline: 2px solid var(--blue);
+				outline-offset: 2px;
+			}
+
+			header {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				height: 64px;
+				padding: 0 24px;
+				background: #fff;
+				border-bottom: 1px solid var(--line);
+			}
+			.logo {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				font-size: 19px;
+				font-weight: 700;
+			}
+			.logo i {
+				width: 24px;
+				height: 24px;
+				background: var(--blue);
+				border-radius: 4px;
+				display: grid;
+				place-items: center;
+			}
+			.logo svg {
+				width: 16px;
+				height: 16px;
+				stroke: #fff;
+			}
+			.av {
+				border-radius: 50%;
+				flex: none;
+				display: block;
+			}
+			.close {
+				background: none;
+				border: 0;
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				color: var(--mute);
+			}
+
+			.page {
+				max-width: 620px;
+				margin: 32px auto;
+				padding: 0 16px;
+			}
+			.page h1 {
+				font-size: 20px;
+				margin-bottom: 16px;
+			}
+			.card {
+				background: #fff;
+				border: 1px solid var(--line);
+			}
+
+			.who {
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				padding: 16px 18px 0;
+			}
+			.who b {
+				display: block;
+				font-size: 13px;
+			}
+			.who small {
+				color: var(--mute);
+				font-size: 11px;
+			}
+			.aud {
+				margin-left: auto;
+				display: flex;
+				align-items: center;
+				gap: 6px;
+				border: 1px solid var(--line);
+				background: #fff;
+				padding: 7px 10px;
+				font-size: 11px;
+				border-radius: 3px;
+			}
+			.aud {
+				cursor: pointer;
+			}
+			.aud svg {
+				width: 14px;
+				height: 14px;
+			}
+			.aud select {
+				appearance: none;
+				-webkit-appearance: none;
+				border: 0;
+				background: none;
+				outline: 0;
+				font-size: 11px;
+				cursor: pointer;
+				padding: 0;
+			}
+			.aud:focus-within {
+				outline: 2px solid var(--blue);
+				outline-offset: 2px;
+			}
+
+			textarea {
+				display: block;
+				width: 100%;
+				border: 0;
+				outline: 0;
+				resize: none;
+				padding: 16px 18px;
+				min-height: 130px;
+				font-size: 15px;
+				line-height: 1.55;
+			}
+			textarea::placeholder {
+				color: #9aa0aa;
+			}
+
+			.media {
+				margin: 0 18px 16px;
+				position: relative;
+			}
+			.photo {
+				height: 170px;
+				border-radius: 2px;
+				background:
+					repeating-linear-gradient(
+						90deg,
+						transparent 0 22px,
+						rgba(20, 14, 8, 0.55) 22px 30px,
+						transparent 30px 58px,
+						rgba(45, 30, 18, 0.4) 58px 63px,
+						transparent 63px 96px
+					),
+					radial-gradient(ellipse at 55% 55%, #d6b86a 0, #8a8a3e 25%, #3d4a24 55%, #1a2312 100%);
+			}
+			.rm {
+				position: absolute;
+				top: 8px;
+				right: 8px;
+				width: 26px;
+				height: 26px;
+				border-radius: 50%;
+				border: 0;
+				background: rgba(20, 22, 26, 0.75);
+				color: #fff;
+				display: grid;
+				place-items: center;
+			}
+			.rm svg {
+				width: 14px;
+				height: 14px;
+			}
+			.alt {
+				position: absolute;
+				left: 8px;
+				bottom: 8px;
+				background: rgba(20, 22, 26, 0.75);
+				color: #fff;
+				border: 0;
+				font-size: 10px;
+				padding: 4px 8px;
+				border-radius: 2px;
+			}
+
+			.opts {
+				border-top: 1px solid var(--line);
+				padding: 4px 18px;
+			}
+			.opt {
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				padding: 12px 0;
+				font-size: 12px;
+				border-bottom: 1px solid var(--line);
+			}
+			.opt:last-child {
+				border: 0;
+			}
+			.opt svg {
+				color: var(--mute);
+			}
+			.opt select {
+				margin-left: auto;
+				border: 0;
+				background: none;
+				color: var(--blue);
+				font-size: 12px;
+				cursor: pointer;
+			}
+
+			.bar {
+				display: flex;
+				align-items: center;
+				gap: 4px;
+				border-top: 1px solid var(--line);
+				padding: 10px 12px 10px 14px;
+			}
+			.tool {
+				background: none;
+				border: 0;
+				padding: 8px;
+				color: var(--blue);
+				display: grid;
+				place-items: center;
+				border-radius: 3px;
+			}
+			.tool:hover {
+				background: var(--soft);
+			}
+			.count {
+				margin-left: auto;
+				margin-right: 14px;
+				font-size: 11px;
+				color: var(--mute);
+			}
+			.count.over {
+				color: #d92d20;
+				font-weight: 600;
+			}
+			.post {
+				background: var(--blue);
+				color: #fff;
+				border: 0;
+				padding: 10px 26px;
+				font-weight: 600;
+				font-size: 12px;
+			}
+			.post:disabled {
+				background: #c9d6ff;
+				cursor: not-allowed;
+			}
+			.hint {
+				margin-top: 12px;
+				font-size: 11px;
+				color: var(--mute);
+			}
+
+			@media (max-width: 620px) {
+				body {
+					background: #fff;
+				}
+				header {
+					padding: 0 14px;
+					height: 60px;
+				}
+				.logo {
+					display: none;
+				}
+				.close {
+					font-size: 13px;
+					color: var(--ink);
+				}
+				header .post {
+					padding: 8px 20px;
+				}
+				.page {
+					margin: 0;
+					padding: 0;
+				}
+				.page h1,
+				.hint,
+				.bar .post {
+					display: none;
+				}
+				.card {
+					border: 0;
+				}
+				.who {
+					padding: 16px 14px 0;
+				}
+				textarea {
+					padding: 14px;
+					min-height: 150px;
+				}
+				.media {
+					margin: 0 14px 14px;
+				}
+				.opts {
+					padding: 0 14px;
+				}
+				.bar {
+					position: fixed;
+					left: 0;
+					right: 0;
+					bottom: 0;
+					background: #fff;
+					padding: 8px 10px calc(8px + env(safe-area-inset-bottom, 0px));
+					z-index: 5;
+				}
+				.count {
+					margin-right: 4px;
+				}
+				body {
+					padding-bottom: 64px;
+				}
+			}
+			@media (min-width: 621px) {
+				header .post {
+					display: none;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<button class="close" aria-label="Cancel">
+				<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" /></svg>Cancel
+			</button>
+			<div class="logo">
+				<i
+					><svg viewBox="0 0 24 24">
+						<circle cx="12" cy="12" r="9" />
+						<path d="M12 3v18M3 12h18" /></svg></i
+				>Gather
+			</div>
+			<button class="post" id="postTop" disabled>Post</button>
+		</header>
+
+		<main class="page">
+			<h1>Create post</h1>
+			<div class="card">
+				<div class="who">
+					<i class="av" style="width: 36px; height: 36px; background: #3a2c24"></i>
+					<div><b>Maya Chen</b><small>@mayachen</small></div>
+					<label class="aud" id="aud"
+						><svg id="audIcon" viewBox="0 0 24 24">
+							<circle cx="12" cy="12" r="9" />
+							<path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18" />
+						</svg>
+						<select id="vis" aria-label="Post visibility">
+							<option value="public">Public</option>
+							<option value="me">Only me</option>
+						</select>
+						<svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg
+					></label>
+				</div>
+
+				<label for="t" class="sr" style="position: absolute; left: -9999px">Post text</label>
+				<textarea id="t" placeholder="What did you notice today?"></textarea>
+
+				<div class="media" id="media">
+					<div class="photo" role="img" aria-label="Photo preview of a forest path"></div>
+					<button class="rm" id="rm" aria-label="Remove photo">
+						<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" /></svg>
+					</button>
+					<button class="alt">Add description</button>
+				</div>
+
+				<div class="bar">
+					<button class="tool" aria-label="Add photo">
+						<svg viewBox="0 0 24 24">
+							<rect x="3" y="4" width="18" height="16" rx="2" />
+							<circle cx="9" cy="10" r="1.6" />
+							<path d="m4 18 5-5 4 4 3-3 4 4" />
+						</svg>
+					</button>
+					<button class="tool" aria-label="Add video">
+						<svg viewBox="0 0 24 24">
+							<rect x="3" y="6" width="13" height="12" rx="2" />
+							<path d="m16 10 5-3v10l-5-3" />
+						</svg>
+					</button>
+					<button class="tool" aria-label="Add poll">
+						<svg viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7" /></svg>
+					</button>
+					<button class="tool" aria-label="Add emoji">
+						<svg viewBox="0 0 24 24">
+							<circle cx="12" cy="12" r="9" />
+							<path d="M8 14c1 1.5 2.5 2.2 4 2.2s3-.7 4-2.2M9 9.5v.5M15 9.5v.5" />
+						</svg>
+					</button>
+					<button class="tool" aria-label="Add location">
+						<svg viewBox="0 0 24 24">
+							<path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z" />
+							<circle cx="12" cy="10" r="2.5" />
+						</svg>
+					</button>
+					<span class="count" id="count">280</span>
+					<button class="post" id="post" disabled>Post</button>
+				</div>
+			</div>
+			<p class="hint">
+				Photos up to 10 MB. Public posts can be seen by anyone; only you can see posts set to Only
+				me.
+			</p>
+		</main>
+
+		<script>
+			const t = document.getElementById('t'),
+				c = document.getElementById('count'),
+				btns = [post, postTop],
+				media = document.getElementById('media'),
+				MAX = 280
+			function sync() {
+				const left = MAX - t.value.length,
+					has = t.value.trim().length > 0 || media.style.display !== 'none'
+				c.textContent = left
+				c.classList.toggle('over', left < 0)
+				btns.forEach((b) => (b.disabled = !has || left < 0))
+			}
+			t.addEventListener('input', sync)
+			rm.addEventListener('click', () => {
+				media.style.display = 'none'
+				sync()
+			})
+			const icons = {
+				public:
+					'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',
+				me: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+			}
+			vis.addEventListener('change', () => {
+				audIcon.innerHTML = icons[vis.value]
+			})
+			sync()
+		</script>
+	</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gather – @nak</title>
+<style>
+:root{--blue:#1a56ff;--ink:#14161a;--mute:#6b7280;--line:#e5e7eb;--soft:#f3f6ff;--bg:#fff;--tile:#f3f4f6}
+:root[data-theme="dark"]{--ink:#f2f3f5;--mute:#9aa0aa;--line:#2a2d34;--soft:#18233f;--bg:#0f1115;--tile:#1d2025}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#f2f3f5;--mute:#9aa0aa;--line:#2a2d34;--soft:#18233f;--bg:#0f1115;--tile:#1d2025}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Helvetica Neue",Arial,sans-serif;color:var(--ink);background:var(--bg);font-size:13px}
+button,a{font:inherit}
+svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+
+header{display:flex;align-items:center;justify-content:space-between;height:64px;padding:0 24px;border-bottom:1px solid var(--line)}
+.logo{display:flex;align-items:center;gap:10px;font-size:19px;font-weight:700}
+.logo i{width:24px;height:24px;background:var(--blue);border-radius:4px;display:grid;place-items:center}
+.logo svg{width:16px;height:16px;stroke:#fff}
+.icon{display:grid;place-items:center;width:36px;height:36px;border-radius:3px;color:var(--ink)}
+.icon:hover{background:var(--soft)}
+
+.wrap{max-width:720px;margin:0 auto;padding:32px 20px 60px}
+.top{display:grid;grid-template-columns:132px 1fr;gap:36px;align-items:center}
+.pic{width:132px;height:132px;border-radius:50%;background:var(--soft);display:grid;place-items:center;color:var(--blue);font-size:44px;font-weight:700}
+.line1{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+h1{font-size:22px;margin-right:6px}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--bg);padding:8px 16px;border-radius:3px;font-size:12px;font-weight:600;cursor:pointer}
+.btn:hover{background:var(--soft);border-color:var(--blue);color:var(--blue)}
+.btn svg{width:14px;height:14px}
+.stats{display:grid;grid-auto-flow:column;grid-auto-columns:max-content;gap:22px;margin-top:16px}
+.stats a{display:block}
+.stats b{font-size:16px;display:block}
+.stats span{color:var(--mute);font-size:12px}
+.stats a:hover span{color:var(--blue)}
+.bio{margin-top:22px;line-height:1.55;max-width:460px}
+.bio b{display:block;font-size:14px;margin-bottom:2px}
+.bio a{color:var(--blue)}
+
+.tabs{display:flex;justify-content:center;gap:40px;border-top:1px solid var(--line);margin-top:30px}
+.tabs a{padding:14px 4px;color:var(--mute);border-top:2px solid transparent;margin-top:-1px;font-size:12px;font-weight:600}
+.tabs .on{color:var(--ink);border-color:var(--blue)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
+.t{aspect-ratio:1;background:var(--tile);display:grid;place-items:center;padding:16px;text-align:center;font-size:13px;line-height:1.45;overflow:hidden;position:relative}
+.img{background:
+ repeating-linear-gradient(90deg,transparent 0 14px,rgba(20,14,8,.55) 14px 19px,transparent 19px 38px,rgba(45,30,18,.4) 38px 42px,transparent 42px 64px),
+ radial-gradient(ellipse at 55% 55%,#d6b86a 0,#8a8a3e 25%,#3d4a24 55%,#1a2312 100%)}
+.t:hover::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.18)}
+
+@media(max-width:560px){
+  header{padding:0 14px}
+  .wrap{padding:20px 14px 40px}
+  .top{grid-template-columns:76px 1fr;gap:18px}
+  .pic{width:76px;height:76px;font-size:28px}
+  .stats{gap:18px;margin:0;justify-content:start}
+  .stats b{font-size:15px}.stats span{font-size:11px}
+  .info{display:contents}
+  .line1{grid-column:1/-1;grid-row:2;margin-top:14px}
+  .line1 h1{width:100%;font-size:18px}
+  .line1 .btn{flex:1;justify-content:center;padding:10px}
+  .line1 .btn.sq{flex:none}
+  .bio{grid-column:1/-1;margin-top:12px}
+  .tabs{margin-top:22px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo"><i><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg></i>Gather</div>
+  <a class="icon" href="gather-preferences.html" aria-label="Preferences"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></a>
+</header>
+
+<main class="wrap">
+  <section class="top">
+    <div class="pic" aria-hidden="true">n</div>
+    <div class="info">
+      <div class="line1">
+        <h1>@nak</h1>
+        <a class="btn" href="gather-edit-profile.html"><svg viewBox="0 0 24 24"><path d="M4 20l1-5L16 4l4 4L9 19z"/></svg>Edit profile</a>
+      </div>
+      <div class="stats">
+        <a href="#"><b>2</b><span>Posts</span></a>
+        <a href="#"><b>0</b><span>Followers</span></a>
+        <a href="#"><b>0</b><span>Following</span></a>
+      </div>
+    </div>
+    <div class="bio"><b>nak</b><a href="gather-edit-profile.html">Add a bio</a></div>
+  </section>
+
+  <nav class="tabs" aria-label="Profile content"><a class="on" href="#">Posts</a><a href="#">Reels</a></nav>
+
+  <div class="grid">
+    <a class="t img" href="#" aria-label="Photo post"></a>
+    <a class="t" href="#">Hi testing the first post</a>
+  </div>
+</main>
+</body>
+</html>

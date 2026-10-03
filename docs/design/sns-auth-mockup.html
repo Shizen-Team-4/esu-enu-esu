@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Gather – Sign in</title>
+		<style>
+			:root {
+				--blue: #1a56ff;
+				--ink: #14161a;
+				--mute: #6b7280;
+				--line: #e5e7eb;
+				--soft: #f3f6ff;
+			}
+			* {
+				box-sizing: border-box;
+				margin: 0;
+				padding: 0;
+			}
+			body {
+				font-family: 'Helvetica Neue', Arial, sans-serif;
+				color: var(--ink);
+				font-size: 13px;
+				min-height: 100vh;
+				display: grid;
+				grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+			}
+			button,
+			input {
+				font: inherit;
+			}
+			svg {
+				width: 16px;
+				height: 16px;
+				fill: none;
+				stroke: currentColor;
+				stroke-width: 1.6;
+				stroke-linecap: round;
+				stroke-linejoin: round;
+			}
+			:focus-visible {
+				outline: 2px solid var(--blue);
+				outline-offset: 2px;
+			}
+
+			/* left: form */
+			.side {
+				display: flex;
+				flex-direction: column;
+				padding: 28px 40px;
+			}
+			.logo {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				font-size: 19px;
+				font-weight: 700;
+			}
+			.logo i {
+				width: 24px;
+				height: 24px;
+				background: var(--blue);
+				border-radius: 4px;
+				display: grid;
+				place-items: center;
+				color: #fff;
+			}
+			.logo svg {
+				width: 16px;
+				height: 16px;
+			}
+			.box {
+				width: 100%;
+				max-width: 360px;
+				margin: auto;
+			}
+			h1 {
+				font-size: 26px;
+				line-height: 1.2;
+				margin-bottom: 8px;
+			}
+			.sub {
+				color: var(--mute);
+				line-height: 1.5;
+				margin-bottom: 24px;
+			}
+
+			.tabs {
+				display: flex;
+				border-bottom: 1px solid var(--line);
+				margin-bottom: 22px;
+			}
+			.tabs button {
+				flex: 1;
+				background: none;
+				border: 0;
+				padding: 12px 0;
+				color: var(--mute);
+				border-bottom: 2px solid transparent;
+				cursor: pointer;
+			}
+			.tabs .on {
+				color: var(--ink);
+				font-weight: 600;
+				border-color: var(--blue);
+			}
+
+			form {
+				display: none;
+			}
+			form.on {
+				display: block;
+			}
+			.f {
+				margin-bottom: 14px;
+			}
+			label {
+				display: block;
+				font-size: 11px;
+				font-weight: 600;
+				margin-bottom: 6px;
+			}
+			.in {
+				display: flex;
+				align-items: center;
+				border: 1px solid var(--line);
+				border-radius: 3px;
+				background: #fff;
+			}
+			.in:focus-within {
+				border-color: var(--blue);
+				box-shadow: 0 0 0 3px #dfe8ff;
+			}
+			.in input {
+				flex: 1;
+				min-width: 0;
+				border: 0;
+				outline: 0;
+				background: none;
+				padding: 11px 12px;
+			}
+			.in button {
+				background: none;
+				border: 0;
+				padding: 0 12px;
+				color: var(--mute);
+				cursor: pointer;
+				font-size: 11px;
+			}
+			.row {
+				display: flex;
+				justify-content: flex-end;
+				align-items: center;
+				margin: 2px 0 18px;
+				font-size: 12px;
+			}
+			.row label {
+				display: flex;
+				gap: 8px;
+				align-items: center;
+				font-weight: 400;
+				margin: 0;
+			}
+			.row input {
+				accent-color: var(--blue);
+			}
+			a {
+				color: var(--blue);
+				text-decoration: none;
+			}
+			.primary {
+				width: 100%;
+				background: var(--blue);
+				color: #fff;
+				border: 0;
+				padding: 12px;
+				font-weight: 600;
+				cursor: pointer;
+			}
+			.primary:hover {
+				background: #0f45e0;
+			}
+			.or {
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				color: var(--mute);
+				font-size: 11px;
+				margin: 20px 0;
+			}
+			.or::before,
+			.or::after {
+				content: '';
+				flex: 1;
+				height: 1px;
+				background: var(--line);
+			}
+			.alt {
+				width: 100%;
+				background: #fff;
+				border: 1px solid var(--line);
+				padding: 11px;
+				cursor: pointer;
+				margin-bottom: 10px;
+				display: flex;
+				justify-content: center;
+				gap: 10px;
+				align-items: center;
+			}
+			.alt:hover {
+				background: #f8f8f9;
+			}
+			.fine {
+				margin-top: 20px;
+				font-size: 11px;
+				color: var(--mute);
+				line-height: 1.5;
+			}
+			.foot {
+				font-size: 11px;
+				color: var(--mute);
+				display: flex;
+				gap: 18px;
+			}
+
+			/* right: showcase */
+			.show {
+				position: relative;
+				overflow: hidden;
+				background: var(--soft);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				padding: 40px;
+				background-image: repeating-linear-gradient(
+					135deg,
+					transparent 0 6px,
+					rgba(26, 86, 255, 0.05) 6px 7px
+				);
+			}
+			.card {
+				width: 100%;
+				max-width: 340px;
+				background: #fff;
+				border: 1px solid var(--line);
+				padding: 16px;
+				box-shadow: 0 12px 32px rgba(26, 86, 255, 0.1);
+			}
+			.ph {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+			}
+			.av {
+				width: 30px;
+				height: 30px;
+				border-radius: 50%;
+				background: #a83a44;
+				flex: none;
+			}
+			.ph b {
+				font-size: 12px;
+				display: block;
+			}
+			.ph small {
+				font-size: 10px;
+				color: var(--mute);
+			}
+			.card p {
+				margin: 12px 0;
+				line-height: 1.5;
+			}
+			.photo {
+				height: 150px;
+				border-radius: 2px;
+				background:
+					repeating-linear-gradient(
+						90deg,
+						transparent 0 22px,
+						rgba(20, 14, 8, 0.55) 22px 30px,
+						transparent 30px 58px,
+						rgba(45, 30, 18, 0.4) 58px 63px,
+						transparent 63px 96px
+					),
+					radial-gradient(ellipse at 55% 55%, #d6b86a 0, #8a8a3e 25%, #3d4a24 55%, #1a2312 100%);
+			}
+			.acts {
+				display: flex;
+				gap: 22px;
+				margin-top: 12px;
+				color: var(--mute);
+				font-size: 11px;
+			}
+			.acts span {
+				display: flex;
+				gap: 7px;
+				align-items: center;
+			}
+			.chip {
+				position: absolute;
+				background: #fff;
+				border: 1px solid var(--line);
+				padding: 9px 12px;
+				font-size: 11px;
+				display: flex;
+				gap: 8px;
+				align-items: center;
+				box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+			}
+			.chip i {
+				width: 8px;
+				height: 8px;
+				border-radius: 50%;
+				background: var(--blue);
+			}
+			.c1 {
+				top: 14%;
+				right: 8%;
+			}
+			.c2 {
+				bottom: 12%;
+				left: 8%;
+			}
+			.tag {
+				position: absolute;
+				bottom: 28px;
+				right: 40px;
+				left: 40px;
+				text-align: center;
+				font-size: 12px;
+				color: var(--mute);
+			}
+
+			@media (max-width: 860px) {
+				body {
+					grid-template-columns: 1fr;
+				}
+				.show {
+					display: none;
+				}
+				.side {
+					padding: 20px 18px;
+				}
+				h1 {
+					font-size: 23px;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<main class="side">
+			<div class="logo">
+				<i
+					><svg viewBox="0 0 24 24" stroke="#fff">
+						<circle cx="12" cy="12" r="9" />
+						<path d="M12 3v18M3 12h18" /></svg></i
+				>Gather
+			</div>
+
+			<div class="box">
+				<h1 id="title">Welcome back.</h1>
+				<p class="sub" id="sub">Sign in to see what your circle is up to.</p>
+
+				<div class="tabs" role="tablist">
+					<button class="on" role="tab" data-t="in">Sign in</button>
+					<button role="tab" data-t="up">Create account</button>
+				</div>
+
+				<form id="in" class="on" onsubmit="return false">
+					<div class="f">
+						<label for="e1">Email</label>
+						<div class="in">
+							<input id="e1" type="email" placeholder="you@example.com" autocomplete="email" />
+						</div>
+					</div>
+					<div class="f">
+						<label for="p1">Password</label>
+						<div class="in">
+							<input
+								id="p1"
+								type="password"
+								placeholder="Enter your password"
+								autocomplete="current-password"
+							/><button type="button" class="show-pw" data-for="p1">Show</button>
+						</div>
+					</div>
+					<div class="row"><a href="#">Forgot password?</a></div>
+					<button class="primary">Sign in</button>
+				</form>
+
+				<form id="up" onsubmit="return false">
+					<div class="f">
+						<label for="n2">Name</label>
+						<div class="in"><input id="n2" placeholder="Maya Chen" autocomplete="name" /></div>
+					</div>
+					<div class="f">
+						<label for="u2">Username</label>
+						<div class="in"><input id="u2" placeholder="@mayachen" autocomplete="username" /></div>
+					</div>
+					<div class="f">
+						<label for="e2">Email</label>
+						<div class="in">
+							<input id="e2" type="email" placeholder="you@example.com" autocomplete="email" />
+						</div>
+					</div>
+					<div class="f">
+						<label for="p2">Password</label>
+						<div class="in">
+							<input
+								id="p2"
+								type="password"
+								placeholder="At least 8 characters"
+								autocomplete="new-password"
+							/><button type="button" class="show-pw" data-for="p2">Show</button>
+						</div>
+					</div>
+					<button class="primary" style="margin-top: 6px">Create account</button>
+					<p class="fine">
+						By creating an account, you agree to our <a href="#">Terms</a> and
+						<a href="#">Privacy Policy</a>.
+					</p>
+				</form>
+
+				<div class="or">or continue with</div>
+				<button class="alt">
+					<svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7M21 4v5h-5" /></svg>Google
+				</button>
+			</div>
+
+			<div class="foot"><a href="#">Help</a><a href="#">Terms</a><a href="#">Privacy</a></div>
+		</main>
+
+		<aside class="show" aria-hidden="true">
+			<div class="chip c1"><i></i>3 new in Photo Club</div>
+			<div class="card">
+				<div class="ph">
+					<span class="av"></span>
+					<div><b>Maya Chen</b><small>@mayachen · 24m</small></div>
+				</div>
+				<p>A little reminder to take the scenic route.</p>
+				<div class="photo"></div>
+				<div class="acts"><span>♡ 128</span><span>💬 24</span><span>↻ 12</span></div>
+			</div>
+			<div class="chip c2"><i></i>Lena started a photo club</div>
+			<div class="tag">Find your people. There's a community for every curiosity.</div>
+		</aside>
+
+		<script>
+			const tabs = document.querySelectorAll('.tabs button'),
+				forms = { in: document.getElementById('in'), up: document.getElementById('up') }
+			const copy = {
+				in: ['Welcome back.', 'Sign in to see what your circle is up to.'],
+				up: [
+					'Make yourself at home.',
+					'Create an account to join communities and share your moments.',
+				],
+			}
+			tabs.forEach((b) =>
+				b.addEventListener('click', () => {
+					const t = b.dataset.t
+					tabs.forEach((x) => x.classList.toggle('on', x === b))
+					for (const k in forms) forms[k].classList.toggle('on', k === t)
+					title.textContent = copy[t][0]
+					sub.textContent = copy[t][1]
+				}),
+			)
+			document.querySelectorAll('.show-pw').forEach((b) =>
+				b.addEventListener('click', () => {
+					const i = document.getElementById(b.dataset.for),
+						s = i.type === 'password'
+					i.type = s ? 'text' : 'password'
+					b.textContent = s ? 'Hide' : 'Show'
+				}),
+			)
+		</script>
+	</body>
+</html>
