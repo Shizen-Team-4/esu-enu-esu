@@ -85,6 +85,16 @@ describe('post operations', () => {
 			createPost(deps)(viewer, { type: 'post', caption: 'Hello' }),
 		).rejects.toMatchObject({ code: 'RATE_LIMITED' })
 	})
+	it('tells the caller when the oldest post leaves the rate-limit window', async () => {
+		const deps = setup()
+		deps.posts.creationWindow = async () => ({
+			count: 30,
+			oldest: new Date('2026-10-02T23:30:00Z'),
+		})
+		await expect(
+			createPost(deps)(viewer, { type: 'post', caption: 'Hello' }),
+		).rejects.toMatchObject({ code: 'RATE_LIMITED', retryAfterSec: 1800 })
+	})
 	it('reports an internal error if a created post cannot be loaded', async () => {
 		const deps = setup()
 		deps.setPost(null)

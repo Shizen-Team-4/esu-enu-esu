@@ -32,6 +32,7 @@ import { likeStory } from './stories/application/like-story'
 import { deleteStory } from './stories/application/delete-story'
 import { validateGuestPreferences } from './preferences/application/validate-guest-preferences'
 import { createLocalUploadReceiver } from './media/infrastructure/local-upload'
+import { createHealthCheck } from './health/infrastructure/health-check'
 import { normalizeMediaUrl } from './shared/infrastructure/media-public-url'
 
 export function createContainer(
@@ -62,6 +63,7 @@ export function createContainer(
 	)
 	const stories = createStoryRepository(db, env.DB, mediaPublicUrl)
 	return {
+		health: createHealthCheck({ kv: env.KV, d1: env.DB, db }),
 		stories: {
 			createStory: createStory({ stories, clock, ids }),
 			listUserStories: listUserStories({ stories, clock }),

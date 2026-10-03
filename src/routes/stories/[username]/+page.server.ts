@@ -1,67 +1,57 @@
-import { error, fail, redirect } from '@sveltejs/kit'
+import { redirect } from '@sveltejs/kit'
 import { optionalViewer } from '$lib/server/auth/viewer'
-import { AppError } from '$lib/server/shared/domain/app-error'
+import { toActionFailure, toHttpError } from '$lib/server/shared/http/error-response'
+import { requireServices, requireUser } from '$lib/server/shared/http/guards'
 import type { Actions, PageServerLoad } from './$types'
 
 export const load: PageServerLoad = async ({ locals, params }) => {
-	if (!locals.user) redirect(303, '/login')
-	if (!locals.services) error(503)
+	const user = requireUser(locals)
+	const services = requireServices(locals)
 	try {
 		return {
-			...(await locals.services.stories.listUserStories(
-				optionalViewer(locals.user),
-				params.username,
-			)),
-			viewerId: locals.user.id,
+			...(await services.stories.listUserStories(optionalViewer(user), params.username)),
+			viewerId: user.id,
 		}
 	} catch (cause) {
-		if (cause instanceof AppError && cause.code === 'NOT_FOUND') error(404)
-		error(500)
+		return toHttpError(cause)
 	}
 }
+
 export const actions: Actions = {
 	love: async ({ locals, request }) => {
-		if (!locals.user) redirect(303, '/login')
-		if (!locals.services) error(503)
+		const user = requireUser(locals)
+		const services = requireServices(locals)
 		const input = await request.formData()
 		try {
-			await locals.services.stories.likeStory(
-				optionalViewer(locals.user),
+			await services.stories.likeStory(
+				optionalViewer(user),
 				String(input.get('id')),
 				input.get('active') === 'true',
 			)
 		} catch (cause) {
-			if (cause instanceof AppError) return fail(400, { code: cause.code })
-			error(500)
+			return toActionFailure(cause)
 		}
-		return { code: null }
+		return { error: null }
 	},
 	seen: async ({ locals, request }) => {
-		if (!locals.services) error(503)
+		const user = requireUser(locals)
+		const services = requireServices(locals)
 		const input = await request.formData()
 		try {
-			await locals.services.stories.markStorySeen(
-				optionalViewer(locals.user),
-				String(input.get('id')),
-			)
+			await services.stories.markStorySeen(optionalViewer(user), String(input.get('id')))
 		} catch (cause) {
-			if (cause instanceof AppError) return fail(400, { code: cause.code })
-			error(500)
+			return toActionFailure(cause)
 		}
-		return { code: null }
+		return { error: null }
 	},
 	delete: async ({ locals, request }) => {
-		if (!locals.user) redirect(303, '/login')
-		if (!locals.services) error(503)
+		const user = requireUser(locals)
+		const services = requireServices(locals)
 		const input = await request.formData()
 		try {
-			await locals.services.stories.deleteStory(
-				optionalViewer(locals.user),
-				String(input.get('id')),
-			)
+			await services.stories.deleteStory(optionalViewer(user), String(input.get('id')))
 		} catch (cause) {
-			if (cause instanceof AppError) return fail(400, { code: cause.code })
-			error(500)
+			return toActionFailure(cause)
 		}
 		redirect(303, '/dashboard')
 	},

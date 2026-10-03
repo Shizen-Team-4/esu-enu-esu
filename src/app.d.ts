@@ -1,5 +1,6 @@
 /// <reference path="../worker-configuration.d.ts" />
 import type { Services } from '$lib/server/container'
+import type { Preferences } from '$lib/server/preferences/domain/preferences'
 import type { Lang } from '$lib/i18n/config'
 import type { SmtpConfig } from '$lib/server/auth/infrastructure/smtp-email'
 import type { R2Config } from '$lib/server/media/infrastructure/r2-storage'
@@ -9,6 +10,10 @@ type AuthSession = NonNullable<Awaited<ReturnType<Services['auth']['api']['getSe
 
 declare global {
 	namespace App {
+		interface Error {
+			message: string
+			code?: string
+		}
 		interface Platform {
 			env: Env & SmtpConfig & R2Config
 			ctx: ExecutionContext
@@ -20,6 +25,7 @@ declare global {
 			theme: 'system' | 'light' | 'dark'
 			user: AuthSession['user'] | null
 			session: AuthSession['session'] | null
+			preferences: Preferences | null
 			services?: Services
 		}
 	}

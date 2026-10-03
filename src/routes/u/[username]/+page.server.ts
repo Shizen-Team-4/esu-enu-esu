@@ -1,40 +1,38 @@
-import { error, fail, redirect } from '@sveltejs/kit'
+import { redirect } from '@sveltejs/kit'
 import { optionalViewer } from '$lib/server/auth/viewer'
-import { AppError } from '$lib/server/shared/domain/app-error'
+import { toActionFailure, toHttpError } from '$lib/server/shared/http/error-response'
+import { requireServices, requireUser } from '$lib/server/shared/http/guards'
 import type { Actions, PageServerLoad } from './$types'
 
 export const load: PageServerLoad = async ({ locals, params, url }) => {
-	if (!locals.services) error(503)
+	const services = requireServices(locals)
+	const viewer = optionalViewer(locals.user)
 	try {
-		const profile = await locals.services.users.getProfile(
-			optionalViewer(locals.user),
-			params.username,
-		)
+		const profile = await services.users.getProfile(viewer, params.username)
 		const type = url.searchParams.get('type') === 'reel' ? 'reel' : 'post'
-		const posts = await locals.services.posts.listFeed(optionalViewer(locals.user), {
+		const posts = await services.posts.listFeed(viewer, {
 			authorId: profile.id,
 			...(type === 'reel' ? { type } : {}),
 		})
 		return { profile, posts, type }
 	} catch (cause) {
-		if (cause instanceof AppError && cause.code === 'NOT_FOUND') error(404)
-		error(500)
+		return toHttpError(cause)
 	}
 }
+
 export const actions: Actions = {
 	follow: async ({ locals, params, request }) => {
-		if (!locals.user) redirect(303, '/login')
-		if (!locals.services) error(503)
+		const user = requireUser(locals)
+		const services = requireServices(locals)
 		const data = await request.formData()
 		try {
-			await locals.services.users.followUser(
-				optionalViewer(locals.user),
+			await services.users.followUser(
+				optionalViewer(user),
 				params.username,
 				data.get('active') === 'true',
 			)
 		} catch (cause) {
-			if (cause instanceof AppError) return fail(422, { code: cause.code })
-			error(500)
+			return toActionFailure(cause)
 		}
 		redirect(303, `/u/${params.username}`)
 	},

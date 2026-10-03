@@ -37,7 +37,7 @@
 					>{/each}
 			</div>
 		</fieldset>
-		{#if form?.code}<p role="alert">{$_('preferences.error')}</p>{/if}
+		{#if form?.error?.code}<p role="alert">{$_('preferences.error')}</p>{/if}
 		<button type="submit">{$_('preferences.save')}</button>
 	</form>
 </main>

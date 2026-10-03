@@ -1,9 +1,10 @@
 import { error } from '@sveltejs/kit'
+import { requireServices } from '$lib/server/shared/http/guards'
 import type { RequestHandler } from './$types'
 
 export const POST: RequestHandler = async ({ locals, request, url }) => {
-	if (!locals.services) error(503, 'Service unavailable')
-	const response = await locals.services.auth.api.signInSocial({
+	const services = requireServices(locals)
+	const response = await services.auth.api.signInSocial({
 		headers: request.headers,
 		body: { provider: 'google', callbackURL: `${url.origin}/dashboard` },
 		asResponse: true,

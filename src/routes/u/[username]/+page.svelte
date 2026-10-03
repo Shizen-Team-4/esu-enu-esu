@@ -7,7 +7,7 @@
 </script>
 
 <main class="container py-8" style="max-width: 935px">
-	{#if form?.code}<p role="alert">{$_('auth.error')}</p>{/if}<ProfileHeader
+	{#if form?.error?.code}<p role="alert">{$_('auth.error')}</p>{/if}<ProfileHeader
 		profile={data.profile}
 	/><ProfileTabs type={data.type} /><PostGrid posts={data.posts.items} />
 </main>

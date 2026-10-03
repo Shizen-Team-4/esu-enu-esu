@@ -29,7 +29,7 @@
 
 <main class="container py-6" style="max-width: 630px">
 	<a class="button" href="/dashboard">{$_('story.close')}</a>
-	{#if form?.code}<p role="alert">{$_('auth.error')}</p>{/if}
+	{#if form?.error?.code}<p role="alert">{$_('auth.error')}</p>{/if}
 	{#if current && !expired}
 		<header class="my-4 flex items-center justify-between">
 			<strong>@{current.author.username || current.author.displayName}</strong><span

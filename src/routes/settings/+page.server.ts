@@ -1,24 +1,20 @@
-import { error, fail, redirect } from '@sveltejs/kit'
-import { AppError } from '$lib/server/shared/domain/app-error'
+import { redirect } from '@sveltejs/kit'
+import { toActionFailure } from '$lib/server/shared/http/error-response'
+import { requireServices } from '$lib/server/shared/http/guards'
 import type { Actions, PageServerLoad } from './$types'
 
-export const load: PageServerLoad = async ({ locals, parent }) => {
-	const data = await parent()
-	return {
-		preferences:
-			locals.user && locals.services
-				? await locals.services.preferences.getPreferences(locals.user.id, locals.lang)
-				: { theme: data.theme, language: locals.lang },
-	}
-}
+export const load: PageServerLoad = ({ locals }) => ({
+	preferences: locals.preferences ?? { theme: locals.theme, language: locals.lang },
+})
+
 export const actions: Actions = {
 	default: async ({ locals, request, cookies, url }) => {
-		if (!locals.services) error(503)
+		const services = requireServices(locals)
 		const form = await request.formData(),
 			input = { theme: form.get('theme'), language: form.get('language') }
 		try {
-			const value = locals.services.preferences.validateGuestPreferences(input)
-			if (locals.user) await locals.services.preferences.updatePreferences(locals.user.id, value)
+			const value = services.preferences.validateGuestPreferences(input)
+			if (locals.user) await services.preferences.updatePreferences(locals.user.id, value)
 			const options = {
 				path: '/',
 				httpOnly: true,
@@ -29,8 +25,7 @@ export const actions: Actions = {
 			if (value.theme) cookies.set('sns-theme', value.theme, options)
 			if (value.language) cookies.set('sns-language', value.language, options)
 		} catch (cause) {
-			if (cause instanceof AppError) return fail(400, { code: cause.code })
-			error(500)
+			return toActionFailure(cause)
 		}
 		redirect(303, '/settings')
 	},
