@@ -68,7 +68,11 @@
 		"create": "作成",
 		"reels": "リール",
 		"home": "ホーム",
-		"profile": "プロフィール"
+		"profile": "プロフィール",
+		"notifications": "通知",
+		"bookmarks": "ブックマーク",
+		"yourSpace": "マイスペース",
+		"createPost": "投稿を作成"
 	},
 	"account": {
 		"title": "プロフィール",
@@ -102,6 +106,30 @@
 			"INVALID_FORMAT": "形式が正しくありません。",
 			"NOT_ALLOWED": "この値は使用できません。",
 			"TAKEN": "すでに使用されています。"
-		}
+		},
+		"retry": "再試行"
+	},
+	"app": {
+		"name": "SNS"
+	},
+	"header": {
+		"menu": "アカウントメニュー"
+	},
+	"notifications": {
+		"title": "通知",
+		"empty": "通知機能は近日公開予定です"
+	},
+	"errorPage": {
+		"title": "問題が発生しました",
+		"notFound": "ページが見つかりませんでした。",
+		"generic": "予期しないエラーが発生しました。もう一度お試しください。",
+		"home": "ホームに戻る",
+		"notFoundTitle": "ページが見つかりません"
+	},
+	"search": {
+		"placeholder": "ユーザーを検索"
+	},
+	"toast": {
+		"dismiss": "閉じる"
 	}
 }

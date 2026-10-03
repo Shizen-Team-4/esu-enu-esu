@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Button from '$lib/components/ui/Button.svelte'
 	import { _ } from 'svelte-i18n'
 	import type { Post } from '$lib/contract'
 	let { post, interactive = false }: { post: Post; interactive?: boolean } = $props()
@@ -35,10 +36,12 @@
 					type="hidden"
 					name="active"
 					value={String(!post.viewer.liked)}
-				/><button aria-pressed={post.viewer.liked}>{$_('post.like')} · {post.counts.likes}</button>
+				/><Button type="submit" aria-pressed={post.viewer.liked}
+					>{$_('post.like')} · {post.counts.likes}</Button
+				>
 			</form>
 		{:else}<span>{$_('post.like')} · {post.counts.likes}</span>{/if}
-		<a class="button" href={post.shareUrl}>{$_('post.share')}</a>
+		<Button href={post.shareUrl}>{$_('post.share')}</Button>
 	</footer>
 </article>
 

@@ -29,6 +29,8 @@ export default defineConfig({
 				'src/lib/api/**/*.ts',
 				'src/lib/media/upload-file.ts',
 				'src/lib/auth/**/*.ts',
+				'src/lib/navigation/**/*.ts',
+				'src/lib/toast/**/*.ts',
 			],
 			exclude: ['**/*.test.ts', '**/ports.ts', '**/testing/**', 'src/lib/i18n/index.ts'],
 			provider: 'v8',

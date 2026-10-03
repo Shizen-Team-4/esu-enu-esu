@@ -4,6 +4,7 @@
 	"useGitignore": true,
 	"words": [
 		"fontsource",
+		"onretry",
 		"ftypisom",
 		"Grotesk",
 		"nosniff",
@@ -64,6 +65,7 @@
 		"**/.svelte-kit/**",
 		"**/.wrangler/**",
 		"pnpm-lock.yaml",
+		"docs/design/**",
 		"*.min.js",
 		"**/locales/km.json"
 	]

@@ -68,7 +68,11 @@
 		"create": "Create",
 		"reels": "Reels",
 		"home": "Home",
-		"profile": "Profile"
+		"profile": "Profile",
+		"notifications": "Notifications",
+		"bookmarks": "Bookmarks",
+		"yourSpace": "Your space",
+		"createPost": "Create post"
 	},
 	"account": {
 		"title": "Profile",
@@ -102,6 +106,30 @@
 			"INVALID_FORMAT": "This format is not valid.",
 			"NOT_ALLOWED": "This value is not allowed.",
 			"TAKEN": "This is already taken."
-		}
+		},
+		"retry": "Try again"
+	},
+	"app": {
+		"name": "SNS"
+	},
+	"header": {
+		"menu": "Account menu"
+	},
+	"notifications": {
+		"title": "Notifications",
+		"empty": "Notifications are coming soon"
+	},
+	"errorPage": {
+		"title": "Something went wrong",
+		"notFound": "We could not find that page.",
+		"generic": "An unexpected error occurred. Please try again.",
+		"home": "Back to home",
+		"notFoundTitle": "Page not found"
+	},
+	"search": {
+		"placeholder": "Search people"
+	},
+	"toast": {
+		"dismiss": "Dismiss"
 	}
 }

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Button from '$lib/components/ui/Button.svelte'
 	import { _ } from 'svelte-i18n'
 	import { goto } from '$app/navigation'
 	import { submitAuth, type AuthOperation } from '$lib/auth/submit-auth'
@@ -72,10 +73,10 @@
 				aria-describedby={describedBy('password')}
 			/><FieldError code={fields.password} id="auth-password-error" /></label
 		>{/if}
-	<button disabled={pending}
+	<Button type="submit" variant="primary" disabled={pending}
 		>{$_(
 			`auth.${operation === 'request-reset' || operation === 'reset' ? 'reset' : operation}`,
-		)}</button
+		)}</Button
 	>
 	{#if success}<p role="status">{$_('auth.success')}</p>{/if}
 	{#if errorCode}<p role="alert">{$_(errorMessageKey(errorCode))}</p>{/if}

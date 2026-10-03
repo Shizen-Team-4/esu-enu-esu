@@ -55,82 +55,73 @@
 	--color-danger: var(--danger);
 	--color-success: var(--success);
 	--radius-card: 1.5rem;
+	--text-title: 1.5rem;
+	--text-title--line-height: 1.3;
+	--text-body: 1rem;
+	--text-body--line-height: 1.5;
+	--text-meta: 0.8125rem;
+	--text-meta--line-height: 1.4;
+	--text-nav: 0.6875rem;
+	--text-nav--line-height: 1.2;
+	--spacing-gutter: 12px;
+	--spacing-inset: 24px;
+	--container-content: 38rem;
+	--container-auth: 28rem;
+	--spacing-rail: 72px;
+	--spacing-sidebar: 200px;
+	--spacing-aside: 172px;
 }
-* {
-	box-sizing: border-box;
+@layer base {
+	* {
+		box-sizing: border-box;
+	}
+	body {
+		margin: 0;
+		background: var(--background);
+		color: var(--text);
+	}
+	img,
+	video {
+		max-width: 100%;
+		height: auto;
+	}
+	button,
+	input,
+	select,
+	textarea {
+		font: inherit;
+	}
+	select,
+	input {
+		min-height: 44px;
+	}
+	a {
+		color: var(--link);
+	}
+	input,
+	select,
+	textarea {
+		background: var(--elevated);
+		color: var(--fg);
+	}
+	[role='alert'] {
+		color: var(--danger);
+	}
+	:focus-visible {
+		outline: 3px solid var(--primary);
+		outline-offset: 3px;
+	}
 }
-body {
-	margin: 0;
-	background: var(--background);
-	color: var(--text);
-}
-img,
-video {
-	max-width: 100%;
-	height: auto;
-}
-button,
-input,
-select,
-textarea {
-	font: inherit;
-}
-button,
-select,
-input,
-.button {
-	min-height: 44px;
-}
-button,
-.button {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	padding: 0.7rem 1.2rem;
-	border: 1px solid var(--border);
-	border-radius: 0.75rem;
-	background: var(--surface);
-	color: var(--text);
-	cursor: pointer;
-	text-decoration: none;
-}
-a {
-	color: var(--link);
-}
-button[type='submit'],
-.primary {
-	background: var(--primary);
-	color: var(--on-primary);
-}
-input,
-select,
-textarea {
-	background: var(--elevated);
-	color: var(--fg);
-}
-button[aria-pressed='true'] {
-	color: var(--accent);
-}
-[role='alert'] {
-	color: var(--danger);
-}
-:focus-visible {
-	outline: 3px solid var(--primary);
-	outline-offset: 3px;
-}
-.container {
-	width: min(100% - 2rem, 72rem);
-	margin-inline: auto;
-}
-.panel {
-	background: var(--surface);
-	padding: clamp(1rem, 4vw, 2rem);
-	border: 1px solid var(--border);
-	border-radius: 1.5rem;
-}
-h1 {
-	font-size: clamp(2rem, 1rem + 4vw, 3.5rem);
-	overflow-wrap: anywhere;
+@layer components {
+	.hatch {
+		background-image: repeating-linear-gradient(135deg, var(--line) 0 1px, transparent 1px 8px);
+	}
+	.panel {
+		background: var(--surface);
+		padding: clamp(1rem, 4vw, 2rem);
+		border: 1px solid var(--border);
+		border-radius: 1.5rem;
+	}
 }
 @media (prefers-reduced-motion: reduce) {
 	*,

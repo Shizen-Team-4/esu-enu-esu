@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Button from '$lib/components/ui/Button.svelte'
 	import { _ } from 'svelte-i18n'
 	import type { Profile } from '$lib/contract'
 	let { profile }: { profile: Profile } = $props()
@@ -30,9 +31,10 @@
 		<strong>{profile.displayName}</strong>
 		<p class="my-3 whitespace-pre-wrap break-words">{profile.bio}</p>
 		{#if !profile.viewer.isMe}<form method="POST" action="?/follow">
-				<input type="hidden" name="active" value={String(!profile.viewer.following)} /><button
+				<input type="hidden" name="active" value={String(!profile.viewer.following)} /><Button
 					type="submit"
-					>{$_(profile.viewer.following ? 'profile.unfollow' : 'profile.follow')}</button
+					variant={profile.viewer.following ? 'secondary' : 'primary'}
+					>{$_(profile.viewer.following ? 'profile.unfollow' : 'profile.follow')}</Button
 				>
 			</form>{/if}
 	</div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Button from '$lib/components/ui/Button.svelte'
 	import { _ } from 'svelte-i18n'
 	import { ApiError } from '$lib/api/api-error'
 	import { errorMessageKey } from '$lib/errors/error-message'
@@ -69,8 +70,11 @@
 		{#if type === 'story'}<p class="text-fg-muted">{$_('story.expires')}</p>{/if}
 		{#if pending}<p role="status">{$_('post.uploading')}</p>{/if}
 		{#if error}<p role="alert">{$_(errorMessageKey(error.code))}</p>{/if}
-		<button type="submit" disabled={pending || failed || (type !== 'post' && ids.length !== 1)}
-			>{$_('post.publish')}</button
+		<Button
+			type="submit"
+			variant="primary"
+			disabled={pending || failed || (type !== 'post' && ids.length !== 1)}
+			>{$_('post.publish')}</Button
 		>
 	</form>
 </section>

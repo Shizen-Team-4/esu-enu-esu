@@ -11,6 +11,7 @@ describe('isProtectedPath', () => {
 		'/create',
 		'/create/post',
 		'/bookmarks',
+		'/notifications',
 	])('protects %s', (path) => expect(isProtectedPath(path)).toBe(true))
 	it.each([
 		'/',
