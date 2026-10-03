@@ -11,7 +11,20 @@
 		"success": "Check your email, or sign in with your updated password.",
 		"email": "Email",
 		"showPassword": "Show",
-		"hidePassword": "Hide"
+		"hidePassword": "Hide",
+		"signIn": "Sign in",
+		"createAccount": "Create account",
+		"tabsLabel": "Authentication",
+		"loginTitle": "Welcome back.",
+		"loginSubtitle": "Sign in to see what your circle is up to.",
+		"registerTitle": "Make yourself at home.",
+		"registerSubtitle": "Create an account to join communities and share your moments.",
+		"orContinue": "or continue with",
+		"forgotPassword": "Forgot password?",
+		"backToSignIn": "Back to sign in",
+		"usernameHint": "3–30 lowercase letters, numbers or underscores.",
+		"forgotSubtitle": "Enter your email and we will send you a reset link.",
+		"resetSubtitle": "Choose a new password for your account."
 	},
 	"common": {
 		"back": "Back"
@@ -155,5 +168,11 @@
 		"previous": "Previous media",
 		"next": "Next media",
 		"counter": "{current} / {total}"
+	},
+	"authShowcase": {
+		"name": "Alex Morgan",
+		"handle": "@alex",
+		"caption": "Sunday morning walk by the river. Who wants to join next time?",
+		"tagline": "Share moments with the people who matter."
 	}
 }

@@ -11,7 +11,20 @@
 		"success": "メールを確認するか、更新したパスワードでログインしてください。",
 		"email": "メールアドレス",
 		"showPassword": "表示",
-		"hidePassword": "非表示"
+		"hidePassword": "非表示",
+		"signIn": "ログイン",
+		"createAccount": "アカウント作成",
+		"tabsLabel": "認証",
+		"loginTitle": "おかえりなさい。",
+		"loginSubtitle": "ログインして、仲間の近況を見てみましょう。",
+		"registerTitle": "くつろいでいってください。",
+		"registerSubtitle": "アカウントを作成して、コミュニティに参加し、思い出を共有しましょう。",
+		"orContinue": "または次で続行",
+		"forgotPassword": "パスワードをお忘れですか？",
+		"backToSignIn": "ログインに戻る",
+		"usernameHint": "3〜30文字の小文字の英字、数字、アンダースコア。",
+		"forgotSubtitle": "メールアドレスを入力すると、リセット用のリンクを送信します。",
+		"resetSubtitle": "アカウントの新しいパスワードを設定してください。"
 	},
 	"common": {
 		"back": "戻る"
@@ -155,5 +168,11 @@
 		"previous": "前のメディア",
 		"next": "次のメディア",
 		"counter": "{current} / {total}"
+	},
+	"authShowcase": {
+		"name": "田中 美花",
+		"handle": "@alex",
+		"caption": "日曜の朝、川沿いをお散歩。次は一緒に歩きませんか？",
+		"tagline": "大切な人たちと、日々の瞬間を共有しよう。"
 	}
 }

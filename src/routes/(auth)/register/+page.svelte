@@ -1,12 +1,14 @@
 <script lang="ts">
-	import Button from '$lib/components/ui/Button.svelte'
-	import AuthForm from '$lib/components/AuthForm.svelte'
 	import { _ } from 'svelte-i18n'
+	import AuthForm from '$lib/components/AuthForm.svelte'
+	import AuthHeading from '$lib/components/auth/AuthHeading.svelte'
+	import AuthTabs from '$lib/components/auth/AuthTabs.svelte'
+	import GoogleSignIn from '$lib/components/auth/GoogleSignIn.svelte'
 </script>
 
 <svelte:head><title>{$_('auth.register')} · {$_('app.name')}</title></svelte:head>
 
-<section class="panel grid gap-4">
-	<h1 class="text-title font-semibold">{$_('auth.register')}</h1>
-	<AuthForm operation="register" /><Button href="/login">{$_('auth.login')}</Button>
-</section>
+<AuthHeading title={$_('auth.registerTitle')} subtitle={$_('auth.registerSubtitle')} />
+<AuthTabs />
+<AuthForm operation="register" />
+<GoogleSignIn />

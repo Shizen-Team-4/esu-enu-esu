@@ -3,29 +3,28 @@
 	import { _ } from 'svelte-i18n'
 	import { enhance } from '$app/forms'
 	import { errorMessageKey } from '$lib/errors/error-message'
-	import FieldError from '$lib/components/FieldError.svelte'
+	import AuthHeading from '$lib/components/auth/AuthHeading.svelte'
+	import TextField from '$lib/components/ui/TextField.svelte'
 	let { form } = $props()
 </script>
 
 <svelte:head><title>{$_('onboard.title')} · {$_('app.name')}</title></svelte:head>
 
-<section class="panel grid gap-4">
-	<h1 class="text-title font-semibold">{$_('onboard.title')}</h1>
-	<p>{$_('onboard.description')}</p>
-	<form method="POST" use:enhance>
-		<label for="onboard-username">{$_('auth.username')}</label>
-		<input
-			id="onboard-username"
-			name="username"
-			autocomplete="username"
-			autocapitalize="none"
-			required
-			aria-describedby={form?.error?.fields?.username ? 'onboard-username-error' : undefined}
-		/>
-		<FieldError code={form?.error?.fields?.username} id="onboard-username-error" />
-		{#if form?.error?.code && !form.error.fields?.username}
-			<p role="alert">{$_(errorMessageKey(form.error.code))}</p>
-		{/if}
-		<Button type="submit" variant="primary">{$_('onboard.submit')}</Button>
-	</form>
-</section>
+<AuthHeading title={$_('onboard.title')} subtitle={$_('onboard.description')} />
+<form method="POST" use:enhance class="grid gap-4">
+	<TextField
+		id="onboard-username"
+		name="username"
+		label={$_('auth.username')}
+		prefix="@"
+		hint={$_('auth.usernameHint')}
+		autocomplete="username"
+		autocapitalize="none"
+		required
+		error={form?.error?.fields?.username}
+	/>
+	{#if form?.error?.code && !form.error.fields?.username}
+		<p role="alert">{$_(errorMessageKey(form.error.code))}</p>
+	{/if}
+	<Button type="submit" variant="primary" class="w-full">{$_('onboard.submit')}</Button>
+</form>
