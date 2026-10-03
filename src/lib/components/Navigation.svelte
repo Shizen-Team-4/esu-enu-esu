@@ -8,7 +8,7 @@
 			href: '/reels',
 			path: 'M4 3h16v18H4z M4 8h16 M9 3l3 5 M15 3l3 5 M10 12l5 3-5 3z',
 		},
-		{ key: 'create', href: '/dashboard', path: 'M12 4v16 M4 12h16' },
+		{ key: 'create', href: '/create', path: 'M12 4v16 M4 12h16' },
 		{ key: 'search', href: '/search', path: 'M21 21l-6-6 M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0' },
 		{
 			key: 'profile',
