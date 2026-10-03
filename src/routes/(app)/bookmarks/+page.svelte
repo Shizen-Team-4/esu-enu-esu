@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Button from '$lib/components/ui/Button.svelte'
-	import PostGrid from '$lib/components/PostGrid.svelte'
+	import PostGrid from '$lib/components/profile/PostGrid.svelte'
 	import { _ } from 'svelte-i18n'
 	let { data } = $props()
 </script>

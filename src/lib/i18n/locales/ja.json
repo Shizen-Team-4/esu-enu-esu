@@ -66,7 +66,11 @@
 		"posts": "投稿",
 		"content": "プロフィールのコンテンツ",
 		"following": "フォロー中",
-		"unfollow": "フォロー解除"
+		"unfollow": "フォロー解除",
+		"editProfile": "プロフィールを編集",
+		"addBio": "自己紹介を追加",
+		"photoPost": "写真の投稿",
+		"reel": "リール"
 	},
 	"story": {
 		"love": "ストーリーにいいね",
