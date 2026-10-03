@@ -14,6 +14,8 @@ export default defineConfig({
 				'src/lib/server/shared/domain/**/*.ts',
 				'src/lib/server/posts/{domain,application}/**/*.ts',
 				'src/lib/server/posts/infrastructure/post-mapper.ts',
+				'src/lib/server/comments/{domain,application}/**/*.ts',
+				'src/lib/server/comments/infrastructure/comment-mapper.ts',
 				'src/lib/server/auth/application/**/*.ts',
 				'src/lib/server/users/infrastructure/user-search-condition.ts',
 				'src/lib/media/video-duration.ts',

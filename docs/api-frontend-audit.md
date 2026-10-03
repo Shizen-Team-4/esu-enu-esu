@@ -30,7 +30,7 @@ Still open for the frontend plan: 4, 5 (UI), 6, 7, 8, 12. New findings:
 ## Backend-first finishing plan (2026-10-04)
 
 - [x] Phase 1: small backend fixes (local-upload purpose, story create rules out of SQL, deletePost returns void, shared rate-limit config)
-- [ ] Phase 2: comments backend (domain/app/infra, container, /p/[id] actions, comment API endpoints) — item 7
+- [x] Phase 2: comments backend (domain/app/infra, container, /p/[id] actions, comment API endpoints) — item 7
 - [ ] Phase 3: users backend (updateMe, listFollowers/listFollowing, username rule shared with auth, /onboard guard) — item 8
 - [ ] Phase 4: expose post use cases in routes (like/save actions everywhere, edit/delete on /p/[id], /bookmarks load) — items 5, 6
 - [ ] Phase 5: full pre-PR gate + final doc update
@@ -50,7 +50,7 @@ Frontend UI work (4, 12, UI halves of 5–8, full happy-path e2e) is left for th
 | 🟡 `updatePost`, `deletePost`                                                 | wired in container                                                                                                                                                                                                                                                                        | no action / no UI                                                                                  |
 | 🟡 `likePost`/`unlikePost`                                                    | ~~`reactToPost` returns full `Post`, not `{liked, likes}`~~ (fixed, verified 2026-10-04: `likePost` returns `{liked, likes}`; use cases not yet exposed in routes except `/dashboard`)                                                                                                    | like only on `/dashboard`; full redirect, no optimistic update; `/`, `/p/[id]`, `/reels` read-only |
 | 🟡 `savePost`/`unsavePost`/`listSavedPosts`                                   | `savePost`/`unsavePost`/`listSavedPosts` use cases exist and are wired; ~~`scope:'saved'` leaks into public `/api/feed`~~ (fixed, verified 2026-10-04)                                                                                                                                    | no route, no UI, no Bookmarks page                                                                 |
-| ⬜ Comments (`listComments`, `listReplies`, `createComment`, `deleteComment`) | table exists, **no domain/app/infra**                                                                                                                                                                                                                                                     | no UI                                                                                              |
+| 🟡 Comments (`listComments`, `listReplies`, `createComment`, `deleteComment`) | ~~table exists, **no domain/app/infra**~~ (fixed 2026-10-04: `comments/` feature, `/p/[id]` actions, `GET /api/posts/[id]/comments`, `GET /api/comments/[id]/replies`)                                                                                                                    | no UI                                                                                              |
 | ⬜ `updateMe`, OAuth username onboarding (`username: ""`)                     | missing                                                                                                                                                                                                                                                                                   | missing                                                                                            |
 | ⬜ `listFollowers` / `listFollowing`                                          | missing                                                                                                                                                                                                                                                                                   | counts not clickable                                                                               |
 | ⬜ `getMe` in nav/header                                                      | —                                                                                                                                                                                                                                                                                         | header has no avatar/logout; `/` shows "Log in" even when logged in                                |
@@ -107,7 +107,7 @@ Frontend UI work (4, 12, UI halves of 5–8, full happy-path e2e) is left for th
 - [ ] ⬜ 4. Feed hookup: following/all scope, pagination, empty/error states
 - [ ] 🟡 5. (backend done) Like/save/share actions everywhere + optimistic update
 - [ ] 🟡 6. (use cases wired, no route/UI) Post edit & delete hookup
-- [ ] ⬜ 7. Comments feature end-to-end
+- [ ] 🟡 7. Comments feature end-to-end (backend done)
 - [ ] ⬜ 8. Users: `updateMe`, OAuth username onboarding, followers/following lists
 - [x] 9. Error envelope end-to-end
 - [ ] 🟡 10. (done, except feed unification in 4) Architecture cleanup per CLAUDE.md §1–3
@@ -291,10 +291,10 @@ Frontend UI work (4, 12, UI halves of 5–8, full happy-path e2e) is left for th
 
 **Acceptance criteria:**
 
-- [ ] Domain layer: Comment entity, thread-flattening rule (compute flat list from nested, mark ancestors in focused branch)
-- [ ] Application layer: `listComments`, `listReplies`, `createComment`, `deleteComment` use cases
-- [ ] Infrastructure: Drizzle repository mapping rows to Comment domain type
-- [ ] Routes: GET/POST `/api/posts/[id]/comments`, POST `/api/comments/[id]`, DELETE `/api/comments/[id]`
+- [x] Domain layer: Comment entity, server-side parent flattening (`resolveParent`). Client-side focused-branch logic is UI work
+- [x] Application layer: `listComments`, `listReplies`, `createComment`, `deleteComment` use cases
+- [x] Infrastructure: Drizzle repository mapping rows to Comment domain type
+- [x] Routes: `GET /api/posts/[id]/comments`, `GET /api/comments/[id]/replies`; create/delete as `/p/[id]` form actions `comment` and `deleteComment`
 - [ ] UI: two visual levels (parent and direct reply only), collapse/expand replies, focused branch with ancestor context
 - [ ] Sticky reply composer above bottom nav while scrolling
 - [ ] Delete shows confirmation and refreshes thread

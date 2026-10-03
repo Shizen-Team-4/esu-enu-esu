@@ -18,6 +18,12 @@ import { unlikePost } from './posts/application/unlike-post'
 import { savePost } from './posts/application/save-post'
 import { unsavePost } from './posts/application/unsave-post'
 import type { AuthorDirectory } from './posts/application/ports'
+import { createCommentRepository } from './comments/infrastructure/drizzle-comments'
+import { listComments } from './comments/application/list-comments'
+import { listReplies } from './comments/application/list-replies'
+import { createComment } from './comments/application/create-comment'
+import { deleteComment } from './comments/application/delete-comment'
+import type { PostLookup } from './comments/application/ports'
 import { createSmtpSender, type SmtpConfig } from './auth/infrastructure/smtp-email'
 import type { Lang } from '$lib/i18n/config'
 import { createUserRepository } from './users/infrastructure/drizzle-users'
@@ -48,6 +54,15 @@ function authorDirectory(users: ReturnType<typeof createUserRepository>): Author
 	}
 }
 
+function postLookup(posts: ReturnType<typeof createPostRepository>): PostLookup {
+	return {
+		find: async (postId) => {
+			const post = await posts.find(postId, null)
+			return post ? { authorId: post.author.id } : null
+		},
+	}
+}
+
 export function createContainer(
 	env: Env & SmtpConfig & R2Config,
 	ctx: ExecutionContext,
@@ -74,6 +89,8 @@ export function createContainer(
 		env,
 		development && env.BETTER_AUTH_SECRET ? { origin, secret: env.BETTER_AUTH_SECRET } : undefined,
 	)
+	const commentRepository = createCommentRepository(db, env.DB)
+	const commentPosts = postLookup(posts)
 	const stories = createStoryRepository(db, env.DB, mediaPublicUrl)
 	return {
 		health: createHealthCheck({ kv: env.KV, d1: env.DB, db }),
@@ -128,6 +145,17 @@ export function createContainer(
 			unlikePost: unlikePost({ posts, clock }),
 			savePost: savePost({ posts, clock }),
 			unsavePost: unsavePost({ posts, clock }),
+		},
+		comments: {
+			listComments: listComments({ comments: commentRepository, posts: commentPosts }),
+			listReplies: listReplies({ comments: commentRepository, posts: commentPosts }),
+			createComment: createComment({
+				comments: commentRepository,
+				posts: commentPosts,
+				clock,
+				ids,
+			}),
+			deleteComment: deleteComment({ comments: commentRepository, posts: commentPosts }),
 		},
 		preferences: {
 			validateGuestPreferences,

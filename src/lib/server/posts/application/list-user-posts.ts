@@ -1,6 +1,6 @@
 import { AppError } from '../../shared/domain/app-error'
 import type { Viewer } from '../../shared/domain/viewer'
-import { pageQuery } from './page-query'
+import { pageQuery } from '../../shared/domain/page-query'
 import type { AuthorDirectory, PostRepository } from './ports'
 
 function parseType(value: unknown): 'post' | 'reel' | undefined {

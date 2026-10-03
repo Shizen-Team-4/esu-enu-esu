@@ -1,5 +1,5 @@
 import { requireViewer, type Viewer } from '../../shared/domain/viewer'
-import { pageQuery } from './page-query'
+import { pageQuery } from '../../shared/domain/page-query'
 import type { PostRepository } from './ports'
 
 export const listSavedPosts =

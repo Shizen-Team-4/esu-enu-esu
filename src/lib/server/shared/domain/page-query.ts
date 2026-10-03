@@ -1,4 +1,4 @@
-import { decodeCursor, parseLimit } from '../../shared/domain/cursor'
+import { decodeCursor, parseLimit } from './cursor'
 
 export function pageQuery(input: { cursor?: string; limit?: unknown }) {
 	return {
