@@ -1,3 +1,5 @@
+import { readFiniteDuration } from './video-duration'
+
 interface UploadResult {
 	id: string
 	type: 'image' | 'video'
@@ -26,6 +28,7 @@ async function readVideo(file: File) {
 				reject(new Error('Video cannot be decoded'))
 			}
 		})
+		const durationSec = await readFiniteDuration(video)
 		const canvas = document.createElement('canvas')
 		const scale = Math.min(1, 1280 / Math.max(video.videoWidth, video.videoHeight))
 		canvas.width = Math.round(video.videoWidth * scale)
@@ -43,7 +46,7 @@ async function readVideo(file: File) {
 		return {
 			width: video.videoWidth,
 			height: video.videoHeight,
-			durationSec: video.duration,
+			durationSec,
 			poster,
 		}
 	} finally {
