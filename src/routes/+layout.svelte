@@ -2,6 +2,9 @@
 	import '../app.css'
 	let { children, data } = $props()
 	$effect(() => {
+		document.documentElement.lang = data.lang
+	})
+	$effect(() => {
 		const query = window.matchMedia('(prefers-color-scheme: dark)')
 		const apply = () =>
 			document.documentElement.classList.toggle(

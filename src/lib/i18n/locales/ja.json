@@ -51,7 +51,9 @@
 	"preferences": {
 		"dark": "ダーク",
 		"theme": "テーマ",
-		"save": "設定を保存",
+		"themeHint": "端末に合わせるか、選択できます。",
+		"languageHint": "メニューやボタンに使われます。",
+		"saved": "保存しました",
 		"language": "言語",
 		"title": "設定",
 		"system": "システム",

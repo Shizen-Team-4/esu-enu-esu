@@ -1,4 +1,3 @@
-import { redirect } from '@sveltejs/kit'
 import { toActionFailure } from '$lib/server/shared/http/error-response'
 import { requireServices } from '$lib/server/shared/http/guards'
 import type { Actions, PageServerLoad } from './$types'
@@ -28,6 +27,6 @@ export const actions: Actions = {
 		} catch (cause) {
 			return toActionFailure(cause)
 		}
-		redirect(303, '/settings')
+		return { saved: true }
 	},
 }

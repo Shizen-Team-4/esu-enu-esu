@@ -51,7 +51,9 @@
 	"preferences": {
 		"dark": "Dark",
 		"theme": "Theme",
-		"save": "Save preferences",
+		"themeHint": "Match your device or pick one.",
+		"languageHint": "Used across menus and buttons.",
+		"saved": "Saved",
 		"language": "Language",
 		"title": "Preferences",
 		"system": "System",
