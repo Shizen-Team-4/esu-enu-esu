@@ -2,11 +2,72 @@
 	"auth": {
 		"login": "Log in",
 		"register": "Register",
-		"logout": "Log out"
+		"logout": "Log out",
+		"google": "Continue with Google",
+		"name": "Display name",
+		"reset": "Reset password",
+		"username": "Username",
+		"password": "Password",
+		"success": "Check your email, or sign in with your updated password.",
+		"unverified": "Please verify your email before signing in.",
+		"error": "Unable to complete your request. Please try again.",
+		"email": "Email"
 	},
 	"post": {
 		"like": "Like",
 		"comment": "Comment",
-		"share": "Share"
+		"share": "Share",
+		"publish": "Publish",
+		"caption": "Write a post",
+		"media": "Photos and videos",
+		"delete": "Delete",
+		"uploading": "Uploading and verifying media…",
+		"uploadError": "Media upload failed. Please try again.",
+		"type": "Content type"
+	},
+	"home": {
+		"description": "Share moments and connect with your community."
+	},
+	"preferences": {
+		"dark": "Dark",
+		"error": "Unable to save preferences. Please check your selections.",
+		"theme": "Theme",
+		"save": "Save preferences",
+		"language": "Language",
+		"title": "Preferences",
+		"system": "System",
+		"light": "Light",
+		"en": "English",
+		"km": "?????",
+		"ja": "???"
+	},
+	"profile": {
+		"follow": "Follow",
+		"followers": "Followers",
+		"posts": "Posts",
+		"content": "Profile content",
+		"following": "Following",
+		"unfollow": "Unfollow"
+	},
+	"story": {
+		"love": "Love this story",
+		"expires": "Stories disappear after 24 hours.",
+		"close": "Close",
+		"previous": "Previous",
+		"expired": "This story has expired or is no longer available.",
+		"title": "Story",
+		"next": "Next"
+	},
+	"feed": {
+		"more": "Load more",
+		"empty": "No posts yet"
+	},
+	"nav": {
+		"search": "Search",
+		"label": "Main navigation",
+		"create": "Create",
+		"reels": "Reels",
+		"home": "Home",
+		"profile": "Profile"
 	}
 }

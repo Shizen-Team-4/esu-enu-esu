@@ -2,11 +2,72 @@
 	"auth": {
 		"login": "ログイン",
 		"register": "新規登録",
-		"logout": "ログアウト"
+		"logout": "ログアウト",
+		"google": "Google で続行",
+		"name": "表示名",
+		"reset": "パスワードをリセット",
+		"username": "ユーザー名",
+		"password": "パスワード",
+		"success": "メールを確認するか、更新したパスワードでログインしてください。",
+		"unverified": "ログインする前にメールアドレスを確認してください。",
+		"error": "リクエストを完了できませんでした。もう一度お試しください。",
+		"email": "メールアドレス"
 	},
 	"post": {
 		"like": "いいね",
 		"comment": "コメント",
-		"share": "シェア"
+		"share": "シェア",
+		"publish": "投稿",
+		"caption": "投稿を書く",
+		"media": "写真と動画",
+		"delete": "削除",
+		"uploading": "メディアをアップロードして確認しています…",
+		"uploadError": "アップロードできませんでした。もう一度お試しください。",
+		"type": "コンテンツの種類"
+	},
+	"home": {
+		"description": "日常を共有して、コミュニティとつながりましょう。"
+	},
+	"preferences": {
+		"dark": "ダーク",
+		"error": "設定を保存できませんでした。選択内容を確認してください。",
+		"theme": "テーマ",
+		"save": "設定を保存",
+		"language": "言語",
+		"title": "設定",
+		"system": "システム",
+		"light": "ライト",
+		"en": "English",
+		"km": "?????",
+		"ja": "???"
+	},
+	"profile": {
+		"follow": "フォロー",
+		"followers": "フォロワー",
+		"posts": "投稿",
+		"content": "プロフィールのコンテンツ",
+		"following": "フォロー中",
+		"unfollow": "フォロー解除"
+	},
+	"story": {
+		"love": "ストーリーにいいね",
+		"expires": "ストーリーは24時間後に消えます。",
+		"close": "閉じる",
+		"previous": "前へ",
+		"expired": "このストーリーは期限切れか、利用できません。",
+		"title": "ストーリー",
+		"next": "次へ"
+	},
+	"feed": {
+		"more": "もっと見る",
+		"empty": "まだ投稿がありません"
+	},
+	"nav": {
+		"search": "検索",
+		"label": "メインナビゲーション",
+		"create": "作成",
+		"reels": "リール",
+		"home": "ホーム",
+		"profile": "プロフィール"
 	}
 }

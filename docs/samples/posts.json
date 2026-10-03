@@ -1,0 +1,345 @@
+[
+	{
+		"id": "pst_108",
+		"type": "post",
+		"author": {
+			"id": "usr_01",
+			"username": "dara",
+			"displayName": "Dara",
+			"avatarUrl": "https://cdn.example.com/avatars/usr_01.webp"
+		},
+		"caption": "Ideas for the next trip.",
+		"media": [
+			{
+				"id": "med_801",
+				"type": "image",
+				"url": "https://cdn.example.com/media/med_801.webp",
+				"thumbnailUrl": null,
+				"width": 1080,
+				"height": 1080,
+				"durationSec": null
+			}
+		],
+		"counts": {
+			"likes": 0,
+			"comments": 0
+		},
+		"viewer": {
+			"liked": false,
+			"saved": false,
+			"isAuthor": true
+		},
+		"shareUrl": "https://sns.eykorban.me/p/pst_108",
+		"createdAt": "2026-10-02T02:10:00.000Z",
+		"editedAt": null
+	},
+	{
+		"id": "pst_107",
+		"type": "post",
+		"author": {
+			"id": "usr_03",
+			"username": "sokha_travel",
+			"displayName": "Sokha",
+			"avatarUrl": null
+		},
+		"caption": "The hidden waterfall near Kampot (edited to fix the name).",
+		"media": [
+			{
+				"id": "med_701",
+				"type": "image",
+				"url": "https://cdn.example.com/media/med_701.webp",
+				"thumbnailUrl": null,
+				"width": 1080,
+				"height": 1350,
+				"durationSec": null
+			}
+		],
+		"counts": {
+			"likes": 4,
+			"comments": 0
+		},
+		"viewer": {
+			"liked": true,
+			"saved": false,
+			"isAuthor": false
+		},
+		"shareUrl": "https://sns.eykorban.me/p/pst_107",
+		"createdAt": "2026-10-01T23:40:00.000Z",
+		"editedAt": "2026-10-02T00:05:00.000Z"
+	},
+	{
+		"id": "pst_106",
+		"type": "reel",
+		"author": {
+			"id": "usr_02",
+			"username": "mei_k",
+			"displayName": "Mei Kobayashi",
+			"avatarUrl": "https://cdn.example.com/avatars/usr_02.webp"
+		},
+		"caption": "Shibuya crossing timelapse. Wide video shown in reel layout.",
+		"media": [
+			{
+				"id": "med_601",
+				"type": "video",
+				"url": "https://cdn.example.com/media/med_601.mp4",
+				"thumbnailUrl": "https://cdn.example.com/media/med_601_thumb.webp",
+				"width": 1920,
+				"height": 1080,
+				"durationSec": 22.5
+			}
+		],
+		"counts": {
+			"likes": 31,
+			"comments": 0
+		},
+		"viewer": {
+			"liked": false,
+			"saved": true,
+			"isAuthor": false
+		},
+		"shareUrl": "https://sns.eykorban.me/p/pst_106",
+		"createdAt": "2026-10-01T15:20:00.000Z",
+		"editedAt": null
+	},
+	{
+		"id": "pst_105",
+		"type": "reel",
+		"author": {
+			"id": "usr_04",
+			"username": "kenji_dev",
+			"displayName": "Kenji",
+			"avatarUrl": "https://cdn.example.com/avatars/usr_04.webp"
+		},
+		"caption": "Building a tiny robot in 30 seconds #maker",
+		"media": [
+			{
+				"id": "med_501",
+				"type": "video",
+				"url": "https://cdn.example.com/media/med_501.mp4",
+				"thumbnailUrl": "https://cdn.example.com/media/med_501_thumb.webp",
+				"width": 1080,
+				"height": 1920,
+				"durationSec": 29.8
+			}
+		],
+		"counts": {
+			"likes": 120,
+			"comments": 0
+		},
+		"viewer": {
+			"liked": true,
+			"saved": false,
+			"isAuthor": false
+		},
+		"shareUrl": "https://sns.eykorban.me/p/pst_105",
+		"createdAt": "2026-10-01T09:00:00.000Z",
+		"editedAt": null
+	},
+	{
+		"id": "pst_104",
+		"type": "post",
+		"author": {
+			"id": "usr_01",
+			"username": "dara",
+			"displayName": "Dara",
+			"avatarUrl": "https://cdn.example.com/avatars/usr_01.webp"
+		},
+		"caption": "Rainy evening on the riverside.",
+		"media": [
+			{
+				"id": "med_401",
+				"type": "video",
+				"url": "https://cdn.example.com/media/med_401.mp4",
+				"thumbnailUrl": "https://cdn.example.com/media/med_401_thumb.webp",
+				"width": 1920,
+				"height": 1080,
+				"durationSec": 41.0
+			}
+		],
+		"counts": {
+			"likes": 6,
+			"comments": 0
+		},
+		"viewer": {
+			"liked": false,
+			"saved": false,
+			"isAuthor": true
+		},
+		"shareUrl": "https://sns.eykorban.me/p/pst_104",
+		"createdAt": "2026-09-30T12:30:00.000Z",
+		"editedAt": null
+	},
+	{
+		"id": "pst_103",
+		"type": "post",
+		"author": {
+			"id": "usr_03",
+			"username": "sokha_travel",
+			"displayName": "Sokha",
+			"avatarUrl": null
+		},
+		"caption": "Ten moments from Siem Reap. Swipe through!",
+		"media": [
+			{
+				"id": "med_301",
+				"type": "image",
+				"url": "https://cdn.example.com/media/med_301.webp",
+				"thumbnailUrl": null,
+				"width": 1080,
+				"height": 1080,
+				"durationSec": null
+			},
+			{
+				"id": "med_302",
+				"type": "image",
+				"url": "https://cdn.example.com/media/med_302.webp",
+				"thumbnailUrl": null,
+				"width": 1080,
+				"height": 1350,
+				"durationSec": null
+			},
+			{
+				"id": "med_303",
+				"type": "video",
+				"url": "https://cdn.example.com/media/med_303.mp4",
+				"thumbnailUrl": "https://cdn.example.com/media/med_303_thumb.webp",
+				"width": 1080,
+				"height": 1920,
+				"durationSec": 14.2
+			},
+			{
+				"id": "med_304",
+				"type": "image",
+				"url": "https://cdn.example.com/media/med_304.webp",
+				"thumbnailUrl": null,
+				"width": 1920,
+				"height": 1080,
+				"durationSec": null
+			},
+			{
+				"id": "med_305",
+				"type": "image",
+				"url": "https://cdn.example.com/media/med_305.webp",
+				"thumbnailUrl": null,
+				"width": 1080,
+				"height": 1080,
+				"durationSec": null
+			},
+			{
+				"id": "med_306",
+				"type": "video",
+				"url": "https://cdn.example.com/media/med_306.mp4",
+				"thumbnailUrl": "https://cdn.example.com/media/med_306_thumb.webp",
+				"width": 1920,
+				"height": 1080,
+				"durationSec": 8.0
+			},
+			{
+				"id": "med_307",
+				"type": "image",
+				"url": "https://cdn.example.com/media/med_307.webp",
+				"thumbnailUrl": null,
+				"width": 1080,
+				"height": 1350,
+				"durationSec": null
+			},
+			{
+				"id": "med_308",
+				"type": "image",
+				"url": "https://cdn.example.com/media/med_308.webp",
+				"thumbnailUrl": null,
+				"width": 1080,
+				"height": 1080,
+				"durationSec": null
+			},
+			{
+				"id": "med_309",
+				"type": "image",
+				"url": "https://cdn.example.com/media/med_309.webp",
+				"thumbnailUrl": null,
+				"width": 1080,
+				"height": 1920,
+				"durationSec": null
+			},
+			{
+				"id": "med_310",
+				"type": "image",
+				"url": "https://cdn.example.com/media/med_310.webp",
+				"thumbnailUrl": null,
+				"width": 1080,
+				"height": 1080,
+				"durationSec": null
+			}
+		],
+		"counts": {
+			"likes": 58,
+			"comments": 0
+		},
+		"viewer": {
+			"liked": true,
+			"saved": true,
+			"isAuthor": false
+		},
+		"shareUrl": "https://sns.eykorban.me/p/pst_103",
+		"createdAt": "2026-09-29T06:00:00.000Z",
+		"editedAt": null
+	},
+	{
+		"id": "pst_102",
+		"type": "post",
+		"author": {
+			"id": "usr_02",
+			"username": "mei_k",
+			"displayName": "Mei Kobayashi",
+			"avatarUrl": "https://cdn.example.com/avatars/usr_02.webp"
+		},
+		"caption": "First matcha of autumn 🍵",
+		"media": [
+			{
+				"id": "med_201",
+				"type": "image",
+				"url": "https://cdn.example.com/media/med_201.webp",
+				"thumbnailUrl": null,
+				"width": 1080,
+				"height": 1350,
+				"durationSec": null
+			}
+		],
+		"counts": {
+			"likes": 12,
+			"comments": 5
+		},
+		"viewer": {
+			"liked": true,
+			"saved": false,
+			"isAuthor": false
+		},
+		"shareUrl": "https://sns.eykorban.me/p/pst_102",
+		"createdAt": "2026-09-28T01:15:00.000Z",
+		"editedAt": null
+	},
+	{
+		"id": "pst_101",
+		"type": "post",
+		"author": {
+			"id": "usr_01",
+			"username": "dara",
+			"displayName": "Dara",
+			"avatarUrl": "https://cdn.example.com/avatars/usr_01.webp"
+		},
+		"caption": "Hello SNS! This is my first text-only post.",
+		"media": [],
+		"counts": {
+			"likes": 3,
+			"comments": 1
+		},
+		"viewer": {
+			"liked": false,
+			"saved": false,
+			"isAuthor": true
+		},
+		"shareUrl": "https://sns.eykorban.me/p/pst_101",
+		"createdAt": "2026-09-27T10:00:00.000Z",
+		"editedAt": null
+	}
+]

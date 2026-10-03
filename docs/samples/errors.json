@@ -1,0 +1,43 @@
+{
+	"VALIDATION_FAILED": {
+		"error": {
+			"code": "VALIDATION_FAILED",
+			"message": "caption must be at most 2200 characters",
+			"fields": { "caption": "TOO_LONG", "mediaIds": "TOO_MANY" }
+		}
+	},
+	"UNAUTHENTICATED": {
+		"error": { "code": "UNAUTHENTICATED", "message": "Login required" }
+	},
+	"INVALID_CREDENTIALS": {
+		"error": { "code": "INVALID_CREDENTIALS", "message": "Email or password is wrong" }
+	},
+	"FORBIDDEN": {
+		"error": { "code": "FORBIDDEN", "message": "Only the author can edit this post" }
+	},
+	"EMAIL_NOT_VERIFIED": {
+		"error": { "code": "EMAIL_NOT_VERIFIED", "message": "Verify your email first" }
+	},
+	"NOT_FOUND": {
+		"error": { "code": "NOT_FOUND", "message": "Post pst_999 not found" }
+	},
+	"CONFLICT": {
+		"error": {
+			"code": "CONFLICT",
+			"message": "Username is already taken",
+			"fields": { "username": "TAKEN" }
+		}
+	},
+	"PAYLOAD_TOO_LARGE": {
+		"error": { "code": "PAYLOAD_TOO_LARGE", "message": "Video must be at most 100 MB" }
+	},
+	"UNSUPPORTED_MEDIA_TYPE": {
+		"error": { "code": "UNSUPPORTED_MEDIA_TYPE", "message": "image/gif is not allowed" }
+	},
+	"RATE_LIMITED": {
+		"error": { "code": "RATE_LIMITED", "message": "Too many requests", "retryAfterSec": 60 }
+	},
+	"INTERNAL": {
+		"error": { "code": "INTERNAL", "message": "Something went wrong" }
+	}
+}
