@@ -46,7 +46,17 @@
 		"actioned",
 		"subsecond",
 		"ftyp",
-		"Unfollowing"
+		"Unfollowing",
+		"geist",
+		"fontsource",
+		"lucide",
+		"jsdom",
+		"styleguide",
+		"describedby",
+		"unstub",
+		"networkidle",
+		"roledescription",
+		"uppercased"
 	],
 	"ignorePaths": [
 		"**/.git/**",

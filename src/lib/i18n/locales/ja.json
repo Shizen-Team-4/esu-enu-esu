@@ -7,6 +7,64 @@
 	"post": {
 		"like": "いいね",
 		"comment": "コメント",
-		"share": "シェア"
+		"share": "シェア",
+		"save": "保存",
+		"menu": "投稿のオプション",
+		"edit": "編集",
+		"delete": "削除",
+		"report": "報告",
+		"edited": "編集済み"
+	},
+	"common": {
+		"back": "戻る",
+		"close": "閉じる",
+		"retry": "もう一度試す",
+		"loading": "読み込み中",
+		"more": "もっと見る",
+		"less": "閉じる"
+	},
+	"error": {
+		"VALIDATION_FAILED": "入力内容に誤りがあります。確認してもう一度お試しください。",
+		"UNAUTHENTICATED": "続けるにはログインしてください。",
+		"INVALID_CREDENTIALS": "メールアドレスまたはパスワードが正しくありません。",
+		"FORBIDDEN": "この操作を行う権限がありません。",
+		"EMAIL_NOT_VERIFIED": "先にメールアドレスを確認してください。",
+		"NOT_FOUND": "お探しの内容が見つかりませんでした。",
+		"CONFLICT": "すでに存在しています。",
+		"PAYLOAD_TOO_LARGE": "ファイルが大きすぎます。",
+		"UNSUPPORTED_MEDIA_TYPE": "このファイル形式には対応していません。",
+		"RATE_LIMITED": "リクエストが多すぎます。しばらく待ってからもう一度お試しください。",
+		"INTERNAL": "問題が発生しました。もう一度お試しください。"
+	},
+	"field": {
+		"REQUIRED": "この項目は必須です。",
+		"TOO_SHORT": "短すぎます。",
+		"TOO_LONG": "長すぎます。",
+		"TOO_MANY": "項目が多すぎます。",
+		"INVALID_FORMAT": "形式が正しくありません。",
+		"NOT_ALLOWED": "この値は使用できません。",
+		"TAKEN": "すでに使われています。"
+	},
+	"empty": {
+		"posts": "まだ投稿がありません"
+	},
+	"nav": {
+		"home": "ホーム",
+		"search": "検索",
+		"create": "作成",
+		"reels": "リール",
+		"profile": "プロフィール",
+		"label": "メインナビゲーション"
+	},
+	"media": {
+		"previous": "前へ",
+		"next": "次へ",
+		"position": "{current} / {total}",
+		"loadFailed": "メディアを読み込めませんでした",
+		"gallery": "投稿のメディア"
+	},
+	"video": {
+		"play": "動画を再生",
+		"pause": "動画を一時停止"
 	}
 }

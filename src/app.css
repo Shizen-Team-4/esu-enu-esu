@@ -1,0 +1,40 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/geist';
+
+@theme {
+	--font-sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+
+	--color-background: #ffffff;
+	--color-foreground: #0a0a0a;
+	--color-muted: #f4f4f5;
+	--color-muted-foreground: #71717a;
+	--color-primary: #18181b;
+	--color-primary-foreground: #fafafa;
+	--color-destructive: #dc2626;
+	--color-border: #e4e4e7;
+	--color-ring: #2563eb;
+
+	--radius-base: 0.5rem;
+
+	--header-height: 3.5rem;
+	--nav-height: 3.5rem;
+}
+
+@layer base {
+	body {
+		background-color: var(--color-background);
+		color: var(--color-foreground);
+		font-family: var(--font-sans);
+	}
+}
+
+@utility divider-diagonal {
+	height: 0.5rem;
+	background-image: repeating-linear-gradient(
+		-45deg,
+		var(--color-border) 0,
+		var(--color-border) 1px,
+		transparent 1px,
+		transparent 6px
+	);
+}
