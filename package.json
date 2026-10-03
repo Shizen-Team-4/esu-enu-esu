@@ -9,8 +9,7 @@
 		"build": "pnpm check:i18n && vite build",
 		"lint": "prettier --check . && pnpm --recursive run lint",
 		"format": "prettier --write .",
-		"spellcheck": "cspell .",
-		"prepush": "pnpm audit --audit-level=high",
+		"spellcheck": "cspell --dot .",
 		"preview": "wrangler dev",
 		"deploy": "pnpm build && wrangler deploy",
 		"types": "wrangler types",
@@ -23,13 +22,16 @@
 		"kv:create": "wrangler kv namespace create KV",
 		"test": "vitest run",
 		"test:coverage": "vitest run --coverage",
-		"test:watch": "vitest"
+		"test:watch": "vitest",
+		"test:e2e": "playwright test",
+		"test:e2e:install": "playwright install chromium"
 	},
 	"engines": {
 		"node": "^20.19.0 || >=22.12.0",
 		"pnpm": ">=10"
 	},
 	"devDependencies": {
+		"@playwright/test": "^1.63.0",
 		"@sveltejs/adapter-cloudflare": "^7.2.9",
 		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^6.0.0",
@@ -39,6 +41,7 @@
 		"dotenv": "^17.0.0",
 		"drizzle-kit": "^0.31.11",
 		"drizzle-orm": "^0.45.3",
+		"lefthook": "^2.1.16",
 		"prettier": "^3.9.9",
 		"prettier-plugin-svelte": "^4.1.1",
 		"svelte": "^5.0.0",
