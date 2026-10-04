@@ -458,16 +458,17 @@ else:
   if p.parent_id is null:  top = p,           replyToUser = null
   else:                    top = p.parent_id, replyToUser = p.author
 store parent_id = top.id
+store reply_to_comment_id = p.id (null for a top-level comment)
 batch: insert comment
        recompute top.reply_count (if reply)
        recompute post.comment_count
 ```
 
-The flatten rule is a pure domain function (`resolveParent(parent) → { topId, replyToUserId }`) with its own unit tests.
+The flatten rule is a pure domain function (`resolveParent(parent) → { topId, replyToUserId, replyToCommentId }`) with its own unit tests.
 
-`deleteComment`: comment author **or** post author → else `FORBIDDEN`. Deleting a top-level comment deletes its replies (FK cascade). Recompute `comment_count` and the parent's `reply_count` in the same batch.
+`deleteComment`: comment author **or** post author → else `FORBIDDEN`. Deleting a top-level comment first promotes its replies to top-level comments, then deletes only the target. Recompute `comment_count` and the parent's `reply_count` in the same batch.
 
-`viewer.canDelete` = viewer is the comment author or the post author.
+`viewer.canDelete` = viewer is the comment author or the post author. Other users cannot delete the post author’s comments, including indirectly through parent deletion.
 
 Lists: `listComments` = `parent_id IS NULL`, newest first. `listReplies` = `parent_id = :id`, oldest first.
 

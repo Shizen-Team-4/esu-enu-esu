@@ -248,6 +248,9 @@ export const comments = sqliteTable(
 		parentId: text('parent_id').references((): AnySQLiteColumn => comments.id, {
 			onDelete: 'cascade',
 		}),
+		replyToCommentId: text('reply_to_comment_id').references((): AnySQLiteColumn => comments.id, {
+			onDelete: 'set null',
+		}),
 		replyToUserId: text('reply_to_user_id').references(() => user.id, {
 			onDelete: 'set null',
 		}),

@@ -16,7 +16,7 @@ export default defineConfig({
 
 	// Runs the built worker in workerd (same runtime as production) with local D1/KV.
 	webServer: {
-		command: `pnpm build && pnpm db:migrate:local && pnpm preview --port ${PORT}`,
+		command: `pnpm build && pnpm db:migrate:local && pnpm preview --port ${PORT} --local-upstream localhost:${PORT} --var BETTER_AUTH_URL:http://localhost:${PORT}`,
 		url: `http://localhost:${PORT}`,
 		reuseExistingServer: true,
 		timeout: 180_000,

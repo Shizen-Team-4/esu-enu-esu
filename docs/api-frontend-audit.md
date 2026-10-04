@@ -107,7 +107,7 @@ Frontend UI work (4, 12, UI halves of 5–8, full happy-path e2e) is left for th
 - [ ] ⬜ 4. Feed hookup: following/all scope, pagination, empty/error states
 - [ ] 🟡 5. (backend done) Like/save/share actions everywhere + optimistic update
 - [ ] 🟡 6. (use cases wired, no route/UI) Post edit & delete hookup
-- [ ] 🟡 7. Comments feature end-to-end (backend done)
+- [x] 7. Comments feature end-to-end (backend and UI done; focused context follows the flattened contract)
 - [ ] 🟡 8. Users: `updateMe`, OAuth username onboarding, followers/following lists (backend done)
 - [x] 9. Error envelope end-to-end
 - [ ] 🟡 10. (done, except feed unification in 4) Architecture cleanup per CLAUDE.md §1–3
@@ -278,6 +278,16 @@ Frontend UI work (4, 12, UI halves of 5–8, full happy-path e2e) is left for th
 
 ### 7. Comments feature end-to-end
 
+**UI implemented 2026-10-04:** `/p/[id]` renders comments with lazy, append-only pagination,
+reply targets, focused conversation views, confirmation before deletion, and a persistent composer.
+UI text uses all three locales. Focus promotes the selected reply and shows its known root parent
+with a dashed connector; the other replies remain a single level with solid connectors. The API
+stores only the root `parentId` and `replyToUser`, so the UI does not guess deeper comment ancestry
+from an addressed user. Exact deeper ancestry would require a separate parent-comment field.
+Playwright covers the conversation flow at 390px and 1440px, guest permissions, failed draft
+retention, Unicode limits, and simulated keyboard viewport changes. Unit tests cover pagination,
+mutation races, focusing and keyboard geometry.
+
 **Labels:** backend, frontend
 
 **Problem:**
@@ -295,10 +305,10 @@ Frontend UI work (4, 12, UI halves of 5–8, full happy-path e2e) is left for th
 - [x] Application layer: `listComments`, `listReplies`, `createComment`, `deleteComment` use cases
 - [x] Infrastructure: Drizzle repository mapping rows to Comment domain type
 - [x] Routes: `GET /api/posts/[id]/comments`, `GET /api/comments/[id]/replies`; create/delete as `/p/[id]` form actions `comment` and `deleteComment`
-- [ ] UI: two visual levels (parent and direct reply only), collapse/expand replies, focused branch with ancestor context
-- [ ] Sticky reply composer above bottom nav while scrolling
-- [ ] Delete shows confirmation and refreshes thread
-- [ ] Author-only delete button
+- [x] UI: two visual levels (parent and direct reply only), collapse/expand replies, focused branch with known parent context
+- [x] Sticky reply composer above bottom nav while scrolling; adjusts to the visual viewport for the keyboard
+- [x] Delete shows confirmation and updates the thread without a reload
+- [x] Delete control follows `viewer.canDelete` (comment or post author, per contract §3.4)
 
 **Tests required:**
 
@@ -459,7 +469,7 @@ Frontend UI work (4, 12, UI halves of 5–8, full happy-path e2e) is left for th
 - [ ] All spacing/sizes via Tailwind classes or tokens, no one-off `style=` overrides
 - [ ] `preferences` keys fixed (not `"?????"`) and all locales complete
 - [ ] Video viewer: dark layout, portrait → controls beside video, square/landscape → controls below, comment sheet overlay
-- [ ] Comment thread UI: two levels (parent + reply), collapse/expand buttons, focused branch with ancestor dashed lines, sticky composer
+- [x] Comment thread UI: two levels (parent + reply), collapse/expand buttons, focused branch with known-parent dashed lines, sticky composer
 
 **Tests required:**
 

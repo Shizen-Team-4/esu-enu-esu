@@ -31,6 +31,7 @@ describe('createComment', () => {
 			body: 'Hello',
 			parentId: null,
 			replyToUser: null,
+			replyToCommentId: null,
 			replyCount: 0,
 			viewer: { canDelete: true },
 			createdAt: '2026-10-03T00:00:00.000Z',
@@ -53,6 +54,7 @@ describe('createComment', () => {
 		])
 		const reply = await create(viewer, { postId: 'pst_1', body: 'Yes', parentId: 'cmt_11' })
 		expect(reply.parentId).toBe('cmt_10')
+		expect(reply.replyToCommentId).toBe('cmt_11')
 		expect(reply.replyToUser?.id).toBe('usr_3')
 		expect((await repository.find('cmt_10'))?.replyCount).toBe(1)
 	})

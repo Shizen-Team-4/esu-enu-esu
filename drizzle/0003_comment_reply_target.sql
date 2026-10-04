@@ -1,0 +1,1 @@
+ALTER TABLE `comments` ADD `reply_to_comment_id` text REFERENCES comments(id) ON DELETE SET NULL;

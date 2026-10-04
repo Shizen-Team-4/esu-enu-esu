@@ -18,6 +18,7 @@ export function aComment(
 		body: 'Nice',
 		parentId: null,
 		replyToUser: null,
+		replyToCommentId: null,
 		replyCount: 0,
 		createdAt: '2026-10-03T00:00:00.000Z',
 		...rest,

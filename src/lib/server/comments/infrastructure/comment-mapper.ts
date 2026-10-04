@@ -4,6 +4,7 @@ export interface CommentRow {
 	id: string
 	postId: string
 	parentId: string | null
+	replyToCommentId: string | null
 	body: string
 	replyCount: number
 	createdAt: number
@@ -29,6 +30,7 @@ export function toComment(row: CommentRow): StoredComment {
 		},
 		body: row.body,
 		parentId: row.parentId,
+		replyToCommentId: row.replyToCommentId,
 		replyToUser:
 			row.replyToId === null
 				? null

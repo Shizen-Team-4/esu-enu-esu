@@ -9,7 +9,7 @@ import {
 import type { CommentRepository, PageRequest } from '../application/ports'
 import { toComment, type CommentRow } from './comment-mapper'
 
-const select = sql`SELECT c.id, c.post_id AS postId, c.parent_id AS parentId, c.body,
+const select = sql`SELECT c.id, c.post_id AS postId, c.parent_id AS parentId, c.reply_to_comment_id AS replyToCommentId, c.body,
 	c.reply_count AS replyCount, c.created_at AS createdAt, c.author_id AS authorId,
 	u.username, u.name, u.image, r.id AS replyToId, r.username AS replyToUsername,
 	r.name AS replyToName, r.image AS replyToImage
@@ -68,8 +68,8 @@ export function createCommentRepository(
 			const statements = [
 				d1
 					.prepare(
-						`INSERT INTO comments (id, post_id, author_id, parent_id, reply_to_user_id, body, created_at)
-						SELECT ?, ?, ?, ?, ?, ?, ? WHERE (SELECT COUNT(*) FROM comments WHERE author_id = ? AND created_at > ?) < ${COMMENT_RATE_LIMIT}`,
+						`INSERT INTO comments (id, post_id, author_id, parent_id, reply_to_user_id, reply_to_comment_id, body, created_at)
+						SELECT ?, ?, ?, ?, ?, ?, ?, ? WHERE (SELECT COUNT(*) FROM comments WHERE author_id = ? AND created_at > ?) < ${COMMENT_RATE_LIMIT}`,
 					)
 					.bind(
 						comment.id,
@@ -77,6 +77,7 @@ export function createCommentRepository(
 						comment.authorId,
 						comment.parentId,
 						comment.replyToUserId,
+						comment.replyToCommentId,
 						comment.body,
 						now.getTime(),
 						comment.authorId,
@@ -101,7 +102,7 @@ export function createCommentRepository(
 		},
 		async delete(target) {
 			const statements = [
-				d1.prepare('DELETE FROM comments WHERE parent_id = ?').bind(target.id),
+				d1.prepare('UPDATE comments SET parent_id = NULL WHERE parent_id = ?').bind(target.id),
 				d1.prepare('DELETE FROM comments WHERE id = ?').bind(target.id),
 				d1
 					.prepare(

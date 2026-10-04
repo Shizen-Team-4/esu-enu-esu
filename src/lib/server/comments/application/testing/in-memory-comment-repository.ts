@@ -45,6 +45,7 @@ export class InMemoryCommentRepository implements CommentRepository {
 			parentId: comment.parentId,
 			replyToUser: comment.replyToUserId ? aUser(comment.replyToUserId) : null,
 			replyCount: 0,
+			replyToCommentId: comment.replyToCommentId,
 			createdAt: now.toISOString(),
 		})
 		if (parent) parent.replyCount += 1
@@ -53,9 +54,13 @@ export class InMemoryCommentRepository implements CommentRepository {
 
 	async delete(target: { id: string; postId: string; parentId: string | null }) {
 		const before = this.comments.length
-		this.comments = this.comments.filter(
-			(comment) => comment.id !== target.id && comment.parentId !== target.id,
-		)
+		this.comments = this.comments
+			.filter((comment) => comment.id !== target.id)
+			.map((comment) => ({
+				...comment,
+				parentId: comment.parentId === target.id ? null : comment.parentId,
+				replyToCommentId: comment.replyToCommentId === target.id ? null : comment.replyToCommentId,
+			}))
 		const removed = before - this.comments.length
 		this.postCounts.set(target.postId, (this.postCounts.get(target.postId) ?? 0) - removed)
 		const parent = target.parentId ? await this.find(target.parentId) : null

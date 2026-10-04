@@ -250,6 +250,7 @@ Comment {
   author: UserSummary
   body: string
   parentId: string | null          // null = top-level; otherwise always the id of a TOP-LEVEL comment
+  replyToCommentId: string | null  // exact comment answered; null for roots, legacy data or a deleted target
   replyToUser: UserSummary | null  // set when replying to a reply → UI shows "@username"
   replyCount: number               // top-level only; 0 for replies
   viewer: { canDelete: boolean }   // comment author or post author (proposed)
@@ -257,7 +258,9 @@ Comment {
 }
 ```
 
-**Flatten rule:** if the user replies to a reply, the server stores the new comment under the **same top-level comment**, not one level deeper. It sets `parentId` to the top-level id and `replyToUser` to the author of the reply they answered. See `cmt_312` and `cmt_313` in [`comments.json`](./samples/comments.json).
+**Flatten rule:** if the user replies to a reply, the server stores the new comment under the **same top-level comment**, not one level deeper. It retains the exact answered comment as `replyToCommentId`, sets `parentId` to the top-level id and `replyToUser` to the author of the reply they answered. See `cmt_312` and `cmt_313` in [`comments.json`](./samples/comments.json).
+
+The UI shows only parent and reply levels. Expanding a reply’s children promotes that reply to the parent position and shows its exact ancestors above it with dashed connectors. Older comments without an exact target remain flat; do not infer ancestry from `replyToUser`.
 
 Comments cannot be edited or liked.
 
@@ -408,7 +411,7 @@ Files are uploaded **directly to Cloudflare R2 with a presigned URL**. They do n
 | `deleteComment` | 🔒   | `{ id }`                                     | `void`                                         | `FORBIDDEN`, `NOT_FOUND`                          |
 
 - `parentId` may be a top-level comment **or a reply** on the same post. The server applies the flatten rule ([3.4](#34-comment)).
-- Deleting a top-level comment also deletes its replies **(proposed)**. `Post.counts.comments` goes down by the total number removed.
+- Deleting a comment removes only that comment. Replies of a deleted top-level comment become top-level comments, preserving other users’ comments (including the post author’s). `Post.counts.comments` goes down by one.
 
 ### 4.7 Stories
 

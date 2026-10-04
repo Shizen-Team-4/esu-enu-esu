@@ -1,4 +1,4 @@
-import { redirect } from '@sveltejs/kit'
+import { fail, redirect } from '@sveltejs/kit'
 import { optionalViewer } from '$lib/server/auth/viewer'
 import { like, save } from '$lib/server/shared/http/post-actions'
 import { toActionFailure, toHttpError } from '$lib/server/shared/http/error-response'
@@ -51,15 +51,20 @@ export const actions: Actions = {
 		const services = requireServices(locals)
 		const data = await request.formData()
 		try {
-			await services.comments.createComment(optionalViewer(user), {
+			const comment = await services.comments.createComment(optionalViewer(user), {
 				postId: params.id,
 				body: data.get('body'),
 				parentId: data.get('parentId'),
 			})
+			return { commented: true, comment }
 		} catch (cause) {
-			return toActionFailure(cause)
+			const failure = toActionFailure(cause)
+			return fail(failure.status, {
+				...failure.data,
+				body: String(data.get('body') ?? ''),
+				parentId: String(data.get('parentId') ?? ''),
+			})
 		}
-		return { commented: true }
 	},
 	deleteComment: async ({ locals, request }) => {
 		const user = requireUser(locals)

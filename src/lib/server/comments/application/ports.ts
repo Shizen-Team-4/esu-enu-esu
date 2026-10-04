@@ -10,6 +10,7 @@ export interface NewComment {
 	authorId: string
 	parentId: string | null
 	replyToUserId: string | null
+	replyToCommentId: string | null
 	body: string
 }
 
@@ -26,7 +27,7 @@ export interface CommentRepository {
 	listReplies(commentId: string, page: PageRequest): Promise<Page<StoredComment>>
 	/** Inserts the comment and updates reply and post comment counts. */
 	create(comment: NewComment, now: Date): Promise<void>
-	/** Deletes the comment with its replies and lowers the counts by the number removed. */
+	/** Deletes only the comment, promotes its replies and updates the counts. */
 	delete(target: { id: string; postId: string; parentId: string | null }): Promise<void>
 	creationWindow(authorId: string, since: Date): Promise<{ count: number; oldest: Date | null }>
 }

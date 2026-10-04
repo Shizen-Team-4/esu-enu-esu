@@ -1,11 +1,11 @@
 import { AppError } from '../../shared/domain/app-error'
-import type { Comment } from '$lib/contract'
+import { COMMENT_BODY_MAX, type Comment } from '$lib/contract'
 
 export type { Comment }
 /** A comment as stored: everything except the viewer-specific part. */
 export type StoredComment = Omit<Comment, 'viewer'>
 
-export const COMMENT_BODY_MAX = 500
+export { COMMENT_BODY_MAX } from '$lib/contract/limits'
 
 export function validateCommentBody(value: unknown): string {
 	if (typeof value !== 'string') throw new AppError('VALIDATION_FAILED', { body: 'INVALID_FORMAT' })
@@ -27,6 +27,7 @@ export function validateParentId(value: unknown): string | null {
 export interface ResolvedParent {
 	parentId: string | null
 	replyToUserId: string | null
+	replyToCommentId: string | null
 }
 
 /**
@@ -39,8 +40,9 @@ export function resolveParent(
 	parent: Pick<StoredComment, 'id' | 'postId' | 'parentId' | 'author'> | null,
 ): ResolvedParent {
 	if (!parent || parent.postId !== postId) throw new AppError('NOT_FOUND')
-	if (parent.parentId === null) return { parentId: parent.id, replyToUserId: null }
-	return { parentId: parent.parentId, replyToUserId: parent.author.id }
+	if (parent.parentId === null)
+		return { parentId: parent.id, replyToUserId: null, replyToCommentId: parent.id }
+	return { parentId: parent.parentId, replyToUserId: parent.author.id, replyToCommentId: parent.id }
 }
 
 export function canDeleteComment(viewerId: string, commentAuthorId: string, postAuthorId: string) {

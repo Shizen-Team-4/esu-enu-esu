@@ -1,27 +1,34 @@
 {
-    "entries":  [
-                    {
-                        "idx":  0,
-                        "breakpoints":  true,
-                        "when":  1791000000000,
-                        "version":  "6",
-                        "tag":  "0000_low_penance"
-                    },
-                    {
-                        "idx":  1,
-                        "breakpoints":  true,
-                        "when":  1791015955203,
-                        "version":  "6",
-                        "tag":  "0001_sns_foundation"
-                    },
-                    {
-                        "idx":  2,
-                        "version":  "6",
-                        "when":  1791018897373,
-                        "tag":  "0002_story_expiry_and_likes",
-                        "breakpoints":  true
-                    }
-                ],
-    "version":  "7",
-    "dialect":  "sqlite"
+  "entries": [
+    {
+      "idx": 0,
+      "breakpoints": true,
+      "when": 1791000000000,
+      "version": "6",
+      "tag": "0000_low_penance"
+    },
+    {
+      "idx": 1,
+      "breakpoints": true,
+      "when": 1791015955203,
+      "version": "6",
+      "tag": "0001_sns_foundation"
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1791018897373,
+      "tag": "0002_story_expiry_and_likes",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1791092825481,
+      "tag": "0003_comment_reply_target",
+      "breakpoints": true
+    }
+  ],
+  "version": "7",
+  "dialect": "sqlite"
 }

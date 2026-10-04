@@ -7,6 +7,7 @@ export interface Comment {
 	body: string
 	parentId: string | null
 	replyToUser: UserSummary | null
+	replyToCommentId: string | null
 	replyCount: number
 	viewer: { canDelete: boolean }
 	createdAt: string

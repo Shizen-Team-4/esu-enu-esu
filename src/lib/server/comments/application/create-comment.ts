@@ -27,7 +27,7 @@ export const createComment =
 		if (!post) throw new AppError('NOT_FOUND')
 		const parent: ResolvedParent =
 			requestedParent === null
-				? { parentId: null, replyToUserId: null }
+				? { parentId: null, replyToUserId: null, replyToCommentId: null }
 				: resolveParent(postId, await deps.comments.find(requestedParent))
 		const now = deps.clock.now()
 		const window = await deps.comments.creationWindow(

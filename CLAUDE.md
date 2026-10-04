@@ -152,7 +152,7 @@ These are the design decisions from the design exports. Every UI change must fol
 - For deeper threads, open a focused branch: the selected comment moves to the parent position, and its ancestors stay visible above it as context.
 - Solid lines connect visible replies. Dashed lines show ancestor context in a focused branch.
 - Collapsed replies show a reply-count button that expands them. Expanded replies show "Hide replies".
-- The reply composer stays visible above the bottom navigation and the on-screen keyboard while the comment list scrolls.
+- The comment composer appears above the comment list. Reply composers appear inline beneath the selected comment. They scroll with the page.
 
 ### Video
 
