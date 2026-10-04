@@ -156,6 +156,7 @@ Values are per user, or per IP when logged out. Going over the limit → `RATE_L
 | Action                                     | Limit       |
 | ------------------------------------------ | ----------- |
 | Sign-in                                    | 10 / 15 min |
+| Sign-up                                    | 3 / hour    |
 | Password reset / resend verification email | 3 / hour    |
 | Report a post                              | 10 / hour   |
 | Create post, reel, story                   | 30 / hour   |
@@ -313,16 +314,17 @@ Operation names define repository methods, not URLs. 🔒 means login is require
 
 Authentication stays with the BetterAuth client/server integration (#10), rather than custom application endpoints. These are frontend auth repository operations; the integration maps the provider's results and errors.
 
-| Operation              | Input                                 | Success                                           | Errors                                                       |
-| ---------------------- | ------------------------------------- | ------------------------------------------------- | ------------------------------------------------------------ |
-| `signUp`               | `{ email, password, name, username }` | Verification email sent                           | `VALIDATION_FAILED`, `CONFLICT` (`email`/`username` `TAKEN`) |
-| `signIn`               | `{ email, password }`                 | Session cookie set                                | `INVALID_CREDENTIALS`, `EMAIL_NOT_VERIFIED`                  |
-| `signInWithGoogle`     | `{ callbackURL }`                     | Redirect to provider                              | `VALIDATION_FAILED`                                          |
-| `signOut`              | none                                  | Cookie cleared, KV session removed                | none                                                         |
-| `getSession`           | none                                  | BetterAuth session/user or `null` when logged out | none                                                         |
-| `verifyEmail`          | `{ token }`                           | Redirect to app                                   | `VALIDATION_FAILED` (`token` invalid or expired)             |
-| `requestPasswordReset` | `{ email, redirectTo }`               | Same result whether or not the email exists       | `RATE_LIMITED`                                               |
-| `resetPassword`        | `{ token, newPassword }`              | Password updated                                  | `VALIDATION_FAILED` (`token` expired, `newPassword` rules)   |
+| Operation               | Input                                 | Success                                                                                                   | Errors                                                                           |
+| ----------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `signUp`                | `{ email, password, name, username }` | Generic success, even for an existing email; verification email sent only for a new or unverified account | `VALIDATION_FAILED`, `CONFLICT` (`username` `TAKEN` only)                        |
+| `signIn`                | `{ email, password }`                 | Session cookie set                                                                                        | `INVALID_CREDENTIALS`, `EMAIL_NOT_VERIFIED` (also sends a new verification link) |
+| `signInWithGoogle`      | `{ callbackURL }`                     | Redirect to provider                                                                                      | `VALIDATION_FAILED`                                                              |
+| `signOut`               | none                                  | Cookie cleared, KV session removed                                                                        | none                                                                             |
+| `getSession`            | none                                  | BetterAuth session/user or `null` when logged out                                                         | none                                                                             |
+| `verifyEmail`           | `{ token }`                           | User signed in, then redirect to `/login` (which forwards to `/` or `/onboard`)                           | Redirect to `/login?error=invalid_token` or `token_expired`                      |
+| `sendVerificationEmail` | `{ email }` (+ `callbackURL`)         | Same result whether or not the email exists                                                               | `RATE_LIMITED`                                                                   |
+| `requestPasswordReset`  | `{ email, redirectTo }`               | Same result whether or not the email exists                                                               | `RATE_LIMITED`                                                                   |
+| `resetPassword`         | `{ token, newPassword }`              | Password updated                                                                                          | `VALIDATION_FAILED` (`token` expired, `newPassword` rules)                       |
 
 - `name` is used as the first `displayName`.
 - `username` needs the BetterAuth username plugin **(proposed)**.

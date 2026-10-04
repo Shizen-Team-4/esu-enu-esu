@@ -308,12 +308,12 @@ One mapper per contract object: `toUserSummary`, `toProfile`, `toMe`, `toFollowL
 
 ### 6.6 Rate limits
 
-| Action                                | How to count                                                                          |
-| ------------------------------------- | ------------------------------------------------------------------------------------- |
-| Sign-in, password reset, resend email | BetterAuth `rateLimit` with `customRules`, `storage: "database"` (`rate_limit` table) |
-| Create post / reel / story            | `COUNT(*)` on `posts` + `stories` where `author_id = ? AND created_at > now − 1h`     |
-| Create comment                        | same on `comments`                                                                    |
-| Report a post                         | same on `reports` (index `reports_reporter_idx`)                                      |
+| Action                                                    | How to count                                                                          |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Sign-in, sign-up (3 / hour), password reset, resend email | BetterAuth `rateLimit` with `customRules`, `storage: "database"` (`rate_limit` table) |
+| Create post / reel / story                                | `COUNT(*)` on `posts` + `stories` where `author_id = ? AND created_at > now − 1h`     |
+| Create comment                                            | same on `comments`                                                                    |
+| Report a post                                             | same on `reports` (index `reports_reporter_idx`)                                      |
 
 Counting real rows needs no extra table and is always correct. `retryAfterSec` = time until the oldest counted row leaves the window. Behind a `RateLimiter` port, so use cases are tested with a fake.
 
@@ -352,6 +352,10 @@ All limits from contract 2.6 live in one domain module (`shared/domain/limits.ts
 - BetterAuth plugins: **username**, **admin** (roles `user`, `moderator`, `admin` via its access-control option). Google is the social provider.
 - `secondaryStorage` = KV (`get` / `set` / `delete` with BetterAuth's `ttl`). This is #12: session reads hit KV first; sign-out deletes the key.
 - `emailVerification.sendOnSignUp: true`, `emailAndPassword.requireEmailVerification: true` → `signIn` fails with `EMAIL_NOT_VERIFIED` until verified.
+- `emailVerification.autoSignInAfterVerification: true`: opening the link signs the user in, then redirects to `/login`, which sends signed-in users to `/` (or `/onboard` without a username). A bad or expired link redirects to `/login?error=invalid_token|token_expired` with a message and a resend form. Verification tokens last 1 hour (BetterAuth default).
+- `emailVerification.sendOnSignIn: true`: a correct password on an unverified account sends a new link and still returns `EMAIL_NOT_VERIFIED`.
+- `emailAndPassword.onExistingUserSignUp`: with `requireEmailVerification` on, BetterAuth returns a generic success for an existing email (anti-enumeration), so `signUp` never returns `CONFLICT` for `email`. An unverified account gets a new link; a verified one gets nothing. Signing up again never changes the existing password.
+- Rate limits: `/sign-up/email` 3 / hour, `/send-verification-email` 3 / hour.
 - Reset tokens expire in **1 hour** **(proposed)**. `requestPasswordReset` returns the same result whether or not the email exists.
 - `databaseHooks.user.create.after`: insert the `preferences` row with `language = locals.lang`.
 - `signUp { name, username }`: `name` becomes `displayName`; `username` follows contract 2.6.
