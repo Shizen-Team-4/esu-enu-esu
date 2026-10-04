@@ -2,7 +2,6 @@
 	import { _ } from 'svelte-i18n'
 	import { page } from '$app/state'
 	import { verifyLinkErrorKey } from '$lib/auth/verify-link-error'
-	import ResendVerification from '$lib/components/auth/ResendVerification.svelte'
 	import AuthForm from '$lib/components/AuthForm.svelte'
 	import AuthHeading from '$lib/components/auth/AuthHeading.svelte'
 	import AuthTabs from '$lib/components/auth/AuthTabs.svelte'
@@ -16,7 +15,6 @@
 <AuthTabs />
 {#if linkErrorKey}
 	<p role="alert">{$_(linkErrorKey)}</p>
-	<ResendVerification email="" />
 {/if}
 <AuthForm operation="login" />
 <GoogleSignIn />

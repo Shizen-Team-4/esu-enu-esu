@@ -13,7 +13,7 @@
 		"checkEmail": "If this email can be used, we sent a verification link to it. Check your inbox and spam folder.",
 		"resendVerification": "Resend verification email",
 		"verificationSent": "If the account needs it, a new verification link is on its way.",
-		"verifyLinkInvalid": "This verification link is invalid or has expired. Request a new one below.",
+		"verifyLinkInvalid": "This verification link is invalid or has expired. Sign in and we will send you a new one.",
 		"showPassword": "Show",
 		"hidePassword": "Hide",
 		"signIn": "Sign in",
