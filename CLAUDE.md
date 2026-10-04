@@ -124,13 +124,14 @@ These are the design decisions from the design exports. Every UI change must fol
 - Long mockups show scrolling content, not fixed page heights. Never set a fixed height on a page to match a mockup.
 - Don't draw the phone status bar or home indicator from the mockups. Use safe-area insets (`env(safe-area-inset-*)`) instead.
 - Breakpoints (see `docs/responsive-ui-rules.md`): below `md` (768px) is mobile with a bottom bar; `md` to `lg` is tablet with an icon rail; `lg` (1024px) and up is desktop.
-- Desktop follows the layout of `docs/design/sns-dashboard-mockup.html`: a top header (logo on the left; bell, avatar and menu on the right), a centered search input under the header, and a 3-column grid. The left sidebar has a "Your space" label, Home, Notifications, Bookmarks and a "Create post" primary button. The center column has left and right borders and holds the stories section, For you / Following tabs and flat posts separated by thin borders. The right column is reserved and empty for now.
+- Desktop follows the layout of `docs/design/sns-dashboard-mockup.html`: a top header (logo on the left; bell, avatar and menu on the right), a centered search input under the header, and a 3-column grid. The left sidebar has a "Your space" label, Home, Notifications, Bookmarks and a "Create post" primary button. The center column has left and right borders and holds the stories section, For you / Following tabs and flat posts separated by diagonal hatch bands with thin borders on all four sides. The right column is reserved and empty for now.
 - When the mockup and these rules disagree on colors or fonts, the tokens win. The mockup sets the layout only.
 
 ### Post separation
 
-- Separate major sections (for example the story tray and the feed) with the diagonal hatch band. Separate posts from each other with thin borders, as in the mockup. Build the band once as a shared component or class and reuse it.
-- Use the same hatch pattern to fill unused space around media.
+- Separate adjacent posts with the diagonal hatch band on mobile, tablet and desktop. The post separator is the pattern with thin borders on all four sides (`hatch h-3 w-full border border-line`), forming a closed rectangle, not a plain border or an empty gap. Reuse the shared `HatchBand` component between posts, without extra spacing around the band or a trailing band after the last post. Do not place a hatch band between the story tray and the feed; keep the existing section spacing instead.
+- Use the same hatch pattern to fill unused space around media. The shared `.hatch` class owns the standard thin border on all four sides and uses the page background token as an explicit base color so media fills and post separators match in light and dark mode, regardless of their parent surface. Do not duplicate border styling in media components.
+- Post lists use the shared `post-list` utility to remove post borders that touch a hatch band. Each band edge stays one pixel thick, never doubled by an adjacent post border. Keep the list's outer post borders and standalone post borders, including the post-to-comments divider.
 
 ### Media
 
@@ -148,6 +149,7 @@ These are the design decisions from the design exports. Every UI change must fol
 
 ### Comments
 
+- The post comment page header uses the reusable `common.back` label beside the back arrow. The post and comment section meet at the post's thin horizontal border, without a hatch band or an outer spacing gap.
 - Show only **two visual levels**: parent and reply. Never indent deeper than one reply level.
 - For deeper threads, open a focused branch: the selected comment moves to the parent position, and its ancestors stay visible above it as context.
 - Solid lines connect visible replies. Dashed lines show ancestor context in a focused branch.

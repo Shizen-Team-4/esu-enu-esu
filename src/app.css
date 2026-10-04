@@ -82,6 +82,14 @@
 	--spacing-sidebar: 200px;
 	--spacing-aside: 172px;
 }
+@utility post-list {
+	& > article:has(+ .hatch) {
+		border-bottom-width: 0;
+	}
+	& > .hatch + article {
+		border-top-width: 0;
+	}
+}
 @layer base {
 	* {
 		box-sizing: border-box;
@@ -125,6 +133,8 @@
 }
 @layer components {
 	.hatch {
+		border: 1px solid var(--line);
+		background-color: var(--background);
 		background-image: repeating-linear-gradient(135deg, var(--line) 0 1px, transparent 1px 8px);
 	}
 	.field {

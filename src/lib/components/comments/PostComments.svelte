@@ -3,7 +3,6 @@
 	import type { Comment, ErrorEnvelope, Page, Post, UserSummary } from '$lib/contract'
 	import PostCard from '$lib/components/post/PostCard.svelte'
 	import PageBar from '$lib/components/ui/PageBar.svelte'
-	import HatchBand from '$lib/components/ui/HatchBand.svelte'
 	import CommentSection from './CommentSection.svelte'
 
 	let {
@@ -25,9 +24,8 @@
 </script>
 
 <div class="post-comments">
-	<PageBar title={$_('post.comments')} backHref="/" />
-	<div class="py-3"><PostCard post={current} /></div>
-	<HatchBand />
+	<PageBar title={$_('common.back')} backHref="/" />
+	<PostCard post={current} />
 	<CommentSection
 		postId={post.id}
 		initial={comments}
