@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { isStale, MAX_QUERY_LENGTH, moveActiveIndex, normalizeQuery } from './search-dropdown'
+import { SEARCH_QUERY_MAX } from '$lib/contract/limits'
+import { isStale, moveActiveIndex, normalizeQuery } from './search-dropdown'
 
 describe('normalizeQuery', () => {
 	it('returns null for an empty string', () => {
@@ -15,12 +16,12 @@ describe('normalizeQuery', () => {
 	})
 
 	it('accepts exactly 50 characters', () => {
-		const q = 'a'.repeat(MAX_QUERY_LENGTH)
+		const q = 'a'.repeat(SEARCH_QUERY_MAX)
 		expect(normalizeQuery(q)).toBe(q)
 	})
 
 	it('rejects 51 characters', () => {
-		expect(normalizeQuery('a'.repeat(MAX_QUERY_LENGTH + 1))).toBeNull()
+		expect(normalizeQuery('a'.repeat(SEARCH_QUERY_MAX + 1))).toBeNull()
 	})
 
 	it('counts 50 emoji as valid', () => {

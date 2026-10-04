@@ -1,9 +1,9 @@
-export const MAX_QUERY_LENGTH = 50
+import { SEARCH_QUERY_MAX } from '$lib/contract/limits'
 
 export function normalizeQuery(raw: string): string | null {
 	const trimmed = raw.trim()
 	const length = [...trimmed].length
-	if (length === 0 || length > MAX_QUERY_LENGTH) return null
+	if (length === 0 || length > SEARCH_QUERY_MAX) return null
 	return trimmed
 }
 

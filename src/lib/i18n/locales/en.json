@@ -169,7 +169,12 @@
 		"notFoundTitle": "Page not found"
 	},
 	"search": {
-		"placeholder": "Search people"
+		"placeholder": "Search people",
+		"results": "Search results",
+		"noResults": "No people found",
+		"loading": "Searching…",
+		"error": "Couldn't load results. Try again.",
+		"more": "Show more"
 	},
 	"toast": {
 		"dismiss": "Dismiss"

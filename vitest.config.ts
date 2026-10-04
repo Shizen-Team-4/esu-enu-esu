@@ -40,6 +40,7 @@ export default defineConfig({
 				'src/lib/auth/**/*.ts',
 				'src/lib/navigation/**/*.ts',
 				'src/lib/toast/**/*.ts',
+				'src/lib/search/**/*.ts',
 			],
 			exclude: ['**/*.test.ts', '**/ports.ts', '**/testing/**', 'src/lib/i18n/index.ts'],
 			provider: 'v8',

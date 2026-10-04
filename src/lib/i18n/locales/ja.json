@@ -169,7 +169,12 @@
 		"notFoundTitle": "ページが見つかりません"
 	},
 	"search": {
-		"placeholder": "ユーザーを検索"
+		"placeholder": "ユーザーを検索",
+		"results": "検索結果",
+		"noResults": "ユーザーが見つかりません",
+		"loading": "検索中…",
+		"error": "結果を読み込めませんでした。もう一度お試しください。",
+		"more": "もっと見る"
 	},
 	"toast": {
 		"dismiss": "閉じる"
