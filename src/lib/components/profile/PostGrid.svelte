@@ -15,10 +15,7 @@
 			<a
 				href={post.shareUrl}
 				aria-label={name(post)}
-				class="relative grid aspect-square place-items-center overflow-hidden text-fg no-underline {tile.kind ===
-				'text'
-					? 'bg-elevated'
-					: 'hatch'}"
+				class="relative grid aspect-square place-items-center overflow-hidden text-fg no-underline bg-elevated"
 			>
 				{#if tile.kind === 'text'}
 					<span class="line-clamp-5 break-words p-4 text-center text-meta md:text-body"

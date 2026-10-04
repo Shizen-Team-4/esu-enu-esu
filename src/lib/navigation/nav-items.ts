@@ -21,11 +21,17 @@ const bookmarks: NavItem = {
 	href: '/bookmarks',
 	path: 'M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z',
 }
+const profile: NavItem = {
+	key: 'profile',
+	href: '/profile',
+	path: 'M20 21a8 8 0 0 0-16 0 M12 13a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
+}
 
-export const mobileNavItems: NavItem[] = [home, search, create, notifications, bookmarks]
-export const sidebarNavItems: NavItem[] = [home, notifications, bookmarks]
+export const mobileNavItems: NavItem[] = [home, search, create, notifications, profile]
+export const sidebarNavItems: NavItem[] = [home, notifications, profile]
 
 export function isActive(pathname: string, href: string): boolean {
 	if (href === '/') return pathname === '/'
+	if (href === '/profile') return pathname === '/profile' || pathname.startsWith('/u/')
 	return pathname === href || pathname.startsWith(`${href}/`)
 }

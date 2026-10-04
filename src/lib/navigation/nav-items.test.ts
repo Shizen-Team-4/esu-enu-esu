@@ -8,12 +8,12 @@ describe('nav items', () => {
 			'/search',
 			'/create',
 			'/notifications',
-			'/bookmarks',
+			'/profile',
 		])
 	})
 
 	it('lists the sidebar destinations', () => {
-		expect(sidebarNavItems.map((item) => item.key)).toEqual(['home', 'notifications', 'bookmarks'])
+		expect(sidebarNavItems.map((item) => item.key)).toEqual(['home', 'notifications', 'profile'])
 	})
 })
 
@@ -25,6 +25,10 @@ describe('isActive', () => {
 
 	it('matches an exact path', () => {
 		expect(isActive('/bookmarks', '/bookmarks')).toBe(true)
+	})
+
+	it('matches profile pages', () => {
+		expect(isActive('/u/test_user', '/profile')).toBe(true)
 	})
 
 	it('matches nested paths', () => {

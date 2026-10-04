@@ -10,12 +10,23 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
 	const viewer = optionalViewer(locals.user)
 	try {
 		const profile = await services.users.getProfile(viewer, params.username)
-		const type = url.searchParams.get('type') === 'reel' ? 'reel' : 'post'
-		const posts = await services.posts.listUserPosts(viewer, {
-			username: params.username,
-			type,
-			cursor: url.searchParams.get('cursor') ?? undefined,
-		})
+		const requestedType = url.searchParams.get('type')
+		const type =
+			requestedType === 'saved' && profile.viewer.isMe
+				? 'saved'
+				: requestedType === 'reel'
+					? 'reel'
+					: 'post'
+		const posts =
+			type === 'saved'
+				? await services.posts.listSavedPosts(viewer, {
+						cursor: url.searchParams.get('cursor') ?? undefined,
+					})
+				: await services.posts.listUserPosts(viewer, {
+						username: params.username,
+						type,
+						cursor: url.searchParams.get('cursor') ?? undefined,
+					})
 		return { profile, posts, type }
 	} catch (cause) {
 		return toHttpError(cause)

@@ -9,6 +9,6 @@
 <svelte:head><title>@{data.profile.username} · {$_('app.name')}</title></svelte:head>
 <div class="py-4 md:py-8">
 	<ProfileHeader profile={data.profile} errorCode={form?.error?.code ?? null} />
-	<ProfileTabs type={data.type} />
+	<ProfileTabs type={data.type} isMe={data.profile.viewer.isMe} />
 	<PostGrid posts={data.posts.items} />
 </div>
