@@ -47,7 +47,7 @@ for (const width of [390, 1440]) {
 		const errors: string[] = []
 		page.on('pageerror', (error) => errors.push(error.message))
 		try {
-			await page.goto(`/p/${postId}`)
+			await page.goto(`/p/${postId}`, { waitUntil: 'networkidle' })
 			await expect(page.getByText('No comments yet', { exact: true })).toBeVisible()
 			await expect(page.locator('.comment-dock')).toHaveCount(0)
 			const sectionBox = await page.locator('#comments').boundingBox()
@@ -232,7 +232,7 @@ test('shows a new root at the top when posted from an expanded branch', async ({
 		await page.request.post(`/p/${postId}?/comment`, {
 			form: { body: 'Branch child', parentId: replies.items[0].id },
 		})
-		await page.goto(`/p/${postId}`)
+		await page.goto(`/p/${postId}`, { waitUntil: 'networkidle' })
 		await page.getByRole('button', { name: '2 replies', exact: true }).click()
 		await page
 			.locator(`[data-comment-id="${replies.items[0].id}"]`)
@@ -303,3 +303,153 @@ for (const width of [390, 1440]) {
 		}
 	})
 }
+
+const isCommentPost = (postId: string) => (url: URL) =>
+	url.pathname === `/p/${postId}` && url.search === '?/comment'
+
+async function seedReplies(page: BrowserPage, postId: string, count: number) {
+	await page.request.post(`/p/${postId}?/comment`, { form: { body: 'Root', parentId: '' } })
+	const root = (await comments(page, postId)).items[0]
+	for (let i = 0; i < count; i++) {
+		await page.request.post(`/p/${postId}?/comment`, {
+			form: { body: `Child ${i}`, parentId: root.id },
+		})
+	}
+	const replies: Page<Comment> = await (
+		await page.request.get(`/api/comments/${root.id}/replies`)
+	).json()
+	return { root, replies: replies.items }
+}
+
+function gateComments(page: BrowserPage, postId: string) {
+	let release!: () => void
+	const gate = new Promise<void>((resolve) => (release = resolve))
+	const state = { requests: 0, release }
+	return page
+		.route(isCommentPost(postId), async (route) => {
+			state.requests++
+			await gate
+			await route.continue()
+		})
+		.then(() => state)
+}
+
+test('locks the reply target while a reply is sending', async ({ page }) => {
+	const postId = await preparePost(page)
+	try {
+		const { replies } = await seedReplies(page, postId, 2)
+		const [a, b] = replies
+		await page.goto(`/p/${postId}`, { waitUntil: 'networkidle' })
+		await page.getByRole('button', { name: '2 replies', exact: true }).click()
+		const itemA = page.locator(`[data-comment-id="${a.id}"]`)
+		const itemB = page.locator(`[data-comment-id="${b.id}"]`)
+		await itemA.getByRole('button', { name: 'Reply', exact: true }).click()
+		await itemA.getByRole('textbox').fill('Locked reply text')
+		const gated = await gateComments(page, postId)
+		await itemA.getByRole('button', { name: 'Send', exact: true }).click()
+		await expect(itemA.getByRole('button', { name: 'Sending…', exact: true })).toBeDisabled()
+		await expect(itemB.getByRole('button', { name: 'Reply', exact: true })).toBeDisabled()
+		await expect(itemA.getByRole('button', { name: 'Cancel reply', exact: true })).toBeDisabled()
+		await itemB
+			.getByRole('button', { name: 'Reply', exact: true })
+			.click({ force: true, noWaitAfter: true })
+		await expect(itemA.getByRole('textbox')).toBeVisible()
+		await expect(itemB.getByRole('textbox')).toHaveCount(0)
+		await expect(page.getByText('Replying to @sns_demo', { exact: true })).toHaveCount(1)
+		gated.release()
+		await expect(page.locator('[data-root-composer]')).toBeVisible()
+		await itemA.getByRole('button', { name: '1 reply', exact: true }).click()
+		await expect(page.getByText('Locked reply text')).toHaveCount(1)
+		expect(gated.requests).toBe(1)
+		const root = (await comments(page, postId)).items[0]
+		const all: Page<Comment> = await (
+			await page.request.get(`/api/comments/${root.id}/replies`)
+		).json()
+		expect(all.items).toHaveLength(3)
+		await expect(page.locator('[data-root-composer]')).toBeVisible()
+		await expect(page.locator('[data-root-composer]').getByRole('textbox')).toHaveValue('')
+	} finally {
+		await page.request.post(`/p/${postId}?/delete`, { form: {} })
+	}
+})
+
+test('finishes a pending reply after its branch is collapsed', async ({ page }) => {
+	const postId = await preparePost(page)
+	try {
+		const { replies } = await seedReplies(page, postId, 1)
+		const itemA = page.locator(`[data-comment-id="${replies[0].id}"]`)
+		await page.goto(`/p/${postId}`, { waitUntil: 'networkidle' })
+		await page.getByRole('button', { name: '1 reply', exact: true }).click()
+		await itemA.getByRole('button', { name: 'Reply', exact: true }).click()
+		await itemA.getByRole('textbox').fill('Collapsed while sending')
+		const gated = await gateComments(page, postId)
+		await itemA.getByRole('button', { name: 'Send', exact: true }).click()
+		await expect.poll(() => gated.requests).toBe(1)
+		await page.getByRole('button', { name: 'Hide replies', exact: true }).click()
+		await expect(itemA).toHaveCount(0)
+		gated.release()
+		const rootComposer = page.locator('[data-root-composer]')
+		await expect(rootComposer).toBeVisible()
+		await expect(rootComposer.getByRole('textbox')).toHaveValue('')
+		await rootComposer.getByRole('textbox').fill('Next comment')
+		await expect(rootComposer.getByRole('button', { name: 'Send', exact: true })).toBeEnabled()
+		expect(gated.requests).toBe(1)
+		const root = (await comments(page, postId)).items[0]
+		const all: Page<Comment> = await (
+			await page.request.get(`/api/comments/${root.id}/replies`)
+		).json()
+		expect(all.items.filter((c) => c.body === 'Collapsed while sending')).toHaveLength(1)
+	} finally {
+		await page.request.post(`/p/${postId}?/delete`, { form: {} })
+	}
+})
+
+test('cancelling a reply after a restored failed reply posts a top-level comment', async ({
+	page,
+}) => {
+	const postId = await preparePost(page)
+	try {
+		await page.request.post(`/p/${postId}?/comment`, { form: { body: 'Root', parentId: '' } })
+		const root = (await comments(page, postId)).items[0]
+		await page.goto(`/p/${postId}`, { waitUntil: 'networkidle' })
+		await Promise.all([
+			page.waitForNavigation(),
+			page.evaluate(
+				({ action, parentId }) => {
+					const form = document.createElement('form')
+					form.method = 'POST'
+					form.action = action
+					for (const [name, value] of [
+						['body', 'x'.repeat(501)],
+						['parentId', parentId],
+					]) {
+						const input = document.createElement('input')
+						input.name = name
+						input.value = value
+						form.appendChild(input)
+					}
+					document.body.appendChild(form)
+					form.submit()
+				},
+				{ action: `/p/${postId}?/comment`, parentId: root.id },
+			),
+		])
+		const rootItem = page.locator(`[data-comment-id="${root.id}"]`)
+		await expect(page.getByRole('textbox', { name: 'Write a comment…' })).toHaveValue(
+			'x'.repeat(501),
+		)
+		await rootItem.getByRole('button', { name: 'Reply', exact: true }).click()
+		await rootItem.getByRole('button', { name: 'Cancel reply', exact: true }).click()
+		const rootComposer = page.locator('[data-root-composer]')
+		await rootComposer.getByRole('textbox').fill('Top level after cancel')
+		await rootComposer.getByRole('button', { name: 'Send', exact: true }).click()
+		await expect(page.getByText('Top level after cancel', { exact: true })).toBeVisible()
+		const result = await comments(page, postId)
+		const created = result.items.find((c) => c.body === 'Top level after cancel')
+		expect(created).toBeDefined()
+		expect(created!.parentId).toBeNull()
+		expect(result.items.find((c) => c.id === root.id)!.replyCount).toBe(0)
+	} finally {
+		await page.request.post(`/p/${postId}?/delete`, { form: {} })
+	}
+})
