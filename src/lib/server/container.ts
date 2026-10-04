@@ -24,7 +24,7 @@ import { listReplies } from './comments/application/list-replies'
 import { createComment } from './comments/application/create-comment'
 import { deleteComment } from './comments/application/delete-comment'
 import type { PostLookup } from './comments/application/ports'
-import { createSmtpSender, type SmtpConfig } from './auth/infrastructure/smtp-email'
+import { createMailtrapSender, type MailConfig } from './auth/infrastructure/mailtrap-email'
 import type { Lang } from '$lib/i18n/config'
 import { createUserRepository } from './users/infrastructure/drizzle-users'
 import { getMe } from './users/application/get-me'
@@ -80,7 +80,7 @@ function avatarMedia(media: MediaRepository, publicUrl: string): AvatarMedia {
 }
 
 export function createContainer(
-	env: Env & SmtpConfig & R2Config & AuthSecrets,
+	env: Env & MailConfig & R2Config & AuthSecrets,
 	ctx: ExecutionContext,
 	origin: string,
 	language: Lang,
@@ -138,7 +138,7 @@ export function createContainer(
 				...env,
 				BETTER_AUTH_URL: env.BETTER_AUTH_URL || (development ? 'http://localhost:5173' : undefined),
 			},
-			createSmtpSender(env),
+			createMailtrapSender(env),
 			language,
 			development,
 		),

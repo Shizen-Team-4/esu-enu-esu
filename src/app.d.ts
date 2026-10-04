@@ -2,7 +2,7 @@
 import type { Services } from '$lib/server/container'
 import type { Preferences } from '$lib/server/preferences/domain/preferences'
 import type { Lang } from '$lib/i18n/config'
-import type { SmtpConfig } from '$lib/server/auth/infrastructure/smtp-email'
+import type { MailConfig } from '$lib/server/auth/infrastructure/mailtrap-email'
 import type { R2Config } from '$lib/server/media/infrastructure/r2-storage'
 import type { AuthSecrets } from '$lib/server/auth'
 
@@ -16,7 +16,7 @@ declare global {
 			code?: string
 		}
 		interface Platform {
-			env: Env & SmtpConfig & R2Config & AuthSecrets
+			env: Env & MailConfig & R2Config & AuthSecrets
 			ctx: ExecutionContext
 			caches: CacheStorage
 			cf?: IncomingRequestCfProperties

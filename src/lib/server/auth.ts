@@ -5,7 +5,7 @@ import * as schema from './db/schema'
 import { username, admin } from 'better-auth/plugins'
 import { sendVerification, sendPasswordReset, type EmailSender } from './auth/application/email'
 import { resendIfUnverified } from './auth/application/resend-if-unverified'
-import type { SmtpConfig } from './auth/infrastructure/smtp-email'
+import type { MailConfig } from './auth/infrastructure/mailtrap-email'
 import { USERNAME_MAX, USERNAME_MIN, USERNAME_PATTERN } from './users/domain/profile'
 import type { Lang } from '$lib/i18n/config'
 
@@ -18,7 +18,7 @@ export interface AuthSecrets {
 
 export function createAuth(
 	db: ReturnType<typeof getDb>,
-	env: Omit<Env, 'BETTER_AUTH_URL'> & { BETTER_AUTH_URL?: string } & SmtpConfig & AuthSecrets,
+	env: Omit<Env, 'BETTER_AUTH_URL'> & { BETTER_AUTH_URL?: string } & MailConfig & AuthSecrets,
 	email: EmailSender,
 	language: Lang,
 	development = false,
