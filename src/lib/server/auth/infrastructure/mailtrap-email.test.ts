@@ -58,6 +58,20 @@ describe('createMailtrapSender', () => {
 		expect(calls).toHaveLength(0)
 	})
 
+	it('aborts the request when Mailtrap does not respond in time', async () => {
+		const hanging = ((_url: string, init: RequestInit) =>
+			new Promise((_resolve, reject) => {
+				init.signal?.addEventListener('abort', () => reject(init.signal?.reason))
+			})) as typeof fetch
+		const sender = createMailtrapSender(
+			{ SMTP_TOKEN: 'token', SMTP_FROM: 'no-reply@example.com' },
+			hanging,
+			1,
+		)
+
+		await expect(sender.send(message)).rejects.toThrow()
+	})
+
 	it('throws with the status and body when Mailtrap rejects the message', async () => {
 		const { send } = recordingFetch(new Response('{"errors":["Unauthorized"]}', { status: 401 }))
 		const sender = createMailtrapSender(

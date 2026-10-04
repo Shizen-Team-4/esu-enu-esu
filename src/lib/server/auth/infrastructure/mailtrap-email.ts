@@ -2,6 +2,7 @@ import type { EmailSender } from '../application/email'
 
 // Workers can't upgrade an SMTP socket to TLS, so mail goes through Mailtrap's HTTP API.
 const SEND_URL = 'https://send.api.mailtrap.io/api/send'
+const SEND_TIMEOUT_MS = 10_000
 
 export interface MailConfig {
 	SMTP_TOKEN?: string
@@ -20,7 +21,11 @@ export function parseAddress(value: string): Address {
 	return name ? { email: match[2].trim(), name } : { email: match[2].trim() }
 }
 
-export function createMailtrapSender(config: MailConfig, send: typeof fetch = fetch): EmailSender {
+export function createMailtrapSender(
+	config: MailConfig,
+	send: typeof fetch = fetch,
+	timeoutMs = SEND_TIMEOUT_MS,
+): EmailSender {
 	return {
 		async send(message) {
 			if (!config.SMTP_TOKEN || !config.SMTP_FROM) {
@@ -28,6 +33,7 @@ export function createMailtrapSender(config: MailConfig, send: typeof fetch = fe
 			}
 			const response = await send(SEND_URL, {
 				method: 'POST',
+				signal: AbortSignal.timeout(timeoutMs),
 				headers: {
 					Authorization: `Bearer ${config.SMTP_TOKEN}`,
 					'Content-Type': 'application/json',
