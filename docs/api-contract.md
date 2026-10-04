@@ -348,6 +348,7 @@ Authentication stays with the BetterAuth client/server integration (#10), rather
 - Following is **instant**. There are no private accounts or follow requests.
 - Follow/unfollow are idempotent: following twice is not an error.
 - Search matches the start of `username` or `displayName` (case-insensitive). It searches **users only**.
+- The header search dropdown loads results incrementally through a `GET /api/users/search?q=&cursor=` `+server.ts` adapter that calls `searchUsers` (allowed by §1).
 
 ### 4.3 Media upload
 
