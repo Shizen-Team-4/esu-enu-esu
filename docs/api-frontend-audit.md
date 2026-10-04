@@ -50,7 +50,7 @@ Frontend UI work (4, 12, UI halves of 5–8, full happy-path e2e) is left for th
 | 🟡 `updatePost`, `deletePost`                                                 | wired in container; `/p/[id]` actions `edit` and `delete` (2026-10-04)                                                                                                                                                                                                                    | no UI                                                                                              |
 | 🟡 `likePost`/`unlikePost`                                                    | ~~`reactToPost` returns full `Post`, not `{liked, likes}`~~ (fixed, verified 2026-10-04: `likePost` returns `{liked, likes}`; shared `like` action on `/`, `/p/[id]`, `/reels`, `/profile`, `/u/[username]`, `/dashboard`, 2026-10-04)                                                    | like only on `/dashboard`; full redirect, no optimistic update; `/`, `/p/[id]`, `/reels` read-only |
 | 🟡 `savePost`/`unsavePost`/`listSavedPosts`                                   | `savePost`/`unsavePost`/`listSavedPosts` use cases exist and are wired; ~~`scope:'saved'` leaks into public `/api/feed`~~ (fixed, verified 2026-10-04)                                                                                                                                    | ~~no route~~ shared `save` action + `/bookmarks` page (2026-10-04); no save button UI, no nav tab  |
-| 🟡 Comments (`listComments`, `listReplies`, `createComment`, `deleteComment`) | ~~table exists, **no domain/app/infra**~~ (fixed 2026-10-04: `comments/` feature, `/p/[id]` actions, `GET /api/posts/[id]/comments`, `GET /api/comments/[id]/replies`)                                                                                                                    | no UI                                                                                              |
+| 🟡 Comments (`listComments`, `listReplies`, `createComment`, `deleteComment`) | ~~table exists, **no domain/app/infra**~~ (fixed 2026-10-04: `comments/` feature, `/p/[id]` actions, `GET /api/posts/[id]/comments`, `GET /api/comments/[id]/replies`)                                                                                                                    | ~~no UI~~ comment UI on `/p/[id]` (2026-10-04)                                                     |
 | 🟡 `updateMe`, OAuth username onboarding (`username: ""`)                     | ~~missing~~ (fixed 2026-10-04: `updateMe`, hooks redirect to `/onboard`)                                                                                                                                                                                                                  | `/onboard` form and settings profile form exist; avatar upload UI open                             |
 | 🟡 `listFollowers` / `listFollowing`                                          | ~~missing~~ (fixed 2026-10-04: use cases + `GET /api/users/[username]/followers` and `/following`)                                                                                                                                                                                        | counts not clickable                                                                               |
 | ⬜ `getMe` in nav/header                                                      | —                                                                                                                                                                                                                                                                                         | header has no avatar/logout; `/` shows "Log in" even when logged in                                |
@@ -95,7 +95,7 @@ Frontend UI work (4, 12, UI halves of 5–8, full happy-path e2e) is left for th
 - ⬜ Media: `PostGrid` and avatars use `object-cover`; story media uses `rounded-card`; gallery is scroll-snap with no prev/next arrows or `2 / 5` counter.
 - 🟡 ~~Hard-coded `#ffffff` in `login/+page.svelte`~~ (fixed, verified 2026-10-04); hard-coded `SNS` strings and `<style>` `max-width` one-offs in `/`, `/dashboard` still open (language names now come from i18n).
 - ✅ ~~i18n corruption: `preferences.km` = `"?????"`, `preferences.ja` = `"???"` in all 3 locale files.~~ (fixed, verified 2026-10-04) (language names are correct in all 3 locale files)
-- ⬜ Video viewer (dark, portrait vs landscape controls, comment bottom sheet) and comment thread UI not implemented.
+- ⬜ Video viewer (dark, portrait vs landscape controls, comment bottom sheet) not implemented. ~~Comment thread UI not implemented~~ (fixed 2026-10-04).
 
 ## Issue drafts
 
@@ -107,7 +107,7 @@ Frontend UI work (4, 12, UI halves of 5–8, full happy-path e2e) is left for th
 - [ ] ⬜ 4. Feed hookup: following/all scope, pagination, empty/error states
 - [ ] 🟡 5. (backend done) Like/save/share actions everywhere + optimistic update
 - [ ] 🟡 6. (use cases wired, no route/UI) Post edit & delete hookup
-- [x] 7. Comments feature end-to-end (backend and UI done; focused context follows the flattened contract)
+- [x] 7. Comments feature end-to-end (backend and UI done; focused branches show exact ancestry via `replyToCommentId`)
 - [ ] 🟡 8. Users: `updateMe`, OAuth username onboarding, followers/following lists (backend done)
 - [x] 9. Error envelope end-to-end
 - [ ] 🟡 10. (done, except feed unification in 4) Architecture cleanup per CLAUDE.md §1–3
@@ -279,14 +279,22 @@ Frontend UI work (4, 12, UI halves of 5–8, full happy-path e2e) is left for th
 ### 7. Comments feature end-to-end
 
 **UI implemented 2026-10-04:** `/p/[id]` renders comments with lazy, append-only pagination,
-reply targets, focused conversation views, confirmation before deletion, and a persistent composer.
-UI text uses all three locales. Focus promotes the selected reply and shows its known root parent
-with a dashed connector; the other replies remain a single level with solid connectors. The API
-stores only the root `parentId` and `replyToUser`, so the UI does not guess deeper comment ancestry
-from an addressed user. Exact deeper ancestry would require a separate parent-comment field.
-Playwright covers the conversation flow at 390px and 1440px, guest permissions, failed draft
-retention, Unicode limits, and simulated keyboard viewport changes. Unit tests cover pagination,
-mutation races, focusing and keyboard geometry.
+reply targets, focused conversation views and confirmation before deletion. The root composer sits
+above the comment list and a reply composer renders inline beneath the selected comment; both scroll
+with the page (nothing is sticky, no keyboard handling). UI text uses all three locales. The API
+stores the root `parentId`, `replyToUser` and the exact answered comment as `replyToCommentId`
+(migration `0003_comment_reply_target.sql`). Expanding a reply's children promotes that reply to the
+parent position and shows its exact ancestors above it with dashed connectors; the other replies
+remain a single level with solid connectors. Legacy or orphaned replies without an exact target stay
+flat, and nothing is inferred from `replyToUser`.
+Playwright covers the conversation flow (comment, reply, branch expansion with a dashed ancestor
+connector, confirmed deletion) at 390px and 1440px, guest view without delete controls, failed inline
+reply draft retention, Unicode limits, a new root posted from an expanded branch, comment fields
+that auto-size at 390/1440, locking the reply target while a reply is sending, finishing a pending
+reply after its branch collapses, and cancelling after a restored failed reply posting a top-level
+comment. Unit tests cover comment state pagination and mutation races, thread focusing and branch
+replies, composer state (submit rules, reply-target selection and cancel, pending lock), textarea
+auto-sizing and fetching comments.
 
 **Labels:** backend, frontend
 
@@ -295,9 +303,9 @@ mutation races, focusing and keyboard geometry.
 - Comments table exists but **no domain/app/infra layers** implemented
 - No UI or routes for list/create/delete comments
 - No thread flattening logic, no focused-branch UI for deep threads
-- No sticky composer per §5 Comments spec
+- No comment composer (root above the list, replies inline) per §5 Comments spec
 
-**References:** `docs/api-contract.md` §3.4 (Comment shape), §4.6 (comments operations), `CLAUDE.md` §1 (layers), §5 (Comments: two-level UI, focused branch, sticky composer)
+**References:** `docs/api-contract.md` §3.4 (Comment shape), §4.6 (comments operations), `CLAUDE.md` §1 (layers), §5 (Comments: two-level UI, focused branch, composer placement)
 
 **Acceptance criteria:**
 
@@ -305,8 +313,8 @@ mutation races, focusing and keyboard geometry.
 - [x] Application layer: `listComments`, `listReplies`, `createComment`, `deleteComment` use cases
 - [x] Infrastructure: Drizzle repository mapping rows to Comment domain type
 - [x] Routes: `GET /api/posts/[id]/comments`, `GET /api/comments/[id]/replies`; create/delete as `/p/[id]` form actions `comment` and `deleteComment`
-- [x] UI: two visual levels (parent and direct reply only), collapse/expand replies, focused branch with known parent context
-- [x] Sticky reply composer above bottom nav while scrolling; adjusts to the visual viewport for the keyboard
+- [x] UI: two visual levels (parent and direct reply only), collapse/expand replies, focused branch with exact ancestor context (`replyToCommentId`)
+- [x] Root composer above the list; inline reply composer beneath the selected comment; both scroll with the page
 - [x] Delete shows confirmation and updates the thread without a reload
 - [x] Delete control follows `viewer.canDelete` (comment or post author, per contract §3.4)
 
@@ -454,7 +462,7 @@ mutation races, focusing and keyboard geometry.
 - One-off `style="max-width: …px"` overrides instead of tokens
 - i18n corruption: `preferences.km` = `"?????"`, `preferences.ja` = `"???"` in all 3 locale files
 - Video viewer not implemented (dark mode, portrait vs landscape controls, comment bottom sheet)
-- Comment thread UI not implemented (two-level visual hierarchy, focused branch, ancestor context lines)
+- ~~Comment thread UI not implemented (two-level visual hierarchy, focused branch, ancestor context lines)~~ (fixed 2026-10-04)
 
 **References:** `CLAUDE.md` §5 (visual style, layout, post separation, media, navigation, comments, video, frontend guard rails), `docs/api-contract.md` (notifications out of scope — intro paragraph)
 
@@ -469,7 +477,7 @@ mutation races, focusing and keyboard geometry.
 - [ ] All spacing/sizes via Tailwind classes or tokens, no one-off `style=` overrides
 - [ ] `preferences` keys fixed (not `"?????"`) and all locales complete
 - [ ] Video viewer: dark layout, portrait → controls beside video, square/landscape → controls below, comment sheet overlay
-- [x] Comment thread UI: two levels (parent + reply), collapse/expand buttons, focused branch with known-parent dashed lines, sticky composer
+- [x] Comment thread UI: two levels (parent + reply), collapse/expand buttons, focused branch with exact-ancestor dashed lines, inline composers
 
 **Tests required:**
 
