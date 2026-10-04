@@ -14,6 +14,7 @@
 		"resendVerification": "Resend verification email",
 		"verificationSent": "If the account needs it, a new verification link is on its way.",
 		"verifyLinkInvalid": "This verification link is invalid or has expired. Sign in and we will send you a new one.",
+		"googleAccountNotLinked": "This email is already registered but not verified yet. Open the verification link we emailed you, or sign in with your password to get a new one. Then you can continue with Google.",
 		"showPassword": "Show",
 		"hidePassword": "Hide",
 		"signIn": "Sign in",

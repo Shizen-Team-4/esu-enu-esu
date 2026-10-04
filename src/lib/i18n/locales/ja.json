@@ -14,6 +14,7 @@
 		"resendVerification": "確認メールを再送する",
 		"verificationSent": "必要な場合は、新しい確認リンクを送信しました。",
 		"verifyLinkInvalid": "この確認リンクは無効か、有効期限が切れています。ログインすると新しいリンクをお送りします。",
+		"googleAccountNotLinked": "このメールアドレスは登録済みですが、まだ確認されていません。メールで送信した確認リンクを開くか、パスワードでログインして新しいリンクを受け取ってください。その後、Googleで続行できます。",
 		"showPassword": "表示",
 		"hidePassword": "非表示",
 		"signIn": "ログイン",

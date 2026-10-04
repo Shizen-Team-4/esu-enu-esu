@@ -96,6 +96,7 @@ export function createAuth(
 			provider: 'sqlite',
 			schema,
 		}),
+		account: { accountLinking: { enabled: true, trustedProviders: ['google'] } },
 		socialProviders: {
 			...(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET
 				? {
