@@ -7,6 +7,7 @@
 	import { debounce } from '$lib/search/debounce'
 	import { fetchUserSearch } from '$lib/search/fetch-user-search'
 	import { isStale, moveActiveIndex, normalizeQuery } from '$lib/search/search-dropdown'
+	import { searchSubmitAction } from '$lib/search/search-submit'
 	import SearchResults from './SearchResults.svelte'
 
 	const uid = $props.id()
@@ -49,6 +50,7 @@
 	const search = debounce((q: string) => void run(q), 250)
 
 	function onInput() {
+		activeIndex = -1
 		const q = normalizeQuery(query)
 		if (q === null) return reset()
 		search(q)
@@ -69,10 +71,11 @@
 		}
 	}
 	function onSubmit(event: SubmitEvent) {
-		const target = items[activeIndex] ?? items[0]
-		if (!target) return
 		event.preventDefault()
-		void goto(`/u/${target.username}`)
+		search.cancel()
+		const action = searchSubmitAction(query, open ? items[activeIndex]?.username : undefined)
+		if (action.type === 'profile') void goto(`/u/${action.username}`)
+		else if (action.type === 'search') void run(action.query)
 	}
 	function onFocusOut(event: FocusEvent) {
 		// Safari doesn't focus clicked links/buttons (relatedTarget is null); outside clicks are
