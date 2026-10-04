@@ -4,6 +4,7 @@ import type { getDb } from './db'
 import * as schema from './db/schema'
 import { username, admin } from 'better-auth/plugins'
 import { sendVerification, sendPasswordReset, type EmailSender } from './auth/application/email'
+import { resendIfUnverified } from './auth/application/resend-if-unverified'
 import type { SmtpConfig } from './auth/infrastructure/smtp-email'
 import { USERNAME_MAX, USERNAME_MIN, USERNAME_PATTERN } from './users/domain/profile'
 import type { Lang } from '$lib/i18n/config'
@@ -22,7 +23,11 @@ export function createAuth(
 	language: Lang,
 	development = false,
 ) {
-	return betterAuth({
+	const resendVerification = (address: string) =>
+		auth.api
+			.sendVerificationEmail({ body: { email: address, callbackURL: '/login' } })
+			.then(() => undefined)
+	const auth = betterAuth({
 		secret: env.BETTER_AUTH_SECRET,
 		baseURL: env.BETTER_AUTH_URL,
 		trustedOrigins: development
@@ -47,9 +52,14 @@ export function createAuth(
 			sendResetPassword: async ({ user, url }) => {
 				await sendPasswordReset(email)(user.email, url)
 			},
+			onExistingUserSignUp: async ({ user }) => {
+				await resendIfUnverified({ send: resendVerification })(user)
+			},
 		},
 		emailVerification: {
 			sendOnSignUp: true,
+			sendOnSignIn: true,
+			autoSignInAfterVerification: true,
 			sendVerificationEmail: async ({ user, url }) => {
 				await sendVerification(email)(user.email, url)
 			},
@@ -77,6 +87,7 @@ export function createAuth(
 			storage: 'database',
 			customRules: {
 				'/sign-in/*': { window: 900, max: 10 },
+				'/sign-up/email': { window: 3600, max: 3 },
 				'/request-password-reset': { window: 3600, max: 3 },
 				'/send-verification-email': { window: 3600, max: 3 },
 			},
@@ -96,4 +107,5 @@ export function createAuth(
 				: {}),
 		},
 	})
+	return auth
 }
