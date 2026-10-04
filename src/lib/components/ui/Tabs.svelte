@@ -1,13 +1,15 @@
 <script lang="ts">
+	// cspell:ignore replacestate
 	type Item = { href: string; label: string; active: boolean }
 	type Props = {
 		items: Item[]
 		label: string
 		position?: 'bottom' | 'top'
+		replaceState?: boolean
 		class?: string
 	}
 
-	let { items, label, position = 'bottom', class: className = '' }: Props = $props()
+	let { items, label, position = 'bottom', replaceState, class: className = '' }: Props = $props()
 
 	const layout = $derived(position === 'top' ? 'justify-center gap-10' : '')
 	const itemBase = $derived(
@@ -21,6 +23,7 @@
 	{#each items as item (item.href)}
 		<a
 			href={item.href}
+			data-sveltekit-replacestate={replaceState}
 			aria-current={item.active ? 'page' : undefined}
 			class="{itemBase} no-underline {item.active
 				? 'border-primary font-semibold text-fg'

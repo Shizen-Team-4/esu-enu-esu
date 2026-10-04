@@ -1,16 +1,15 @@
+import { redirect } from '@sveltejs/kit'
 import { optionalViewer } from '$lib/server/auth/viewer'
 import { requireServices, requireUser } from '$lib/server/shared/http/guards'
-import { save } from '$lib/server/shared/http/post-actions'
-import type { Actions, PageServerLoad } from './$types'
+import type { PageServerLoad } from './$types'
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	const viewer = optionalViewer(requireUser(locals))
 	const services = requireServices(locals)
-	return {
-		saved: await services.posts.listSavedPosts(viewer, {
-			cursor: url.searchParams.get('cursor') ?? undefined,
-		}),
-	}
+	const profile = await services.users.getMe(viewer)
+	if (!profile.username) redirect(303, '/onboard')
+	const query = new URLSearchParams({ type: 'bookmarks' })
+	const cursor = url.searchParams.get('cursor')
+	if (cursor) query.set('cursor', cursor)
+	redirect(303, `/u/${profile.username}?${query}`)
 }
-
-export const actions: Actions = { save }

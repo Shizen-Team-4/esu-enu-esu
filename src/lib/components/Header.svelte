@@ -1,13 +1,9 @@
 <script lang="ts">
 	import { _ } from 'svelte-i18n'
 	import type { UserSummary } from '$lib/contract'
-	import { mobileNavItems } from '$lib/navigation/nav-items'
-	import AvatarMenu from './AvatarMenu.svelte'
+	import AccountMenu from './AccountMenu.svelte'
 	import HeaderSearch from './search/HeaderSearch.svelte'
-	import NavIcon from './NavIcon.svelte'
-	import IconButton from './ui/IconButton.svelte'
 	let { me }: { me: UserSummary | null } = $props()
-	const bell = mobileNavItems.find((item) => item.key === 'notifications')
 </script>
 
 <header
@@ -18,13 +14,6 @@
 	>
 	<div class="mx-auto hidden w-full max-w-md lg:block"><HeaderSearch /></div>
 	<div class="col-start-3 flex items-center gap-1">
-		{#if bell}
-			<span class="hidden lg:block"
-				><IconButton label={$_('nav.notifications')} href={bell.href}
-					><NavIcon path={bell.path} /></IconButton
-				></span
-			>
-		{/if}
-		<AvatarMenu {me} />
+		<AccountMenu {me} />
 	</div>
 </header>

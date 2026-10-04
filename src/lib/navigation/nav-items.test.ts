@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { isActive, mobileNavItems, sidebarNavItems } from './nav-items'
+import { isActive, mobileNavItems, sidebarNavItems, withProfileHref } from './nav-items'
 
 describe('nav items', () => {
 	it('lists the five mobile destinations in order', () => {
@@ -8,12 +8,26 @@ describe('nav items', () => {
 			'/search',
 			'/create',
 			'/notifications',
-			'/bookmarks',
+			'/profile',
 		])
 	})
 
 	it('lists the sidebar destinations', () => {
-		expect(sidebarNavItems.map((item) => item.key)).toEqual(['home', 'notifications', 'bookmarks'])
+		expect(sidebarNavItems.map((item) => item.key)).toEqual(['home', 'notifications', 'profile'])
+	})
+
+	it('links Profile to the signed-in user without changing other destinations', () => {
+		const items = withProfileHref(mobileNavItems, 'dara')
+		expect(items.at(-1)?.href).toBe('/u/dara')
+		expect(items.slice(0, -1)).toEqual(mobileNavItems.slice(0, -1))
+		expect(mobileNavItems.at(-1)?.href).toBe('/profile')
+		expect(isActive('/u/dara', items.at(-1)!.href)).toBe(true)
+		expect(isActive('/u/other', items.at(-1)!.href)).toBe(false)
+	})
+
+	it('keeps the profile redirect for guests and users awaiting onboarding', () => {
+		expect(withProfileHref(sidebarNavItems).at(-1)?.href).toBe('/profile')
+		expect(withProfileHref(sidebarNavItems, '').at(-1)?.href).toBe('/profile')
 	})
 })
 

@@ -124,7 +124,7 @@ These are the design decisions from the design exports. Every UI change must fol
 - Long mockups show scrolling content, not fixed page heights. Never set a fixed height on a page to match a mockup.
 - Don't draw the phone status bar or home indicator from the mockups. Use safe-area insets (`env(safe-area-inset-*)`) instead.
 - Breakpoints (see `docs/responsive-ui-rules.md`): below `md` (768px) is mobile with a bottom bar; `md` to `lg` is tablet with an icon rail; `lg` (1024px) and up is desktop.
-- Desktop follows the layout of `docs/design/sns-dashboard-mockup.html`: a top header (logo on the left; bell, avatar and menu on the right), a centered search input under the header, and a 3-column grid. The left sidebar has a "Your space" label, Home, Notifications, Bookmarks and a "Create post" primary button. The center column has left and right borders and holds the stories section, For you / Following tabs and flat posts separated by diagonal hatch bands with thin borders on all four sides. The right column is reserved and empty for now.
+- Desktop follows the layout of `docs/design/sns-dashboard-mockup.html`: a top header (logo on the left; search and hamburger account menu on the right), and a 3-column grid. The left sidebar has a "Your space" label, Home, Notifications, Profile and a "Create post" primary button. The center column has left and right borders and holds the stories section, For you / Following tabs and flat posts separated by diagonal hatch bands with thin borders on all four sides. The right column is reserved and empty for now.
 - When the mockup and these rules disagree on colors or fonts, the tokens win. The mockup sets the layout only.
 
 ### Post separation
@@ -141,9 +141,12 @@ These are the design decisions from the design exports. Every UI change must fol
 
 ### Navigation
 
-- The mobile bottom bar has exactly five labelled destinations, in this order: Home, Search, Create, Notifications, Bookmarks.
+- The mobile bottom bar has exactly five labelled destinations, in this order: Home, Search, Create, Notifications, Profile. The tablet rail uses the same destinations.
 - Create is the raised blue button. The other four are plain labelled icons, and the active item shows a top indicator line.
-- Desktop (`lg` and up): the sidebar has Home, Notifications, Bookmarks and a "Create post" primary button. Search lives in the header.
+- Desktop (`lg` and up): the sidebar has Home, Notifications, Profile and a "Create post" primary button. Search lives in the header. Profile opens the signed-in user's profile on every screen size.
+- Profile tabs are Posts, Reels, then Bookmarks. Bookmarks is visible and accessible only on the viewer's own profile. Legacy `/bookmarks` links redirect to that tab, preserving pagination.
+- The header has no notification button. Its hamburger menu keeps Profile, Preferences and Log out, with matching alignment and rounded hover styles.
+- Profile container borders extend to the viewport bottom even when there are no posts; pages remain content-driven, never fixed-height.
 - Notifications is a placeholder page until a notifications backend exists.
 - Reels have no nav entry. They show in the home feed and in the profile Reels tab.
 

@@ -79,6 +79,11 @@
 		"photoPost": "Photo post",
 		"reel": "Reel"
 	},
+	"follows": {
+		"emptyFollowers": "No followers yet",
+		"emptyFollowing": "Not following anyone yet",
+		"loading": "Loading people…"
+	},
 	"story": {
 		"love": "Love this story",
 		"expires": "Stories disappear after 24 hours.",

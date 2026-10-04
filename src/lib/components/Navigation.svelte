@@ -1,8 +1,11 @@
 <script lang="ts">
 	import { page } from '$app/state'
 	import { _ } from 'svelte-i18n'
-	import { isActive, mobileNavItems } from '$lib/navigation/nav-items'
+	import { isActive, mobileNavItems, withProfileHref } from '$lib/navigation/nav-items'
+	import type { UserSummary } from '$lib/contract'
 	import NavIcon from './NavIcon.svelte'
+	let { me }: { me: UserSummary | null } = $props()
+	const items = $derived(withProfileHref(mobileNavItems, me?.username))
 </script>
 
 <nav
@@ -10,7 +13,7 @@
 	aria-label={$_('nav.label')}
 	class="fixed inset-x-0 bottom-0 z-20 flex items-end justify-around border-t border-line bg-surface px-1 pb-[env(safe-area-inset-bottom)] md:inset-y-0 md:right-auto md:w-rail md:flex-col md:items-center md:justify-start md:gap-2 md:border-t-0 md:border-r md:py-3 lg:hidden"
 >
-	{#each mobileNavItems as item (item.key)}
+	{#each items as item (item.key)}
 		{@const active = isActive(page.url.pathname, item.href)}
 		{@const isCreate = item.key === 'create'}
 		<a

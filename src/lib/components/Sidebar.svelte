@@ -1,15 +1,18 @@
 <script lang="ts">
 	import { page } from '$app/state'
 	import { _ } from 'svelte-i18n'
-	import { isActive, sidebarNavItems } from '$lib/navigation/nav-items'
+	import { isActive, sidebarNavItems, withProfileHref } from '$lib/navigation/nav-items'
+	import type { UserSummary } from '$lib/contract'
 	import Button from './ui/Button.svelte'
 	import NavIcon from './NavIcon.svelte'
+	let { me }: { me: UserSummary | null } = $props()
+	const items = $derived(withProfileHref(sidebarNavItems, me?.username))
 </script>
 
 <aside class="hidden px-gutter py-6 lg:block" aria-label={$_('nav.label')}>
 	<p class="mb-2 px-3 text-meta text-fg-muted">{$_('nav.yourSpace')}</p>
 	<nav class="grid gap-1">
-		{#each sidebarNavItems as item (item.key)}
+		{#each items as item (item.key)}
 			{@const active = isActive(page.url.pathname, item.href)}
 			<a
 				href={item.href}

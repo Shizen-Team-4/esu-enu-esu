@@ -14,7 +14,9 @@
 	<div class="md:row-span-3 md:row-start-1">
 		<ProfileAvatar src={profile.avatarUrl} name={profile.displayName || profile.username} />
 	</div>
-	<div class="col-start-2 row-start-1 md:row-start-2"><ProfileStats counts={profile.counts} /></div>
+	<div class="col-start-2 row-start-1 md:row-start-2">
+		<ProfileStats counts={profile.counts} username={profile.username} />
+	</div>
 	<div
 		class="col-span-2 row-start-2 flex items-center gap-3 md:col-span-1 md:col-start-2 md:row-start-1 md:gap-4"
 	>

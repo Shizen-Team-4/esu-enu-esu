@@ -11,6 +11,10 @@ type AuthSession = NonNullable<Awaited<ReturnType<Services['auth']['api']['getSe
 
 declare global {
 	namespace App {
+		interface PageState {
+			backHistory?: import('$lib/navigation/back-history').BackHistoryEntry
+		}
+
 		interface Error {
 			message: string
 			code?: string

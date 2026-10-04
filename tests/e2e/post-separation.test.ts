@@ -128,14 +128,64 @@ for (const width of [390, 1440]) {
 		expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
 	})
 
-	test(`comment page has a Back heading and only a line after the post at ${width}px`, async ({
+	test(`media without captions has scalable spacing below the author at ${width}px`, async ({
 		page,
 	}, testInfo) => {
 		await page.context().addCookies(authenticatedCookies)
 		await page.setViewportSize({ width, height: 844 })
-		await page.goto(`/p/${postIds[1]}`, { waitUntil: 'networkidle' })
-		await expect(page.getByRole('heading', { name: 'Back', exact: true })).toBeVisible()
-		await expect(page.getByRole('link', { name: 'Back', exact: true })).toHaveAttribute('href', '/')
+		await page.route(`**/media/${mediaKey}`, (route) =>
+			route.fulfill({
+				contentType: 'image/svg+xml',
+				body: '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="2000"></svg>',
+			}),
+		)
+		await page.goto(`/p/${postIds[0]}`, { waitUntil: 'networkidle' })
+		const post = page.locator('.post-comments > article')
+		const media = post.getByRole('group', { name: 'Media', exact: true })
+		const caption = post.getByText('Post separation portrait fixture', { exact: true })
+		const captionBox = await caption.boundingBox()
+		const captionedMediaBox = await media.boundingBox()
+		expect(captionedMediaBox!.y).toBeCloseTo(captionBox!.y + captionBox!.height)
+		try {
+			fixtureSql(`UPDATE posts SET caption = '' WHERE id = '${postIds[0]}';`)
+			await page.reload({ waitUntil: 'networkidle' })
+			await expect(caption).toHaveCount(0)
+			for (const fontSize of ['100%', '150%']) {
+				await page.evaluate((size) => {
+					document.documentElement.style.fontSize = size
+				}, fontSize)
+				const header = post.locator('header')
+				const headerBox = await header.boundingBox()
+				const mediaBox = await media.boundingBox()
+				const expectedGap = await header.evaluate((element) =>
+					parseFloat(getComputedStyle(element).paddingTop),
+				)
+				expect(expectedGap).toBeGreaterThan(0)
+				expect(mediaBox!.y - headerBox!.y - headerBox!.height).toBeCloseTo(expectedGap)
+			}
+			await page.screenshot({
+				path: testInfo.outputPath(`media-without-caption-${width}.png`),
+				fullPage: true,
+			})
+		} finally {
+			fixtureSql(
+				`UPDATE posts SET caption = 'Post separation portrait fixture' WHERE id = '${postIds[0]}';`,
+			)
+		}
+	})
+
+	test(`comment page has a Back link and only a line after the post at ${width}px`, async ({
+		page,
+	}, testInfo) => {
+		await page.context().addCookies(authenticatedCookies)
+		await page.setViewportSize({ width, height: 844 })
+		await page.goto('/', { waitUntil: 'networkidle' })
+		await page.locator(`article a[href="/p/${postIds[1]}"]`).first().click()
+		await expect(page.getByRole('link', { name: 'Back', exact: true })).toBeVisible()
+		await expect(page.getByRole('link', { name: 'Back', exact: true })).toHaveAttribute(
+			'href',
+			/\/$/,
+		)
 		await expect(page.locator('.post-comments > .hatch')).toHaveCount(0)
 		const post = page.locator('.post-comments > article')
 		await expect(post).toHaveCSS('border-bottom-width', '1px')
@@ -147,5 +197,43 @@ for (const width of [390, 1440]) {
 			path: testInfo.outputPath(`comment-boundary-${width}.png`),
 			fullPage: true,
 		})
+		const url = page.url()
+		const length = await page.evaluate(() => history.length)
+		const input = page.getByRole('textbox', { name: 'Write a comment…' })
+		await input.fill('Keep this draft')
+		await input.evaluate((field: HTMLTextAreaElement) => field.setSelectionRange(4, 4))
+		for (let click = 0; click < 2; click += 1) {
+			await post.getByLabel('Comments', { exact: true }).click()
+			await expect(input).toBeFocused()
+			await expect(input).toHaveValue('Keep this draft')
+			expect(await input.evaluate((field: HTMLTextAreaElement) => field.selectionStart)).toBe(4)
+			await expect(page).toHaveURL(url)
+			expect(await page.evaluate(() => history.length)).toBe(length)
+		}
+		await page.screenshot({
+			path: testInfo.outputPath(`comment-focus-${width}.png`),
+			fullPage: true,
+		})
+		await page.reload({ waitUntil: 'networkidle' })
+		await page.getByRole('link', { name: 'Back', exact: true }).click()
+		await expect(page).toHaveURL(/\/$/)
+		await expect(page.locator('.post-comments')).toHaveCount(0)
+		await page
+			.locator('article')
+			.filter({ hasText: 'Post separation text fixture' })
+			.getByRole('link', { name: 'Comments', exact: true })
+			.click()
+		await expect(page).toHaveURL(new RegExp(`/p/${postIds[1]}#comments$`))
+		await post.getByRole('button', { name: 'Comments', exact: true }).click()
+		await expect(input).toBeFocused()
+		await page.reload({ waitUntil: 'networkidle' })
+		await page.getByRole('link', { name: 'Back', exact: true }).click()
+		await expect(page).toHaveURL(/\/$/)
+		await page.goto(`/p/${postIds[1]}#comments`, { waitUntil: 'networkidle' })
+		await expect(page.getByRole('link', { name: 'Back', exact: true })).toHaveCount(0)
+		await post.getByRole('button', { name: 'Comments', exact: true }).click()
+		await expect(input).toBeFocused()
+		await page.reload({ waitUntil: 'networkidle' })
+		await expect(page.getByRole('link', { name: 'Back', exact: true })).toHaveCount(0)
 	})
 }
