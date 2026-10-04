@@ -20,11 +20,12 @@ const setup = () => {
 }
 
 describe('deleteComment', () => {
-	it('lets the comment author delete a top-level comment with its replies', async () => {
+	it('preserves other comments when their parent is deleted by its author', async () => {
 		const { repository, run } = setup()
 		await run(viewer, 'cmt_1')
-		expect(repository.comments.map((c) => c.id)).toEqual(['cmt_4'])
-		expect(repository.postCounts.get('pst_1')).toBe(0)
+		expect(repository.comments.map((c) => c.id)).toEqual(['cmt_2', 'cmt_3', 'cmt_4'])
+		expect((await repository.find('cmt_2'))?.parentId).toBe(null)
+		expect(repository.postCounts.get('pst_1')).toBe(2)
 	})
 
 	it('lets the post author delete a comment', async () => {
@@ -38,6 +39,27 @@ describe('deleteComment', () => {
 		await run(as('usr_3'), 'cmt_2')
 		expect((await repository.find('cmt_1'))?.replyCount).toBe(1)
 		expect(repository.postCounts.get('pst_1')).toBe(2)
+	})
+
+	it('does not delete the post author reply when its parent author removes their comment', async () => {
+		const { repository, run } = setup()
+		repository.comments.push(aComment({ id: 'cmt_owner', parentId: 'cmt_1', authorId: 'usr_9' }))
+		await run(viewer, 'cmt_1')
+		expect(await repository.find('cmt_owner')).toMatchObject({ id: 'cmt_owner', parentId: null })
+	})
+
+	it('forbids a commenter from deleting the post author comment directly', async () => {
+		const { repository, run } = setup()
+		repository.comments.push(aComment({ id: 'cmt_owner', authorId: 'usr_9' }))
+		await expect(run(viewer, 'cmt_owner')).rejects.toMatchObject({ code: 'FORBIDDEN' })
+		expect(await repository.find('cmt_owner')).not.toBe(null)
+	})
+
+	it('allows the post author to delete their own comment', async () => {
+		const { repository, run } = setup()
+		repository.comments.push(aComment({ id: 'cmt_owner', authorId: 'usr_9' }))
+		await run(as('usr_9'), 'cmt_owner')
+		expect(await repository.find('cmt_owner')).toBe(null)
 	})
 
 	it('requires a logged-in viewer', async () => {

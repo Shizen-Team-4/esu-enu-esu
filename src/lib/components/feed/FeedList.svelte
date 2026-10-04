@@ -3,6 +3,7 @@
 	import Button from '$lib/components/ui/Button.svelte'
 	import EmptyState from '$lib/components/ui/EmptyState.svelte'
 	import ErrorState from '$lib/components/ui/ErrorState.svelte'
+	import HatchBand from '$lib/components/ui/HatchBand.svelte'
 	import PostCard from '$lib/components/post/PostCard.svelte'
 	import type { Page, Post } from '$lib/contract'
 	import { errorMessageKey } from '$lib/errors/error-message'
@@ -40,8 +41,11 @@
 		{/snippet}
 	</EmptyState>
 {:else}
-	<div class="max-md:mt-3 max-md:grid max-md:gap-3">
-		{#each snap.items as post (post.id)}<PostCard {post} />{/each}
+	<div class="post-list max-md:mt-3">
+		{#each snap.items as post, index (post.id)}
+			{#if index > 0}<HatchBand />{/if}
+			<PostCard {post} />
+		{/each}
 	</div>
 	{#if snap.status === 'error'}
 		<ErrorState message={$_(errorMessageKey(snap.errorCode))} onretry={() => pager.retry()} />

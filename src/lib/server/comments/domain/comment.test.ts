@@ -56,12 +56,20 @@ describe('validateParentId', () => {
 describe('resolveParent', () => {
 	it('uses a top-level parent as is with no replyTo user', () => {
 		const parent = aComment({ id: 'cmt_1' })
-		expect(resolveParent('pst_1', parent)).toEqual({ parentId: 'cmt_1', replyToUserId: null })
+		expect(resolveParent('pst_1', parent)).toEqual({
+			parentId: 'cmt_1',
+			replyToUserId: null,
+			replyToCommentId: 'cmt_1',
+		})
 	})
 
 	it('flattens a reply to its top-level comment and points at the reply author', () => {
 		const reply = aComment({ id: 'cmt_2', parentId: 'cmt_1', authorId: 'usr_3' })
-		expect(resolveParent('pst_1', reply)).toEqual({ parentId: 'cmt_1', replyToUserId: 'usr_3' })
+		expect(resolveParent('pst_1', reply)).toEqual({
+			parentId: 'cmt_1',
+			replyToUserId: 'usr_3',
+			replyToCommentId: 'cmt_2',
+		})
 	})
 
 	it('reports a missing parent', () => {
@@ -87,6 +95,12 @@ describe('canDeleteComment', () => {
 })
 
 describe('withViewer', () => {
+	it('protects the post author comment from other viewers', () => {
+		const comment = aComment({ authorId: 'usr_1' })
+		expect(withViewer(comment, 'usr_2', 'usr_1').viewer.canDelete).toBe(false)
+		expect(withViewer(comment, 'usr_1', 'usr_1').viewer.canDelete).toBe(true)
+	})
+
 	it('marks canDelete for the viewer and never for guests', () => {
 		const comment = aComment({ authorId: 'usr_2' })
 		expect(withViewer(comment, 'usr_2', 'usr_1').viewer.canDelete).toBe(true)

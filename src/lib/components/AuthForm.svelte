@@ -5,11 +5,13 @@
 	import { submitAuth, type AuthOperation } from '$lib/auth/submit-auth'
 	import { errorMessageKey } from '$lib/errors/error-message'
 	import AuthFields from './auth/AuthFields.svelte'
+	import ResendVerification from './auth/ResendVerification.svelte'
 	let { operation, token = '' }: { operation: AuthOperation; token?: string } = $props()
 	let pending = $state(false)
 	let success = $state(false)
 	let errorCode = $state<string | null>(null)
 	let fields = $state<Record<string, string>>({})
+	let submittedEmail = $state('')
 	async function submit(event: SubmitEvent) {
 		event.preventDefault()
 		pending = true
@@ -17,6 +19,7 @@
 		const input = Object.fromEntries(
 			[...data.entries()].map(([key, value]) => [key, String(value)]),
 		)
+		submittedEmail = input.email ?? ''
 		const response = await submitAuth(operation, { ...input, token }, window.location.origin)
 		pending = false
 		success = response.ok
@@ -33,6 +36,12 @@
 			`auth.${operation === 'request-reset' || operation === 'reset' ? 'reset' : operation}`,
 		)}</Button
 	>
-	{#if success}<p role="status">{$_('auth.success')}</p>{/if}
+	{#if success}
+		<p role="status">{$_(operation === 'register' ? 'auth.checkEmail' : 'auth.success')}</p>
+		{#if operation === 'register'}<ResendVerification email={submittedEmail} />{/if}
+	{/if}
 	{#if errorCode}<p role="alert">{$_(errorMessageKey(errorCode))}</p>{/if}
+	{#if operation === 'login' && errorCode === 'EMAIL_NOT_VERIFIED'}
+		<ResendVerification email={submittedEmail} />
+	{/if}
 </form>

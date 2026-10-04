@@ -2,6 +2,7 @@
 	import Button from '$lib/components/ui/Button.svelte'
 	import { _ } from 'svelte-i18n'
 	import { errorMessageKey } from '$lib/errors/error-message'
+	import { SEARCH_QUERY_MAX } from '$lib/contract/limits'
 	let { data } = $props()
 </script>
 
@@ -14,7 +15,7 @@
 			value={data.q}
 			aria-label={$_('nav.search')}
 			required
-			maxlength="50"
+			maxlength={SEARCH_QUERY_MAX}
 			class="min-w-0 flex-1 rounded-xl border border-line p-3"
 		/><Button type="submit" variant="primary">{$_('nav.search')}</Button>
 	</form>

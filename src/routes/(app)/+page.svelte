@@ -5,7 +5,6 @@
 	import FeedTabs from '$lib/components/feed/FeedTabs.svelte'
 	import StoryTray from '$lib/components/StoryTray.svelte'
 	import ErrorState from '$lib/components/ui/ErrorState.svelte'
-	import HatchBand from '$lib/components/ui/HatchBand.svelte'
 	import { errorMessageKey } from '$lib/errors/error-message'
 
 	let { data } = $props()
@@ -22,8 +21,7 @@
 		<h2 id="story-circle" class="text-meta font-semibold text-fg">{$_('story.circle')}</h2>
 		<StoryTray items={data.stories.items} me={data.me} />
 	</section>
-	<div class="mt-3"><HatchBand /></div>
-	<FeedTabs scope={data.scope} />
+	<div class="mt-3"><FeedTabs scope={data.scope} /></div>
 	{#if data.feed}
 		<FeedList initial={data.feed} scope={data.scope} />
 	{:else}

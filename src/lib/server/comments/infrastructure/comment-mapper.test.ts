@@ -5,6 +5,7 @@ const row: CommentRow = {
 	id: 'cmt_1',
 	postId: 'pst_1',
 	parentId: null,
+	replyToCommentId: null,
 	body: 'Hi',
 	replyCount: 2,
 	createdAt: Date.parse('2026-10-03T00:00:00Z'),
@@ -32,6 +33,7 @@ describe('toComment', () => {
 			body: 'Hi',
 			parentId: null,
 			replyToUser: null,
+			replyToCommentId: null,
 			replyCount: 2,
 			createdAt: '2026-10-03T00:00:00.000Z',
 		})
@@ -41,6 +43,7 @@ describe('toComment', () => {
 		const comment = toComment({
 			...row,
 			parentId: 'cmt_0',
+			replyToCommentId: 'cmt_0',
 			username: null,
 			replyToId: 'usr_2',
 			replyToUsername: null,
@@ -48,6 +51,7 @@ describe('toComment', () => {
 			replyToImage: null,
 		})
 		expect(comment.author.username).toBe('')
+		expect(comment.replyToCommentId).toBe('cmt_0')
 		expect(comment.replyToUser).toEqual({
 			id: 'usr_2',
 			username: '',

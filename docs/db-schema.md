@@ -295,6 +295,9 @@ export const comments = sqliteTable(
 		parentId: text('parent_id').references((): AnySQLiteColumn => comments.id, {
 			onDelete: 'cascade',
 		}),
+		replyToCommentId: text('reply_to_comment_id').references((): AnySQLiteColumn => comments.id, {
+			onDelete: 'set null',
+		}),
 		replyToUserId: text('reply_to_user_id').references(() => user.id, {
 			onDelete: 'set null',
 		}),
@@ -435,6 +438,7 @@ export const rateLimit = sqliteTable('rate_limit', {
 ### `comments`
 
 - `parent_id` always points to a **top-level** comment (flatten rule). Its `ON DELETE CASCADE` deletes replies with their parent.
+- `reply_to_comment_id` retains the exact answered comment for branch expansion. Deleting that target sets this reference to null. Comment deletion promotes replies before deleting their root, preserving their content. Legacy comments have a null exact target and remain flat.
 - SQLite only enforces cascades when `PRAGMA foreign_keys = ON`. D1 enables it by default. Do not turn it off in migrations.
 
 ### `stories`, `story_views`, `story_likes`

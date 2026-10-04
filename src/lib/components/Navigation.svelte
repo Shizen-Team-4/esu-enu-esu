@@ -6,6 +6,7 @@
 </script>
 
 <nav
+	data-app-navigation
 	aria-label={$_('nav.label')}
 	class="fixed inset-x-0 bottom-0 z-20 flex items-end justify-around border-t border-line bg-surface px-1 pb-[env(safe-area-inset-bottom)] md:inset-y-0 md:right-auto md:w-rail md:flex-col md:items-center md:justify-start md:gap-2 md:border-t-0 md:border-r md:py-3 lg:hidden"
 >

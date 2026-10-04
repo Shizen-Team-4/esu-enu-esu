@@ -156,6 +156,7 @@ Values are per user, or per IP when logged out. Going over the limit → `RATE_L
 | Action                                     | Limit       |
 | ------------------------------------------ | ----------- |
 | Sign-in                                    | 10 / 15 min |
+| Sign-up                                    | 3 / hour    |
 | Password reset / resend verification email | 3 / hour    |
 | Report a post                              | 10 / hour   |
 | Create post, reel, story                   | 30 / hour   |
@@ -250,6 +251,7 @@ Comment {
   author: UserSummary
   body: string
   parentId: string | null          // null = top-level; otherwise always the id of a TOP-LEVEL comment
+  replyToCommentId: string | null  // exact comment answered; null for roots, legacy data or a deleted target
   replyToUser: UserSummary | null  // set when replying to a reply → UI shows "@username"
   replyCount: number               // top-level only; 0 for replies
   viewer: { canDelete: boolean }   // comment author or post author (proposed)
@@ -257,7 +259,9 @@ Comment {
 }
 ```
 
-**Flatten rule:** if the user replies to a reply, the server stores the new comment under the **same top-level comment**, not one level deeper. It sets `parentId` to the top-level id and `replyToUser` to the author of the reply they answered. See `cmt_312` and `cmt_313` in [`comments.json`](./samples/comments.json).
+**Flatten rule:** if the user replies to a reply, the server stores the new comment under the **same top-level comment**, not one level deeper. It retains the exact answered comment as `replyToCommentId`, sets `parentId` to the top-level id and `replyToUser` to the author of the reply they answered. See `cmt_312` and `cmt_313` in [`comments.json`](./samples/comments.json).
+
+The UI shows only parent and reply levels. Expanding a reply’s children promotes that reply to the parent position and shows its exact ancestors above it with dashed connectors. Older comments without an exact target remain flat; do not infer ancestry from `replyToUser`.
 
 Comments cannot be edited or liked.
 
@@ -310,20 +314,22 @@ Operation names define repository methods, not URLs. 🔒 means login is require
 
 Authentication stays with the BetterAuth client/server integration (#10), rather than custom application endpoints. These are frontend auth repository operations; the integration maps the provider's results and errors.
 
-| Operation              | Input                                 | Success                                           | Errors                                                       |
-| ---------------------- | ------------------------------------- | ------------------------------------------------- | ------------------------------------------------------------ |
-| `signUp`               | `{ email, password, name, username }` | Verification email sent                           | `VALIDATION_FAILED`, `CONFLICT` (`email`/`username` `TAKEN`) |
-| `signIn`               | `{ email, password }`                 | Session cookie set                                | `INVALID_CREDENTIALS`, `EMAIL_NOT_VERIFIED`                  |
-| `signInWithGoogle`     | `{ callbackURL }`                     | Redirect to provider                              | `VALIDATION_FAILED`                                          |
-| `signOut`              | none                                  | Cookie cleared, KV session removed                | none                                                         |
-| `getSession`           | none                                  | BetterAuth session/user or `null` when logged out | none                                                         |
-| `verifyEmail`          | `{ token }`                           | Redirect to app                                   | `VALIDATION_FAILED` (`token` invalid or expired)             |
-| `requestPasswordReset` | `{ email, redirectTo }`               | Same result whether or not the email exists       | `RATE_LIMITED`                                               |
-| `resetPassword`        | `{ token, newPassword }`              | Password updated                                  | `VALIDATION_FAILED` (`token` expired, `newPassword` rules)   |
+| Operation               | Input                                 | Success                                                                                                   | Errors                                                                                                        |
+| ----------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `signUp`                | `{ email, password, name, username }` | Generic success, even for an existing email; verification email sent only for a new or unverified account | `VALIDATION_FAILED`, `CONFLICT` (`username` `TAKEN` only)                                                     |
+| `signIn`                | `{ email, password }`                 | Session cookie set                                                                                        | `INVALID_CREDENTIALS`, `EMAIL_NOT_VERIFIED` (also sends a new verification link)                              |
+| `signInWithGoogle`      | `{ callbackURL }`                     | Redirect to provider                                                                                      | `VALIDATION_FAILED`, redirect to `/login?error=account_not_linked` (existing email, local account unverified) |
+| `signOut`               | none                                  | Cookie cleared, KV session removed                                                                        | none                                                                                                          |
+| `getSession`            | none                                  | BetterAuth session/user or `null` when logged out                                                         | none                                                                                                          |
+| `verifyEmail`           | `{ token }`                           | User signed in, then redirect to `/login` (which forwards to `/` or `/onboard`)                           | Redirect to `/login?error=invalid_token` or `token_expired`                                                   |
+| `sendVerificationEmail` | `{ email }` (+ `callbackURL`)         | Same result whether or not the email exists                                                               | `RATE_LIMITED`                                                                                                |
+| `requestPasswordReset`  | `{ email, redirectTo }`               | Same result whether or not the email exists                                                               | `RATE_LIMITED`                                                                                                |
+| `resetPassword`         | `{ token, newPassword }`              | Password updated                                                                                          | `VALIDATION_FAILED` (`token` expired, `newPassword` rules)                                                    |
 
 - `name` is used as the first `displayName`.
 - `username` needs the BetterAuth username plugin **(proposed)**.
 - Google is the OAuth provider (`GOOGLE_CLIENT_ID` is in `.env.example`).
+- Google sign-in links automatically to an existing account with the same email only if that account's email is verified; otherwise it redirects to `/login?error=account_not_linked`.
 - New OAuth users have no username yet. After the first OAuth login, `getMe` returns `username: ""`, and the frontend asks the user to pick one with `updateMe` **(proposed)**.
 
 ### 4.2 Users, profile, follow, search
@@ -342,6 +348,7 @@ Authentication stays with the BetterAuth client/server integration (#10), rather
 - Following is **instant**. There are no private accounts or follow requests.
 - Follow/unfollow are idempotent: following twice is not an error.
 - Search matches the start of `username` or `displayName` (case-insensitive). It searches **users only**.
+- The header search dropdown loads results incrementally through a `GET /api/users/search?q=&cursor=` `+server.ts` adapter that calls `searchUsers` (allowed by §1).
 
 ### 4.3 Media upload
 
@@ -408,7 +415,7 @@ Files are uploaded **directly to Cloudflare R2 with a presigned URL**. They do n
 | `deleteComment` | 🔒   | `{ id }`                                     | `void`                                         | `FORBIDDEN`, `NOT_FOUND`                          |
 
 - `parentId` may be a top-level comment **or a reply** on the same post. The server applies the flatten rule ([3.4](#34-comment)).
-- Deleting a top-level comment also deletes its replies **(proposed)**. `Post.counts.comments` goes down by the total number removed.
+- Deleting a comment removes only that comment. Replies of a deleted top-level comment become top-level comments, preserving other users’ comments (including the post author’s). `Post.counts.comments` goes down by one.
 
 ### 4.7 Stories
 

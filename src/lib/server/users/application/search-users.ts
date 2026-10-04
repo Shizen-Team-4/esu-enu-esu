@@ -1,3 +1,4 @@
+import { SEARCH_QUERY_MAX } from '$lib/contract/limits'
 import { AppError } from '../../shared/domain/app-error'
 import type { Viewer } from '../../shared/domain/viewer'
 import { parseLimit, decodeCursor } from '../../shared/domain/cursor'
@@ -9,7 +10,7 @@ export const searchUsers =
 		if (typeof input.q !== 'string')
 			throw new AppError('VALIDATION_FAILED', { q: 'INVALID_FORMAT' })
 		const q = input.q.trim().toLowerCase()
-		if ([...q].length < 1 || [...q].length > 50)
+		if ([...q].length < 1 || [...q].length > SEARCH_QUERY_MAX)
 			throw new AppError('VALIDATION_FAILED', { q: 'INVALID_FORMAT' })
 		return users.search(
 			q,

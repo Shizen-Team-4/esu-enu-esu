@@ -10,6 +10,11 @@
 		"password": "Password",
 		"success": "Check your email, or sign in with your updated password.",
 		"email": "Email",
+		"checkEmail": "If this email can be used, we sent a verification link to it. Check your inbox and spam folder.",
+		"resendVerification": "Resend verification email",
+		"verificationSent": "If the account needs it, a new verification link is on its way.",
+		"verifyLinkInvalid": "This verification link is invalid or has expired. Sign in and we will send you a new one.",
+		"googleAccountNotLinked": "This email is already registered but not verified yet. Open the verification link we emailed you, or sign in with your password to get a new one. Then you can continue with Google.",
 		"showPassword": "Show",
 		"hidePassword": "Hide",
 		"signIn": "Sign in",
@@ -133,7 +138,7 @@
 		"PAYLOAD_TOO_LARGE": "This file is too large.",
 		"UNSUPPORTED_MEDIA_TYPE": "This file type is not supported.",
 		"INVALID_CREDENTIALS": "Incorrect email or password.",
-		"EMAIL_NOT_VERIFIED": "Please verify your email before signing in.",
+		"EMAIL_NOT_VERIFIED": "Please verify your email first. We sent you a new link.",
 		"UPLOAD_EXPIRED": "The upload link expired. Please try again.",
 		"field": {
 			"REQUIRED": "This field is required.",
@@ -164,7 +169,12 @@
 		"notFoundTitle": "Page not found"
 	},
 	"search": {
-		"placeholder": "Search people"
+		"placeholder": "Search people",
+		"results": "Search results",
+		"noResults": "No people found",
+		"loading": "Searching…",
+		"error": "Couldn't load results. Try again.",
+		"more": "Show more"
 	},
 	"toast": {
 		"dismiss": "Dismiss"
@@ -208,5 +218,34 @@
 		"post": "Post",
 		"reel": "Reel",
 		"story": "Story"
+	},
+	"comments": {
+		"focus": "Focus thread",
+		"reply": "Reply",
+		"cancel": "Cancel",
+		"confirmDelete": "Delete this comment?",
+		"confirmDeleteThread": "Delete this comment and all its replies?",
+		"deleting": "Deleting…",
+		"context": "Parent comment context",
+		"hideReplies": "Hide replies",
+		"replyCount": "{count, plural, one {# reply} other {# replies}}",
+		"loading": "Loading comments…",
+		"moreReplies": "Load more replies",
+		"backToMainThread": "Back to main thread",
+		"empty": "No comments yet",
+		"emptyHint": "Start the conversation.",
+		"more": "Load more comments",
+		"write": "Write a comment…",
+		"writeReply": "Write a reply…",
+		"replyingTo": "Replying to @{username}",
+		"cancelReply": "Cancel reply",
+		"send": "Send",
+		"sending": "Sending…",
+		"counter": "{count} / {max} characters",
+		"loginHint": "Log in to join the conversation.",
+		"posted": "Comment posted.",
+		"deleted": "Comment deleted.",
+		"focused": "Focused comment",
+		"conversation": "Other replies in this conversation"
 	}
 }
