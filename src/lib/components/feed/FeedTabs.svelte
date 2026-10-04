@@ -9,4 +9,9 @@
 	])
 </script>
 
-<Tabs items={tabs} label={$_('feed.tabs')} class="border-b border-line bg-surface max-md:border" />
+<Tabs
+	items={tabs}
+	label={$_('feed.tabs')}
+	replaceState
+	class="border-b border-line bg-surface max-md:border"
+/>

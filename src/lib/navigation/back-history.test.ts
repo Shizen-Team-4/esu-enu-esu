@@ -64,6 +64,34 @@ describe('resolveBackHref', () => {
 		).toBe(href)
 	})
 
+	it('preserves the profile entry point across repeated content tab replacements', () => {
+		let currentHref = 'https://sns.example/u/alice'
+		let backHref: string | null = 'https://sns.example/'
+		for (const type of ['reel', 'post', 'reel', 'post']) {
+			const nextHref = `https://sns.example/u/alice?type=${type}`
+			backHref = resolveBackHref({
+				type: 'link',
+				href: nextHref,
+				fromHref: currentHref,
+				previousHref: backHref,
+				replaceState: true,
+			})
+			expect(backHref).toBe('https://sns.example/')
+			currentHref = nextHref
+		}
+	})
+
+	it('returns from a post to the selected profile tab as a normal Back step', () => {
+		expect(
+			resolveBackHref({
+				type: 'link',
+				href: 'https://sns.example/p/one',
+				fromHref: 'https://sns.example/u/alice?type=reel',
+				previousHref: 'https://sns.example/',
+			}),
+		).toBe('https://sns.example/u/alice?type=reel')
+	})
+
 	it('tracks programmatic and form navigation', () => {
 		for (const type of ['goto', 'form'] as const) {
 			expect(resolveBackHref({ type, href, fromHref: '/search?q=alice' })).toBe('/search?q=alice')

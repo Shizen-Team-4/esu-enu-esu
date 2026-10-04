@@ -12,5 +12,6 @@
 	{items}
 	label={$_('profile.content')}
 	position="top"
-	class="mt-[22px] border-t border-line md:mt-[30px]"
+	replaceState
+	class="mt-5.5 border-t border-line md:mt-7.5"
 />
