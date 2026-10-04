@@ -1,5 +1,6 @@
 <script lang="ts">
 	import '../app.css'
+	import NavigationHistory from '$lib/components/NavigationHistory.svelte'
 	let { children, data } = $props()
 	$effect(() => {
 		document.documentElement.lang = data.lang
@@ -17,4 +18,4 @@
 	})
 </script>
 
-{@render children()}
+<NavigationHistory>{@render children()}</NavigationHistory>

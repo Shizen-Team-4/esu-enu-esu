@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process'
-// cspell:ignore opencode
+// cspell:ignore opencode replacestate
 import { expect, test, type BrowserContext } from '@playwright/test'
 
 test.use({ extraHTTPHeaders: { origin: 'http://localhost:8787' } })
@@ -131,6 +131,172 @@ test('pagination failures preserve rows and offer a working retry', async ({ pag
 	await expect(page.locator('[data-user-id]')).toHaveCount(20)
 	await page.getByRole('button', { name: 'Try again' }).click()
 	await expect(page.locator('[data-user-id]')).toHaveCount(26)
+})
+
+for (const width of [390, 1440]) {
+	test(`Back retraces nested profiles and follow lists after refresh at ${width}px`, async ({
+		page,
+	}, testInfo) => {
+		await page.setViewportSize({ width, height: 844 })
+		const errors: string[] = []
+		page.on('pageerror', (error) => errors.push(error.message))
+		const main = page.getByRole('main')
+		const back = main.getByRole('link', { name: 'Back', exact: true })
+		await page.goto('/u/follow_ui_owner', { waitUntil: 'networkidle' })
+		await expect(back).toHaveCount(0)
+		await main.getByRole('link', { name: /followers/i }).click()
+		await expect(page).toHaveURL(/\/u\/follow_ui_owner\/followers$/)
+		await page.locator('[data-user-id="usr_sns_demo"] a').click()
+		await expect(page).toHaveURL(/\/u\/sns_demo$/)
+		await expect(back).toBeVisible()
+		await expect(back).toHaveAttribute('href', /\/u\/follow_ui_owner\/followers$/)
+		await main.getByRole('link', { name: /following/i }).click()
+		await expect(page).toHaveURL(/\/u\/sns_demo\/following$/)
+		await page.locator('[data-user-id="usr_follow_ui_owner"] a').click()
+		await expect(page).toHaveURL(/\/u\/follow_ui_owner$/)
+		await page.reload({ waitUntil: 'networkidle' })
+		await expect(back).toBeVisible()
+		await back.focus()
+		await expect(back).toBeFocused()
+		expect((await back.boundingBox())!.height).toBeGreaterThanOrEqual(44)
+		await page.screenshot({
+			path: testInfo.outputPath(`profile-back-${width}.png`),
+			fullPage: true,
+		})
+		await page.evaluate(() => document.documentElement.classList.add('dark'))
+		await page.screenshot({
+			path: testInfo.outputPath(`profile-back-dark-${width}.png`),
+			fullPage: true,
+		})
+		for (const path of [
+			'/u/sns_demo/following',
+			'/u/sns_demo',
+			'/u/follow_ui_owner/followers',
+			'/u/follow_ui_owner',
+		]) {
+			await back.click()
+			await expect(page).toHaveURL(new RegExp(`${path}$`))
+		}
+		await expect(back).toHaveCount(0)
+		await page.goForward()
+		await expect(page).toHaveURL(/\/u\/follow_ui_owner\/followers$/)
+		await expect(back).toBeVisible()
+		await back.press('Enter')
+		await expect(page).toHaveURL(/\/u\/follow_ui_owner$/)
+		await expect(back).toHaveCount(0)
+		await main.getByRole('link', { name: /following/i }).click()
+		await expect(page).toHaveURL(/\/u\/follow_ui_owner\/following$/)
+		await back.click()
+		await expect(page).toHaveURL(/\/u\/follow_ui_owner$/)
+		await expect(back).toHaveCount(0)
+		expect(errors).toEqual([])
+	})
+}
+
+test('directly opened follow lists have no Back, including after refresh', async ({ page }) => {
+	await page.goto('/u/follow_ui_owner/followers', { waitUntil: 'networkidle' })
+	const back = page.getByRole('main').getByRole('link', { name: 'Back', exact: true })
+	await expect(back).toHaveCount(0)
+	await page.reload({ waitUntil: 'networkidle' })
+	await expect(back).toHaveCount(0)
+	await page.locator('[data-user-id="usr_sns_demo"] a').click()
+	await expect(back).toBeVisible()
+	const [newTab] = await Promise.all([
+		page.context().waitForEvent('page'),
+		back.click({ modifiers: ['Control'] }),
+	])
+	await newTab.waitForLoadState('networkidle')
+	await expect(newTab.getByRole('link', { name: 'Back', exact: true })).toHaveCount(0)
+	await newTab.close()
+	await back.click()
+	await expect(page).toHaveURL(/\/u\/follow_ui_owner\/followers$/)
+	await expect(back).toHaveCount(0)
+})
+
+for (const width of [390, 1440]) {
+	test(`settings retrace their actual entry point at ${width}px`, async ({ page }, testInfo) => {
+		await page.setViewportSize({ width, height: 844 })
+		await page.goto('/u/follow_ui_owner', { waitUntil: 'networkidle' })
+		await page.getByRole('button', { name: 'Account menu' }).click()
+		await page.getByRole('link', { name: 'Preferences', exact: true }).click()
+		await expect(page).toHaveURL(/\/settings$/)
+		const back = page.getByRole('main').getByRole('link', { name: 'Back', exact: true })
+		await expect(back).toBeVisible()
+		const length = await page.evaluate(() => history.length)
+		await page.getByRole('link', { name: 'Preferences', exact: true }).click()
+		await expect(page.getByRole('link', { name: 'Preferences', exact: true })).not.toBeFocused()
+		await page.reload({ waitUntil: 'networkidle' })
+		expect(await page.evaluate(() => history.length)).toBe(length)
+		await expect(back).toHaveAttribute('href', /\/u\/follow_ui_owner$/)
+		await page.screenshot({
+			path: testInfo.outputPath(`settings-back-${width}.png`),
+			fullPage: true,
+		})
+		await page.getByRole('main').getByRole('link', { name: 'Edit profile' }).click()
+		await expect(page).toHaveURL(/\/settings\/profile$/)
+		await page.reload({ waitUntil: 'networkidle' })
+		await page.screenshot({
+			path: testInfo.outputPath(`edit-profile-back-${width}.png`),
+			fullPage: true,
+		})
+		await back.click()
+		await expect(page).toHaveURL(/\/settings$/)
+		await back.click()
+		await expect(page).toHaveURL(/\/u\/follow_ui_owner$/)
+		await expect(back).toHaveCount(0)
+	})
+
+	test(`direct story viewer has no Back at ${width}px`, async ({ page }, testInfo) => {
+		await page.setViewportSize({ width, height: 844 })
+		await page.goto('/stories/sns_demo', { waitUntil: 'networkidle' })
+		await expect(page.getByRole('link', { name: 'Back', exact: true })).toHaveCount(0)
+		await expect(page.getByRole('link', { name: 'Close', exact: true })).toBeVisible()
+		await page.screenshot({
+			path: testInfo.outputPath(`story-direct-${width}.png`),
+			fullPage: true,
+		})
+	})
+}
+
+test('same-URL Preferences links do not invent Back on a direct visit', async ({ page }) => {
+	await page.goto('/settings', { waitUntil: 'networkidle' })
+	const back = page.getByRole('main').getByRole('link', { name: 'Back', exact: true })
+	await expect(back).toHaveCount(0)
+	const length = await page.evaluate(() => history.length)
+	await page.getByRole('button', { name: 'Account menu' }).click()
+	await page.getByRole('link', { name: 'Preferences', exact: true }).click()
+	await expect(page.getByRole('link', { name: 'Preferences', exact: true })).not.toBeFocused()
+	await page.reload({ waitUntil: 'networkidle' })
+	expect(await page.evaluate(() => history.length)).toBe(length)
+	await expect(back).toHaveCount(0)
+})
+
+test('explicit replacement links preserve the original predecessor', async ({ page }) => {
+	await page.goto('/u/follow_ui_owner', { waitUntil: 'networkidle' })
+	await page.getByRole('button', { name: 'Account menu' }).click()
+	const preferences = page.getByRole('link', { name: 'Preferences', exact: true })
+	await preferences.evaluate((link) => link.setAttribute('data-sveltekit-replacestate', 'true'))
+	const length = await page.evaluate(() => history.length)
+	await preferences.click()
+	await expect(page).toHaveURL(/\/settings$/)
+	await page.reload({ waitUntil: 'networkidle' })
+	expect(await page.evaluate(() => history.length)).toBe(length)
+	await expect(page.getByRole('link', { name: 'Back', exact: true })).toHaveCount(0)
+})
+
+test('explicit same-URL pushes remain real Back steps', async ({ page }) => {
+	await page.goto('/settings', { waitUntil: 'networkidle' })
+	await page.getByRole('button', { name: 'Account menu' }).click()
+	const preferences = page.getByRole('link', { name: 'Preferences', exact: true })
+	await preferences.evaluate((link) => link.setAttribute('data-sveltekit-replacestate', 'false'))
+	const length = await page.evaluate(() => history.length)
+	await preferences.click()
+	const back = page.getByRole('main').getByRole('link', { name: 'Back', exact: true })
+	await expect(back).toBeVisible()
+	expect(await page.evaluate(() => history.length)).toBe(length + 1)
+	await back.click()
+	await expect(back).toHaveCount(0)
+	await expect(page).toHaveURL(/\/settings$/)
 })
 
 test('follow failures keep the existing follow state', async ({ page }) => {

@@ -15,6 +15,7 @@
 	} from '$lib/posts/optimistic-toggle'
 	import { likeFromData, saveFromData } from '$lib/posts/reaction-result'
 	import { showToast } from '$lib/toast/toast-state'
+	import { focusCommentInput } from '$lib/comments/focus-comment-input'
 	import ActionButton from './ActionButton.svelte'
 	import ReactionButton from './ReactionButton.svelte'
 	import ShareButton from './ShareButton.svelte'
@@ -28,6 +29,7 @@
 	let likeBefore: LikeState = { liked: false, likes: 0 }
 	let saveBefore: SaveState = { saved: false }
 	const loggedIn = $derived(Boolean(page.data.me))
+	const onPostPage = $derived(page.url.pathname === `/p/${encodeURIComponent(post.id)}`)
 
 	const failed = (code: string) => showToast($_(errorMessageKey(code)))
 </script>
@@ -58,7 +60,9 @@
 			}}
 		/>
 		<ActionButton
-			href="/p/{post.id}#comments"
+			href={onPostPage ? undefined : `/p/${post.id}#comments`}
+			type={onPostPage ? 'button' : undefined}
+			onclick={onPostPage ? () => focusCommentInput(document) : undefined}
 			icon="comment"
 			label={$_('post.comments')}
 			count={post.counts.comments}

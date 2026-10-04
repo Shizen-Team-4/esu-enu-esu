@@ -40,7 +40,7 @@
 </script>
 
 <svelte:head><title>{$_('preferences.title')} · {$_('app.name')}</title></svelte:head>
-<PageBar title={$_('preferences.title')} backHref="/" />
+<PageBar title={$_('preferences.title')} />
 <div class="mx-auto my-7 w-full max-w-[520px] px-gutter">
 	<form
 		bind:this={formEl}

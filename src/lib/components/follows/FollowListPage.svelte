@@ -20,7 +20,7 @@
 </script>
 
 <svelte:head><title>{$_(`profile.${kind}`)} · @{username} · {$_('app.name')}</title></svelte:head>
-<PageBar title={$_('common.back')} backHref="/u/{username}" />
+<PageBar />
 <section class="py-6">
 	<h1 class="m-0 text-title font-semibold">{$_(`profile.${kind}`)}</h1>
 	<p class="mb-6 mt-1 text-meta text-fg-muted">@{username}</p>

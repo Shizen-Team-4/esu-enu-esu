@@ -169,6 +169,41 @@ test('guests see comments without deletion controls and can log in to reply', as
 	}
 })
 
+for (const width of [390, 1440]) {
+	test(`comment-page Back returns to the originating profile at ${width}px`, async ({
+		page,
+	}, testInfo) => {
+		await page.setViewportSize({ width, height: 844 })
+		const postId = await preparePost(page)
+		const back = page.getByRole('main').getByRole('link', { name: 'Back', exact: true })
+		try {
+			await page.goto('/u/sns_demo', { waitUntil: 'networkidle' })
+			await expect(back).toHaveCount(0)
+			await page.getByRole('main').locator(`a[href$="/p/${postId}"]`).click()
+			await expect(page).toHaveURL(new RegExp(`/p/${postId}$`))
+			await expect(back).toBeVisible()
+			await page.reload({ waitUntil: 'networkidle' })
+			await expect(back).toBeVisible()
+			await page.screenshot({
+				path: testInfo.outputPath(`comments-back-${width}.png`),
+				fullPage: true,
+			})
+			await page.evaluate(() => document.documentElement.classList.add('dark'))
+			await page.screenshot({
+				path: testInfo.outputPath(`comments-back-dark-${width}.png`),
+				fullPage: true,
+			})
+			await back.click()
+			await expect(page).toHaveURL(/\/u\/sns_demo$/)
+			await expect(back).toHaveCount(0)
+			await page.goto(`/p/${postId}`, { waitUntil: 'networkidle' })
+			await expect(back).toHaveCount(0)
+		} finally {
+			await page.request.post(`/p/${postId}?/delete`, { form: {} })
+		}
+	})
+}
+
 test('keeps a failed inline reply draft and restores the top composer after sending', async ({
 	page,
 }) => {

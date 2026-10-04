@@ -7,7 +7,7 @@
 </script>
 
 <svelte:head><title>{$_('editProfile.title')} · {$_('app.name')}</title></svelte:head>
-<PageBar title={$_('editProfile.title')} backHref={`/u/${data.profile.username}`} />
+<PageBar title={$_('editProfile.title')} />
 <div class="px-gutter py-6">
 	<div class="mx-auto max-w-[520px] border border-line bg-surface p-[18px] md:p-[22px]">
 		<EditProfileForm profile={data.profile} {form} />

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Button from '$lib/components/ui/Button.svelte'
+	import PageBar from '$lib/components/ui/PageBar.svelte'
 	import { _ } from 'svelte-i18n'
 	import { errorMessageKey } from '$lib/errors/error-message'
 	import { enhance } from '$app/forms'
@@ -24,6 +25,7 @@
 <svelte:head><title>{$_('story.title')} · {$_('app.name')}</title></svelte:head>
 
 <main class="mx-auto w-full max-w-content px-gutter py-6">
+	<PageBar />
 	<Button href="/">{$_('story.close')}</Button>
 	{#if form?.error?.code}<p role="alert">{$_(errorMessageKey(form.error.code))}</p>{/if}
 	{#if current && !expired}

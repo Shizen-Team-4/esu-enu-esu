@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { _ } from 'svelte-i18n'
 	import type { Comment, ErrorEnvelope, Page, Post, UserSummary } from '$lib/contract'
 	import PostCard from '$lib/components/post/PostCard.svelte'
 	import PageBar from '$lib/components/ui/PageBar.svelte'
@@ -24,7 +23,7 @@
 </script>
 
 <div class="post-comments">
-	<PageBar title={$_('common.back')} backHref="/" />
+	<PageBar />
 	<PostCard post={current} />
 	<CommentSection
 		postId={post.id}
