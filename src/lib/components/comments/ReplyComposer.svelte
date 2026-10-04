@@ -4,7 +4,7 @@
 	import { _ } from 'svelte-i18n'
 	import type { Comment, ErrorEnvelope, UserSummary } from '$lib/contract'
 	import { COMMENT_BODY_MAX } from '$lib/contract'
-	import { canSubmitComment } from '$lib/comments/composer-state'
+	import { canSubmitComment, submittedParentId } from '$lib/comments/composer-state'
 	import { autoSizeTextarea } from '$lib/comments/auto-size-textarea'
 	import { charCount } from '$lib/format/char-count'
 	import { errorCodeFromData } from '$lib/posts/reaction-result'
@@ -17,7 +17,8 @@
 		me,
 		target,
 		body = $bindable(''),
-		fallbackParentId = $bindable(''),
+		fallbackParentId = '',
+		pending = $bindable(false),
 		initialError,
 		notice,
 		oncancel,
@@ -27,6 +28,7 @@
 		target: Comment | null
 		body?: string
 		fallbackParentId?: string
+		pending?: boolean
 		initialError?: ErrorEnvelope['error']
 		notice?: string | null
 		oncancel: () => void
@@ -34,7 +36,6 @@
 	} = $props()
 	let error = $state<string | null>(untrack(() => initialError?.code ?? null))
 	let fieldError = $state(untrack(() => initialError?.fields?.body))
-	let pending = $state(false)
 	let input = $state<HTMLTextAreaElement>()
 	$effect(() => {
 		if (target) input?.focus()
@@ -54,8 +55,6 @@
 				pending = false
 				if (result.type === 'success' && result.data?.comment) {
 					await update({ reset: false, invalidateAll: false })
-					body = ''
-					fallbackParentId = ''
 					onCreated(result.data.comment as Comment)
 				} else if (result.type === 'redirect') await update()
 				else {
@@ -66,7 +65,7 @@
 			}
 		}}
 	>
-		<input type="hidden" name="parentId" value={target?.id ?? fallbackParentId} />
+		<input type="hidden" name="parentId" value={submittedParentId({ target, fallbackParentId })} />
 		{#if target}<div
 				class="flex min-w-0 items-center justify-between gap-2 text-meta text-fg-muted"
 			>

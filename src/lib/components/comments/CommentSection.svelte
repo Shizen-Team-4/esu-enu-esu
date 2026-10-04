@@ -4,6 +4,7 @@
 	import type { Comment, ErrorEnvelope, Page, UserSummary } from '$lib/contract'
 	import { createCommentState } from '$lib/comments/comment-state'
 	import { fetchComments } from '$lib/comments/fetch-comments'
+	import { cancelReplyTarget, selectReplyTarget } from '$lib/comments/composer-state'
 	import CommentThread from './CommentThread.svelte'
 	import ReplyComposer from './ReplyComposer.svelte'
 
@@ -32,15 +33,25 @@
 	let focused = $state<Comment | null>(null)
 	let body = $state(untrack(() => form?.body ?? ''))
 	let fallbackParentId = $state(untrack(() => form?.parentId ?? ''))
+	let pending = $state(false)
 	let initialError = $state(untrack(() => form?.error))
 	let notice = $state<string | null>(null)
 	let expanded = $state(new Set<string>())
 
+	function reply(comment: Comment) {
+		;({ target, fallbackParentId } = selectReplyTarget(
+			{ target, fallbackParentId, pending },
+			comment,
+		))
+	}
+	function cancel() {
+		;({ target, fallbackParentId } = cancelReplyTarget({ target, fallbackParentId, pending }))
+	}
 	function toggle(id: string) {
 		const next = new Set(expanded)
 		if (next.has(id)) {
 			next.delete(id)
-			if (target?.parentId === id) target = null
+			if (!pending && target?.parentId === id) target = null
 		} else {
 			next.add(id)
 			void controller.loadMore(id)
@@ -53,13 +64,16 @@
 		if (comment.parentId === null) focused = null
 		if (comment.parentId && !expanded.has(comment.parentId)) toggle(comment.parentId)
 		target = null
+		body = ''
+		fallbackParentId = ''
 		onCountChange(1)
 		notice = 'comments.posted'
 	}
 	function deleted(comment: Comment) {
 		controller.remove(comment)
-		if (target?.id === comment.id || (comment.parentId === null && target?.parentId === comment.id))
-			target = null
+		const clearsTarget =
+			target?.id === comment.id || (comment.parentId === null && target?.parentId === comment.id)
+		if (!pending && clearsTarget) target = null
 		onCountChange(-1)
 		if (comment.parentId === null) void controller.loadMore()
 		notice = 'comments.deleted'
@@ -85,10 +99,13 @@
 		{expanded}
 		onExpand={toggle}
 		onload={(id) => controller.loadMore(id)}
-		onReply={(comment) => (target = comment)}
+		onReply={reply}
+		replyDisabled={pending}
 		onDeleted={deleted}
 		{replyComposer}
-		onNavigate={() => (target = null)}
+		onNavigate={() => {
+			if (!pending) target = null
+		}}
 	/>
 </section>
 
@@ -97,10 +114,11 @@
 		{me}
 		{target}
 		bind:body
-		bind:fallbackParentId
+		{fallbackParentId}
+		bind:pending
 		{initialError}
 		{notice}
-		oncancel={() => (target = null)}
+		oncancel={cancel}
 		onCreated={created}
 	/>
 {/snippet}

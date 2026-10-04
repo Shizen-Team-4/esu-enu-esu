@@ -19,6 +19,7 @@
 		onExpandBranch,
 		onDeleted,
 		replyComposer,
+		replyDisabled = false,
 	}: {
 		root: Comment
 		page?: CommentPage
@@ -30,6 +31,7 @@
 		onExpandBranch: (comment: Comment) => void
 		onDeleted: (comment: Comment) => void
 		replyComposer: Snippet<[Comment]>
+		replyDisabled?: boolean
 	} = $props()
 	const branch = $derived(focusBranch(root, page?.items ?? [], focusedId))
 	const replyCount = $derived(focusedId ? branch.replies.length : root.replyCount)
@@ -40,13 +42,13 @@
 		<div aria-label={$_('comments.context')}>
 			{#each branch.ancestors as comment (comment.id)}
 				<div class="ancestor relative pb-4">
-					<CommentItem {comment} context {onReply} {onDeleted} {replyComposer} />
+					<CommentItem {comment} context {onReply} {onDeleted} {replyComposer} {replyDisabled} />
 				</div>
 			{/each}
 		</div>
 	{/if}
 	<div class="branch-parent relative" class:connected={expanded && branch.replies.length > 0}>
-		<CommentItem comment={branch.parent} {onReply} {onDeleted} {replyComposer} />
+		<CommentItem comment={branch.parent} {onReply} {onDeleted} {replyComposer} {replyDisabled} />
 		{#if replyCount > 0 || expanded}
 			<button
 				type="button"
@@ -72,6 +74,7 @@
 						{onExpandBranch}
 						{onDeleted}
 						{replyComposer}
+						{replyDisabled}
 					/>
 				</div>
 			{/each}

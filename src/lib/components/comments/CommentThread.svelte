@@ -19,6 +19,7 @@
 		onDeleted,
 		replyComposer,
 		onNavigate,
+		replyDisabled = false,
 	}: {
 		focused?: Comment | null
 		roots: CommentPage
@@ -30,6 +31,7 @@
 		onDeleted: (comment: Comment) => void
 		replyComposer: Snippet<[Comment]>
 		onNavigate: () => void
+		replyDisabled?: boolean
 	} = $props()
 	const visibleRoots = $derived(
 		focused ? roots.items.filter((root) => root.id === focused?.parentId) : roots.items,
@@ -71,6 +73,7 @@
 			}}
 			{onDeleted}
 			{replyComposer}
+			{replyDisabled}
 		/>
 	{/each}
 </div>

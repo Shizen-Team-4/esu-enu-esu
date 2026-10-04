@@ -14,6 +14,7 @@
 		onExpandBranch,
 		onDeleted,
 		replyComposer,
+		replyDisabled = false,
 	}: {
 		comment: Comment
 		context?: boolean
@@ -22,6 +23,7 @@
 		onExpandBranch?: (comment: Comment) => void
 		onDeleted: (comment: Comment) => void
 		replyComposer: Snippet<[Comment]>
+		replyDisabled?: boolean
 	} = $props()
 	const href = $derived(`/u/${encodeURIComponent(comment.author.username)}`)
 </script>
@@ -52,7 +54,8 @@
 			<div class="flex flex-wrap items-center justify-end gap-1">
 				<button
 					type="button"
-					class="min-h-11 cursor-pointer px-2 text-meta text-fg-muted"
+					disabled={replyDisabled}
+					class="min-h-11 cursor-pointer px-2 text-meta text-fg-muted disabled:cursor-not-allowed"
 					onclick={() => onReply(comment)}>{$_('comments.reply')}</button
 				>
 				{#if comment.viewer.canDelete}<DeleteComment {comment} {onDeleted} />{/if}
