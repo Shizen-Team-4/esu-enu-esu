@@ -29,6 +29,7 @@ import type { Lang } from '$lib/i18n/config'
 import { createUserRepository } from './users/infrastructure/drizzle-users'
 import { getMe } from './users/application/get-me'
 import { getProfile } from './users/application/get-profile'
+import { getProfileContent } from './users/application/get-profile-content'
 import { searchUsers } from './users/application/search-users'
 import { followUser } from './users/application/follow-user'
 import { updateMe } from './users/application/update-me'
@@ -145,6 +146,11 @@ export function createContainer(
 		users: {
 			getMe: getMe(users),
 			getProfile: getProfile(users),
+			getProfileContent: getProfileContent({
+				getProfile: getProfile(users),
+				listUserPosts: listUserPosts({ posts, authors: authorDirectory(users) }),
+				listSavedPosts: listSavedPosts(posts),
+			}),
 			searchUsers: searchUsers(users),
 			followUser: followUser({ users, clock }),
 			updateMe: updateMe({ users, avatars: avatarMedia(mediaRepository, mediaPublicUrl) }),

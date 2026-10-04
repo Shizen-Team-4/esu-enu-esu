@@ -11,14 +11,14 @@
 	<div
 		class="mx-auto lg:grid lg:max-w-[calc(var(--spacing-sidebar)+var(--container-content)+var(--spacing-aside))] lg:grid-cols-[var(--spacing-sidebar)_minmax(0,1fr)_var(--spacing-aside)]"
 	>
-		<Sidebar />
+		<Sidebar me={data.me} />
 		<main
-			class="mx-auto w-full max-w-content px-gutter pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-8 lg:border-x lg:border-line"
+			class="mx-auto min-h-[calc(100dvh-var(--spacing-app-header))] w-full max-w-content px-gutter pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-8 lg:border-x lg:border-line"
 		>
 			{@render children()}
 		</main>
 		<div class="hidden lg:block" aria-hidden="true"></div>
 	</div>
-	<Navigation />
+	<Navigation me={data.me} />
 	<Toast />
 </div>

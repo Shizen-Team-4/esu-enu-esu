@@ -9,14 +9,11 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
 	const services = requireServices(locals)
 	const viewer = optionalViewer(locals.user)
 	try {
-		const profile = await services.users.getProfile(viewer, params.username)
-		const type = url.searchParams.get('type') === 'reel' ? 'reel' : 'post'
-		const posts = await services.posts.listUserPosts(viewer, {
+		return await services.users.getProfileContent(viewer, {
 			username: params.username,
-			type,
+			type: url.searchParams.get('type') ?? undefined,
 			cursor: url.searchParams.get('cursor') ?? undefined,
 		})
-		return { profile, posts, type }
 	} catch (cause) {
 		return toHttpError(cause)
 	}
