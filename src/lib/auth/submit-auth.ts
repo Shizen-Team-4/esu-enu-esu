@@ -1,6 +1,6 @@
 import type { ErrorCode } from '$lib/contract'
 
-export type AuthOperation = 'login' | 'register' | 'request-reset' | 'reset'
+export type AuthOperation = 'login' | 'register' | 'request-reset' | 'reset' | 'resend-verification'
 
 export type AuthResult =
 	{ ok: true } | { ok: false; code: ErrorCode; fields?: Record<string, string> }
@@ -10,6 +10,7 @@ const paths: Record<AuthOperation, string> = {
 	register: 'sign-up/email',
 	'request-reset': 'request-password-reset',
 	reset: 'reset-password',
+	'resend-verification': 'send-verification-email',
 }
 
 function buildBody(operation: AuthOperation, input: Record<string, string>, origin: string) {
@@ -17,7 +18,9 @@ function buildBody(operation: AuthOperation, input: Record<string, string>, orig
 	if (operation === 'request-reset')
 		return { email: input.email, redirectTo: `${origin}/reset-password` }
 	if (operation === 'reset') return { token: input.token, newPassword: input.password }
-	return input
+	if (operation === 'resend-verification')
+		return { email: input.email, callbackURL: `${origin}/login` }
+	return { ...input, callbackURL: `${origin}/login` }
 }
 
 function failureFor(status: number, betterAuthCode: string | undefined): AuthResult {

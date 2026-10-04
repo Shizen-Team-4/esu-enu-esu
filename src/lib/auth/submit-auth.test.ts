@@ -26,7 +26,13 @@ describe('submitAuth', () => {
 	})
 
 	it.each([
+		['login', 'sign-in/email', { email: 'a@b.c', callbackURL: 'https://x/login' }],
 		['register', 'sign-up/email', { callbackURL: 'https://x/login' }],
+		[
+			'resend-verification',
+			'send-verification-email',
+			{ email: 'a@b.c', callbackURL: 'https://x/login' },
+		],
 		['request-reset', 'request-password-reset', { redirectTo: 'https://x/reset-password' }],
 		['reset', 'reset-password', { newPassword: 'pw', token: 't' }],
 	] as const)('sends the %s request to its endpoint', async (operation, path, expected) => {
