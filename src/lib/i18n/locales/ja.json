@@ -79,6 +79,11 @@
 		"photoPost": "写真の投稿",
 		"reel": "リール"
 	},
+	"follows": {
+		"emptyFollowers": "まだフォロワーはいません",
+		"emptyFollowing": "まだ誰もフォローしていません",
+		"loading": "ユーザーを読み込み中…"
+	},
 	"story": {
 		"love": "ストーリーにいいね",
 		"expires": "ストーリーは24時間後に消えます。",

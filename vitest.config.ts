@@ -30,6 +30,8 @@ export default defineConfig({
 				'src/lib/media/upload-file.ts',
 				'src/lib/media/carousel-index.ts',
 				'src/lib/feed/**/*.ts',
+				'src/lib/follows/**/*.ts',
+				'src/lib/pagination/**/*.ts',
 				'src/lib/comments/**/*.ts',
 				'src/lib/posts/**/*.ts',
 				'src/lib/format/**/*.ts',
