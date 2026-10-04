@@ -1,11 +1,11 @@
-import { error } from '@sveltejs/kit'
-import { AppError } from '$lib/server/shared/domain/app-error'
+import { toHttpError } from '$lib/server/shared/http/error-response'
+import { requireServices } from '$lib/server/shared/http/guards'
 import type { RequestHandler } from './$types'
 
 export const GET: RequestHandler = async ({ locals, params }) => {
-	if (!locals.services) error(503)
+	const services = requireServices(locals)
 	try {
-		const file = await locals.services.media.getMediaFile(params.key)
+		const file = await services.media.getMediaFile(params.key)
 		return new Response(file.body, {
 			headers: {
 				'content-type': file.contentType,
@@ -15,7 +15,6 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			},
 		})
 	} catch (cause) {
-		if (cause instanceof AppError && cause.code === 'NOT_FOUND') error(404)
-		error(500)
+		return toHttpError(cause)
 	}
 }

@@ -1,32 +1,23 @@
-import { json } from '@sveltejs/kit'
-import { AppError, type ErrorCode } from '../domain/app-error'
+import { error, fail, json } from '@sveltejs/kit'
+import { statusOf, toEnvelope } from './error-envelope'
 
-const statuses: Record<ErrorCode, number> = {
-	VALIDATION_FAILED: 400,
-	UNAUTHENTICATED: 401,
-	FORBIDDEN: 403,
-	NOT_FOUND: 404,
-	CONFLICT: 409,
-	RATE_LIMITED: 429,
-	INTERNAL: 500,
-	PAYLOAD_TOO_LARGE: 413,
-	UNSUPPORTED_MEDIA_TYPE: 415,
-	INVALID_CREDENTIALS: 401,
-	EMAIL_NOT_VERIFIED: 403,
+export { statusOf, toEnvelope }
+
+export function toJsonError(cause: unknown) {
+	const envelope = toEnvelope(cause)
+	const { code, retryAfterSec } = envelope.error
+	return json(envelope, {
+		status: statusOf(code),
+		headers: retryAfterSec === undefined ? {} : { 'Retry-After': String(retryAfterSec) },
+	})
 }
 
-export function errorResponse(cause: unknown) {
-	const error = cause instanceof AppError ? cause : new AppError('INTERNAL')
-	return json(
-		{
-			error: {
-				code: error.code,
-				message: error.message,
-				...(error.fields ? { fields: error.fields } : {}),
-			},
-		},
-		{
-			status: statuses[error.code],
-		},
-	)
+export function toActionFailure(cause: unknown) {
+	const envelope = toEnvelope(cause)
+	return fail(statusOf(envelope.error.code), envelope)
+}
+
+export function toHttpError(cause: unknown): never {
+	const { code, message } = toEnvelope(cause).error
+	error(statusOf(code), { message, code })
 }

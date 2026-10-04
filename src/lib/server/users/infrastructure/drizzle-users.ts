@@ -1,7 +1,11 @@
-import { sql } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import type { getDb } from '../../db'
+import { user } from '../../db/schema'
+import { AppError } from '../../shared/domain/app-error'
 import { encodeCursor } from '../../shared/domain/cursor'
-import type { Me, UserRepository } from '../application/ports'
+import type { Me, PageRequest, UserRepository } from '../application/ports'
+import { isUniqueViolation } from './unique-violation'
+import { userSearchCondition } from './user-search-condition'
 
 type UserRow = {
 	id: string
@@ -37,6 +41,46 @@ export function createUserRepository(db: ReturnType<typeof getDb>): UserReposito
 			viewer: { isMe: row.id === viewerId, following: Boolean(row.viewerFollowing) },
 		}
 	}
+	async function listFollows(
+		scope: { owner: ReturnType<typeof sql>; other: ReturnType<typeof sql> },
+		viewerId: string | null,
+		page: PageRequest,
+	) {
+		const conditions = [scope.owner, sql`u.banned = 0`, sql`u.username IS NOT NULL`]
+		if (page.cursor)
+			conditions.push(
+				sql`(f.created_at < ${page.cursor.time} OR (f.created_at = ${page.cursor.time} AND u.id < ${page.cursor.id}))`,
+			)
+		const rows = await db.all<{
+			id: string
+			username: string
+			name: string
+			image: string | null
+			followedAt: number
+			viewerFollowing: number
+		}>(
+			sql`SELECT u.id, u.username, u.name, u.image, f.created_at AS followedAt,
+			EXISTS(SELECT 1 FROM follows WHERE follower_id = ${viewerId} AND followee_id = u.id) AS viewerFollowing
+			FROM follows f JOIN user u ON u.id = ${scope.other}
+			WHERE ${sql.join(conditions, sql` AND `)} ORDER BY f.created_at DESC, u.id DESC LIMIT ${page.limit + 1}`,
+		)
+		const items = rows.slice(0, page.limit),
+			last = items.at(-1)
+		return {
+			items: items.map((row) => ({
+				id: row.id,
+				username: row.username,
+				displayName: row.name,
+				avatarUrl: row.image,
+				viewer: { isMe: row.id === viewerId, following: Boolean(row.viewerFollowing) },
+			})),
+			nextCursor:
+				rows.length > page.limit && last
+					? encodeCursor({ time: last.followedAt, id: last.id })
+					: null,
+		}
+	}
+
 	return {
 		async find(input, viewerId) {
 			const where = input.id ? sql`u.id = ${input.id}` : sql`u.username = ${input.username}`
@@ -46,14 +90,9 @@ export function createUserRepository(db: ReturnType<typeof getDb>): UserReposito
 			return row ? map(row, viewerId) : null
 		},
 		async search(q, viewerId, limit, cursor) {
-			const escaped = q.replace(/[\\%_]/g, (char) => `\\${char}`) + '%'
 			const rank = sql`CASE WHEN u.username = ${q} THEN 0 WHEN EXISTS(SELECT 1 FROM follows WHERE follower_id = ${viewerId} AND followee_id = u.id) THEN 1 ELSE 2 END`
 			// Search cursors carry rank and the hex-encoded username followed by the user ID.
-			const conditions = [
-				sql`u.banned = 0`,
-				sql`u.username IS NOT NULL`,
-				sql`(u.username LIKE ${escaped} ESCAPE '\' OR lower(u.name) LIKE ${escaped} ESCAPE '\')`,
-			]
+			const conditions = [sql`u.banned = 0`, sql`u.username IS NOT NULL`, userSearchCondition(q)]
 			if (cursor) {
 				const [hexName, ...idParts] = cursor.id.split('_')
 				const name =
@@ -109,5 +148,42 @@ export function createUserRepository(db: ReturnType<typeof getDb>): UserReposito
 				)?.count ?? 0
 			)
 		},
+		async update(id, patch) {
+			const values: Partial<typeof user.$inferInsert> = { updatedAt: new Date() }
+			if (patch.username !== undefined) {
+				values.username = patch.username
+				values.displayUsername = patch.username
+			}
+			if (patch.displayName !== undefined) values.name = patch.displayName
+			if (patch.bio !== undefined) values.bio = patch.bio
+			if (patch.avatar !== undefined) {
+				values.avatarMediaId = patch.avatar?.mediaId ?? null
+				values.image = patch.avatar?.url ?? null
+			}
+			try {
+				await db.update(user).set(values).where(eq(user.id, id))
+			} catch (cause) {
+				if (isUniqueViolation(cause)) throw new AppError('CONFLICT', { username: 'TAKEN' })
+				throw cause
+			}
+		},
+		async isUsernameTaken(username, exceptUserId) {
+			const row = await db.get<{ id: string }>(
+				sql`SELECT id FROM user WHERE username = ${username} AND id != ${exceptUserId} LIMIT 1`,
+			)
+			return Boolean(row)
+		},
+		listFollowers: (userId, viewerId, page) =>
+			listFollows(
+				{ owner: sql`f.followee_id = ${userId}`, other: sql`f.follower_id` },
+				viewerId,
+				page,
+			),
+		listFollowing: (userId, viewerId, page) =>
+			listFollows(
+				{ owner: sql`f.follower_id = ${userId}`, other: sql`f.followee_id` },
+				viewerId,
+				page,
+			),
 	}
 }

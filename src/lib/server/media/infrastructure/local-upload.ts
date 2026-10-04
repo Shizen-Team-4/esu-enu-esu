@@ -1,9 +1,10 @@
 import { AppError } from '../../shared/domain/app-error'
 import type { Viewer } from '../../shared/domain/viewer'
-import { validateUpload } from '../domain/upload'
+import { validateUpload, type Purpose } from '../domain/upload'
 
 interface Capability {
 	key: string
+	purpose: Purpose
 	mimeType: string
 	sizeBytes: number
 	expiresAt: number
@@ -57,7 +58,7 @@ export async function verifyLocalUpload(
 		)
 			throw new Error()
 		const value = JSON.parse(new TextDecoder().decode(decode(payload))) as Capability
-		validateUpload({ purpose: 'post', mimeType: value.mimeType, sizeBytes: value.sizeBytes })
+		validateUpload({ purpose: value.purpose, mimeType: value.mimeType, sizeBytes: value.sizeBytes })
 		if (
 			!Number.isSafeInteger(value.expiresAt) ||
 			value.expiresAt <= now ||

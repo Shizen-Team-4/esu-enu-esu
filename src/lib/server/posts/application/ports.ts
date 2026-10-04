@@ -1,16 +1,14 @@
 import type { Post, CreatePostInput } from '../domain/post'
 import type { Cursor } from '../../shared/domain/cursor'
+import type { Page } from '$lib/contract'
 
-export interface Page<T> {
-	items: T[]
-	nextCursor: string | null
-}
+export type { Page }
 export interface PostRepository {
 	find(id: string, viewerId: string | null): Promise<Post | null>
 	list(input: {
 		viewerId: string | null
 		scope: 'all' | 'following' | 'saved'
-		type?: 'reel'
+		type?: 'post' | 'reel'
 		authorId?: string
 		cursor?: Cursor
 		limit: number
@@ -29,6 +27,6 @@ export interface PostRepository {
 	creationWindow(authorId: string, since: Date): Promise<{ count: number; oldest: Date | null }>
 }
 
-export interface IdGenerator {
-	generate(prefix: string): string
+export interface AuthorDirectory {
+	findIdByUsername(username: string): Promise<string | null>
 }

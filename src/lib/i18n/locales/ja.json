@@ -9,9 +9,25 @@
 		"username": "ユーザー名",
 		"password": "パスワード",
 		"success": "メールを確認するか、更新したパスワードでログインしてください。",
-		"unverified": "ログインする前にメールアドレスを確認してください。",
-		"error": "リクエストを完了できませんでした。もう一度お試しください。",
-		"email": "メールアドレス"
+		"email": "メールアドレス",
+		"showPassword": "表示",
+		"hidePassword": "非表示",
+		"signIn": "ログイン",
+		"createAccount": "アカウント作成",
+		"tabsLabel": "認証",
+		"loginTitle": "おかえりなさい。",
+		"loginSubtitle": "ログインして、仲間の近況を見てみましょう。",
+		"registerTitle": "くつろいでいってください。",
+		"registerSubtitle": "アカウントを作成して、コミュニティに参加し、思い出を共有しましょう。",
+		"orContinue": "または次で続行",
+		"forgotPassword": "パスワードをお忘れですか？",
+		"backToSignIn": "ログインに戻る",
+		"usernameHint": "3〜30文字の小文字の英字、数字、アンダースコア。",
+		"forgotSubtitle": "メールアドレスを入力すると、リセット用のリンクを送信します。",
+		"resetSubtitle": "アカウントの新しいパスワードを設定してください。"
+	},
+	"common": {
+		"back": "戻る"
 	},
 	"post": {
 		"like": "いいね",
@@ -22,24 +38,29 @@
 		"media": "写真と動画",
 		"delete": "削除",
 		"uploading": "メディアをアップロードして確認しています…",
-		"uploadError": "アップロードできませんでした。もう一度お試しください。",
-		"type": "コンテンツの種類"
+		"type": "コンテンツの種類",
+		"comments": "コメント",
+		"unlike": "いいねを取り消す",
+		"save": "保存",
+		"unsave": "保存を解除",
+		"copied": "リンクをコピーしました"
 	},
 	"home": {
 		"description": "日常を共有して、コミュニティとつながりましょう。"
 	},
 	"preferences": {
 		"dark": "ダーク",
-		"error": "設定を保存できませんでした。選択内容を確認してください。",
 		"theme": "テーマ",
-		"save": "設定を保存",
+		"themeHint": "端末に合わせるか、選択できます。",
+		"languageHint": "メニューやボタンに使われます。",
+		"saved": "保存しました",
 		"language": "言語",
 		"title": "設定",
 		"system": "システム",
 		"light": "ライト",
 		"en": "English",
-		"km": "?????",
-		"ja": "???"
+		"km": "ខ្មែរ",
+		"ja": "日本語"
 	},
 	"profile": {
 		"follow": "フォロー",
@@ -47,7 +68,11 @@
 		"posts": "投稿",
 		"content": "プロフィールのコンテンツ",
 		"following": "フォロー中",
-		"unfollow": "フォロー解除"
+		"unfollow": "フォロー解除",
+		"editProfile": "プロフィールを編集",
+		"addBio": "自己紹介を追加",
+		"photoPost": "写真の投稿",
+		"reel": "リール"
 	},
 	"story": {
 		"love": "ストーリーにいいね",
@@ -56,11 +81,23 @@
 		"previous": "前へ",
 		"expired": "このストーリーは期限切れか、利用できません。",
 		"title": "ストーリー",
-		"next": "次へ"
+		"next": "次へ",
+		"circle": "あなたの仲間のストーリー",
+		"add": "ストーリーを追加"
 	},
 	"feed": {
 		"more": "もっと見る",
-		"empty": "まだ投稿がありません"
+		"empty": "まだ投稿がありません",
+		"tabs": "フィード",
+		"forYou": "おすすめ",
+		"following": "フォロー中",
+		"emptyAll": "まだ投稿がありません。最初の投稿をシェアしましょう。",
+		"emptyFollowing": "まだ何もありません。ユーザーをフォローして投稿を見ましょう。",
+		"error": "フィードを読み込めませんでした。"
+	},
+	"bookmarks": {
+		"title": "ブックマーク",
+		"empty": "保存した投稿はまだありません"
 	},
 	"nav": {
 		"search": "検索",
@@ -68,6 +105,108 @@
 		"create": "作成",
 		"reels": "リール",
 		"home": "ホーム",
-		"profile": "プロフィール"
+		"profile": "プロフィール",
+		"notifications": "通知",
+		"bookmarks": "ブックマーク",
+		"yourSpace": "マイスペース",
+		"createPost": "投稿を作成"
+	},
+	"account": {
+		"title": "プロフィール",
+		"bio": "自己紹介",
+		"removeAvatar": "プロフィール写真を削除",
+		"save": "プロフィールを保存"
+	},
+	"onboard": {
+		"title": "ユーザー名を選択",
+		"description": "アカウントの設定を完了するためにユーザー名を選んでください。",
+		"submit": "続ける"
+	},
+	"error": {
+		"VALIDATION_FAILED": "入力内容を確認してもう一度お試しください。",
+		"UNAUTHENTICATED": "続けるにはログインしてください。",
+		"FORBIDDEN": "この操作を行う権限がありません。",
+		"NOT_FOUND": "お探しの内容が見つかりませんでした。",
+		"CONFLICT": "既存のデータと競合しています。",
+		"RATE_LIMITED": "試行回数が多すぎます。しばらくしてからもう一度お試しください。",
+		"INTERNAL": "問題が発生しました。もう一度お試しください。",
+		"PAYLOAD_TOO_LARGE": "ファイルが大きすぎます。",
+		"UNSUPPORTED_MEDIA_TYPE": "このファイル形式には対応していません。",
+		"INVALID_CREDENTIALS": "メールアドレスまたはパスワードが正しくありません。",
+		"EMAIL_NOT_VERIFIED": "ログインする前にメールアドレスを確認してください。",
+		"UPLOAD_EXPIRED": "アップロードの有効期限が切れました。もう一度お試しください。",
+		"field": {
+			"REQUIRED": "この項目は必須です。",
+			"TOO_SHORT": "短すぎます。",
+			"TOO_LONG": "長すぎます。",
+			"TOO_MANY": "選択数が多すぎます。",
+			"INVALID_FORMAT": "形式が正しくありません。",
+			"NOT_ALLOWED": "この値は使用できません。",
+			"TAKEN": "すでに使用されています。"
+		},
+		"retry": "再試行"
+	},
+	"app": {
+		"name": "SNS"
+	},
+	"header": {
+		"menu": "アカウントメニュー"
+	},
+	"notifications": {
+		"title": "通知",
+		"empty": "通知機能は近日公開予定です"
+	},
+	"errorPage": {
+		"title": "問題が発生しました",
+		"notFound": "ページが見つかりませんでした。",
+		"generic": "予期しないエラーが発生しました。もう一度お試しください。",
+		"home": "ホームに戻る",
+		"notFoundTitle": "ページが見つかりません"
+	},
+	"search": {
+		"placeholder": "ユーザーを検索"
+	},
+	"toast": {
+		"dismiss": "閉じる"
+	},
+	"carousel": {
+		"label": "メディア",
+		"previous": "前のメディア",
+		"next": "次のメディア",
+		"counter": "{current} / {total}"
+	},
+	"authShowcase": {
+		"name": "田中 美花",
+		"handle": "@alex",
+		"caption": "日曜の朝、川沿いをお散歩。次は一緒に歩きませんか？",
+		"tagline": "大切な人たちと、日々の瞬間を共有しよう。"
+	},
+	"editProfile": {
+		"title": "プロフィールを編集",
+		"changePhoto": "写真を変更",
+		"uploading": "アップロード中…",
+		"bioHint": "プロフィールに表示されます。",
+		"unsaved": "未保存の変更があります。",
+		"saved": "プロフィールを保存しました。",
+		"cancel": "キャンセル",
+		"save": "保存"
+	},
+	"create": {
+		"title": "投稿を作成",
+		"cancel": "キャンセル",
+		"placeholder": "今日は何に気づきましたか?",
+		"addPhoto": "写真を追加",
+		"addVideo": "動画を追加",
+		"removeMedia": "メディアを削除",
+		"hint": "写真と動画はアップロード上限内にしてください。リールとストーリーは動画または写真を1つ選べます。",
+		"remaining": "残り{count}文字",
+		"over": "{count}文字オーバー",
+		"uploadingItem": "アップロード中…",
+		"failedItem": "アップロードに失敗しました",
+		"preview": "選択したメディア",
+		"typeLocked": "投稿の種類を変更するには、選択したメディアを削除してください。",
+		"post": "投稿",
+		"reel": "リール",
+		"story": "ストーリー"
 	}
 }

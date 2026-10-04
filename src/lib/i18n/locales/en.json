@@ -9,9 +9,25 @@
 		"username": "Username",
 		"password": "Password",
 		"success": "Check your email, or sign in with your updated password.",
-		"unverified": "Please verify your email before signing in.",
-		"error": "Unable to complete your request. Please try again.",
-		"email": "Email"
+		"email": "Email",
+		"showPassword": "Show",
+		"hidePassword": "Hide",
+		"signIn": "Sign in",
+		"createAccount": "Create account",
+		"tabsLabel": "Authentication",
+		"loginTitle": "Welcome back.",
+		"loginSubtitle": "Sign in to see what your circle is up to.",
+		"registerTitle": "Make yourself at home.",
+		"registerSubtitle": "Create an account to join communities and share your moments.",
+		"orContinue": "or continue with",
+		"forgotPassword": "Forgot password?",
+		"backToSignIn": "Back to sign in",
+		"usernameHint": "3–30 lowercase letters, numbers or underscores.",
+		"forgotSubtitle": "Enter your email and we will send you a reset link.",
+		"resetSubtitle": "Choose a new password for your account."
+	},
+	"common": {
+		"back": "Back"
 	},
 	"post": {
 		"like": "Like",
@@ -22,24 +38,29 @@
 		"media": "Photos and videos",
 		"delete": "Delete",
 		"uploading": "Uploading and verifying media…",
-		"uploadError": "Media upload failed. Please try again.",
-		"type": "Content type"
+		"type": "Content type",
+		"comments": "Comments",
+		"unlike": "Remove like",
+		"save": "Save",
+		"unsave": "Remove from saved",
+		"copied": "Link copied"
 	},
 	"home": {
 		"description": "Share moments and connect with your community."
 	},
 	"preferences": {
 		"dark": "Dark",
-		"error": "Unable to save preferences. Please check your selections.",
 		"theme": "Theme",
-		"save": "Save preferences",
+		"themeHint": "Match your device or pick one.",
+		"languageHint": "Used across menus and buttons.",
+		"saved": "Saved",
 		"language": "Language",
 		"title": "Preferences",
 		"system": "System",
 		"light": "Light",
 		"en": "English",
-		"km": "?????",
-		"ja": "???"
+		"km": "ខ្មែរ",
+		"ja": "日本語"
 	},
 	"profile": {
 		"follow": "Follow",
@@ -47,7 +68,11 @@
 		"posts": "Posts",
 		"content": "Profile content",
 		"following": "Following",
-		"unfollow": "Unfollow"
+		"unfollow": "Unfollow",
+		"editProfile": "Edit profile",
+		"addBio": "Add a bio",
+		"photoPost": "Photo post",
+		"reel": "Reel"
 	},
 	"story": {
 		"love": "Love this story",
@@ -56,11 +81,23 @@
 		"previous": "Previous",
 		"expired": "This story has expired or is no longer available.",
 		"title": "Story",
-		"next": "Next"
+		"next": "Next",
+		"circle": "Stories from your circle",
+		"add": "Add story"
 	},
 	"feed": {
 		"more": "Load more",
-		"empty": "No posts yet"
+		"empty": "No posts yet",
+		"tabs": "Feed",
+		"forYou": "For you",
+		"following": "Following",
+		"emptyAll": "No posts yet. Be the first to share something.",
+		"emptyFollowing": "Nothing here yet. Follow people to see their posts.",
+		"error": "We could not load your feed."
+	},
+	"bookmarks": {
+		"title": "Bookmarks",
+		"empty": "You have not saved any posts yet"
 	},
 	"nav": {
 		"search": "Search",
@@ -68,6 +105,108 @@
 		"create": "Create",
 		"reels": "Reels",
 		"home": "Home",
-		"profile": "Profile"
+		"profile": "Profile",
+		"notifications": "Notifications",
+		"bookmarks": "Bookmarks",
+		"yourSpace": "Your space",
+		"createPost": "Create post"
+	},
+	"account": {
+		"title": "Profile",
+		"bio": "Bio",
+		"removeAvatar": "Remove profile photo",
+		"save": "Save profile"
+	},
+	"onboard": {
+		"title": "Choose a username",
+		"description": "Pick a username to finish setting up your account.",
+		"submit": "Continue"
+	},
+	"error": {
+		"VALIDATION_FAILED": "Please check the highlighted fields and try again.",
+		"UNAUTHENTICATED": "Please log in to continue.",
+		"FORBIDDEN": "You do not have permission to do that.",
+		"NOT_FOUND": "We could not find what you were looking for.",
+		"CONFLICT": "This conflicts with existing data.",
+		"RATE_LIMITED": "Too many attempts. Please wait a moment and try again.",
+		"INTERNAL": "Something went wrong. Please try again.",
+		"PAYLOAD_TOO_LARGE": "This file is too large.",
+		"UNSUPPORTED_MEDIA_TYPE": "This file type is not supported.",
+		"INVALID_CREDENTIALS": "Incorrect email or password.",
+		"EMAIL_NOT_VERIFIED": "Please verify your email before signing in.",
+		"UPLOAD_EXPIRED": "The upload link expired. Please try again.",
+		"field": {
+			"REQUIRED": "This field is required.",
+			"TOO_SHORT": "This is too short.",
+			"TOO_LONG": "This is too long.",
+			"TOO_MANY": "Too many items selected.",
+			"INVALID_FORMAT": "This format is not valid.",
+			"NOT_ALLOWED": "This value is not allowed.",
+			"TAKEN": "This is already taken."
+		},
+		"retry": "Try again"
+	},
+	"app": {
+		"name": "SNS"
+	},
+	"header": {
+		"menu": "Account menu"
+	},
+	"notifications": {
+		"title": "Notifications",
+		"empty": "Notifications are coming soon"
+	},
+	"errorPage": {
+		"title": "Something went wrong",
+		"notFound": "We could not find that page.",
+		"generic": "An unexpected error occurred. Please try again.",
+		"home": "Back to home",
+		"notFoundTitle": "Page not found"
+	},
+	"search": {
+		"placeholder": "Search people"
+	},
+	"toast": {
+		"dismiss": "Dismiss"
+	},
+	"carousel": {
+		"label": "Media",
+		"previous": "Previous media",
+		"next": "Next media",
+		"counter": "{current} / {total}"
+	},
+	"authShowcase": {
+		"name": "Alex Morgan",
+		"handle": "@alex",
+		"caption": "Sunday morning walk by the river. Who wants to join next time?",
+		"tagline": "Share moments with the people who matter."
+	},
+	"editProfile": {
+		"title": "Edit profile",
+		"changePhoto": "Change photo",
+		"uploading": "Uploading…",
+		"bioHint": "Shown on your profile.",
+		"unsaved": "You have unsaved changes.",
+		"saved": "Profile saved.",
+		"cancel": "Cancel",
+		"save": "Save"
+	},
+	"create": {
+		"title": "Create post",
+		"cancel": "Cancel",
+		"placeholder": "What did you notice today?",
+		"addPhoto": "Add photo",
+		"addVideo": "Add video",
+		"removeMedia": "Remove media",
+		"hint": "Photos and videos must be within the upload limit. Reels and stories take one video or photo.",
+		"remaining": "{count} characters remaining",
+		"over": "{count} characters over the limit",
+		"uploadingItem": "Uploading…",
+		"failedItem": "Upload failed",
+		"preview": "Selected media",
+		"typeLocked": "Remove the selected media to change the content type.",
+		"post": "Post",
+		"reel": "Reel",
+		"story": "Story"
 	}
 }

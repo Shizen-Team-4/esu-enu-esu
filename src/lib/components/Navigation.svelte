@@ -1,52 +1,40 @@
 <script lang="ts">
 	import { page } from '$app/state'
 	import { _ } from 'svelte-i18n'
-	const items = [
-		{ key: 'home', href: '/', path: 'M3 10 12 3l9 7v11h-6v-7H9v7H3z' },
-		{
-			key: 'reels',
-			href: '/reels',
-			path: 'M4 3h16v18H4z M4 8h16 M9 3l3 5 M15 3l3 5 M10 12l5 3-5 3z',
-		},
-		{ key: 'create', href: '/dashboard', path: 'M12 4v16 M4 12h16' },
-		{ key: 'search', href: '/search', path: 'M21 21l-6-6 M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0' },
-		{
-			key: 'profile',
-			href: '/profile',
-			path: 'M20 21a8 8 0 0 0-16 0 M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0',
-		},
-	]
+	import { isActive, mobileNavItems } from '$lib/navigation/nav-items'
+	import NavIcon from './NavIcon.svelte'
 </script>
 
 <nav
 	aria-label={$_('nav.label')}
-	class="fixed inset-x-0 bottom-0 z-10 flex justify-around border-t border-line bg-surface px-2 pb-[env(safe-area-inset-bottom)] md:inset-y-0 md:right-auto md:w-[72px] md:flex-col md:justify-start md:border-r md:border-t-0 md:p-3 xl:w-[240px]"
+	class="fixed inset-x-0 bottom-0 z-20 flex items-end justify-around border-t border-line bg-surface px-1 pb-[env(safe-area-inset-bottom)] md:inset-y-0 md:right-auto md:w-rail md:flex-col md:items-center md:justify-start md:gap-2 md:border-t-0 md:border-r md:py-3 lg:hidden"
 >
-	<a href="/" class="hidden min-h-14 items-center text-xl font-semibold text-fg md:flex xl:mb-5"
-		><span class="xl:hidden">S</span><span class="hidden xl:inline">SNS</span></a
-	>
-	{#each items as item}
+	{#each mobileNavItems as item (item.key)}
+		{@const active = isActive(page.url.pathname, item.href)}
+		{@const isCreate = item.key === 'create'}
 		<a
 			href={item.href}
-			aria-label={$_(`nav.${item.key}`)}
-			aria-current={page.url.pathname === item.href ? 'page' : undefined}
-			class="flex min-h-12 min-w-11 items-center justify-center gap-4 rounded-xl p-3 text-fg hover:bg-elevated md:mb-2 xl:justify-start {item.key ===
-			'create'
-				? 'bg-primary text-on-primary'
-				: ''}"
+			aria-current={active ? 'page' : undefined}
+			class="relative flex min-h-14 min-w-11 flex-1 flex-col items-center justify-center gap-1 overflow-hidden px-0.5 text-nav no-underline md:size-11 md:min-h-11 md:flex-none {active &&
+			!isCreate
+				? 'text-primary'
+				: 'text-fg-muted'}"
 		>
-			<svg
-				width="24"
-				height="24"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				aria-hidden="true"><path d={item.path} /></svg
+			{#if active && !isCreate}<span
+					class="absolute top-0 h-0.5 w-5 bg-primary md:top-auto md:left-0 md:h-5 md:w-0.5"
+					aria-hidden="true"
+				></span>{/if}
+			{#if isCreate}
+				<span
+					class="grid size-11 place-items-center rounded-lg bg-primary text-on-primary md:size-11"
+					><NavIcon path={item.path} /></span
+				>
+			{:else}
+				<NavIcon path={item.path} />
+			{/if}
+			<span class={isCreate ? 'sr-only' : 'max-w-full truncate md:sr-only'}
+				>{$_(`nav.${item.key}`)}</span
 			>
-			<span class="hidden xl:inline">{$_(`nav.${item.key}`)}</span>
 		</a>
 	{/each}
 </nav>

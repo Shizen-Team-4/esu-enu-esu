@@ -1,7 +1,23 @@
-import type { Profile, Me, UserSummary } from '../domain/user'
+import type { Profile, Me, FollowListItem } from '../domain/user'
 import type { Cursor } from '../../shared/domain/cursor'
+import type { Page } from '$lib/contract'
 
-export type { Profile, Me } from '../domain/user'
+export type { Profile, Me, FollowListItem } from '../domain/user'
+
+export interface PageRequest {
+	cursor?: Cursor
+	limit: number
+}
+
+/** A validated profile change in the shape the repository stores. */
+export interface UserUpdate {
+	username?: string
+	displayName?: string
+	bio?: string
+	/** `null` removes the avatar. */
+	avatar?: { mediaId: string; url: string } | null
+}
+
 export interface UserRepository {
 	find(input: { id?: string; username?: string }, viewerId: string | null): Promise<Me | null>
 	search(
@@ -9,6 +25,28 @@ export interface UserRepository {
 		viewerId: string | null,
 		limit: number,
 		cursor?: Cursor,
-	): Promise<{ items: (UserSummary & { viewer: Profile['viewer'] })[]; nextCursor: string | null }>
+	): Promise<{
+		items: (FollowListItem & { viewer: Profile['viewer'] })[]
+		nextCursor: string | null
+	}>
 	follow(viewerId: string, userId: string, active: boolean, now: Date): Promise<number>
+	/** Throws `AppError('CONFLICT', { username: 'TAKEN' })` when the username is taken meanwhile. */
+	update(id: string, patch: UserUpdate): Promise<void>
+	isUsernameTaken(username: string, exceptUserId: string): Promise<boolean>
+	/** Newest follow first. */
+	listFollowers(
+		userId: string,
+		viewerId: string | null,
+		page: PageRequest,
+	): Promise<Page<FollowListItem>>
+	listFollowing(
+		userId: string,
+		viewerId: string | null,
+		page: PageRequest,
+	): Promise<Page<FollowListItem>>
+}
+
+export interface AvatarMedia {
+	/** The public URL of an upload the owner may use as an avatar, or null when it is not usable. */
+	findUsable(mediaId: string, ownerId: string): Promise<{ url: string } | null>
 }

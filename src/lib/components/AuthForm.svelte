@@ -1,10 +1,15 @@
 <script lang="ts">
+	import Button from '$lib/components/ui/Button.svelte'
 	import { _ } from 'svelte-i18n'
 	import { goto } from '$app/navigation'
 	import { submitAuth, type AuthOperation } from '$lib/auth/submit-auth'
+	import { errorMessageKey } from '$lib/errors/error-message'
+	import AuthFields from './auth/AuthFields.svelte'
 	let { operation, token = '' }: { operation: AuthOperation; token?: string } = $props()
 	let pending = $state(false)
-	let result = $state('')
+	let success = $state(false)
+	let errorCode = $state<string | null>(null)
+	let fields = $state<Record<string, string>>({})
 	async function submit(event: SubmitEvent) {
 		event.preventDefault()
 		pending = true
@@ -14,63 +19,20 @@
 		)
 		const response = await submitAuth(operation, { ...input, token }, window.location.origin)
 		pending = false
-		result = response.ok
-			? 'success'
-			: response.code === 'EMAIL_NOT_VERIFIED'
-				? 'unverified'
-				: 'error'
-		if (response.ok && operation === 'login') await goto('/dashboard', { invalidateAll: true })
+		success = response.ok
+		errorCode = response.ok ? null : response.code
+		fields = response.ok ? {} : (response.fields ?? {})
+		if (response.ok && operation === 'login') await goto('/', { invalidateAll: true })
 	}
 </script>
 
-<form onsubmit={submit}>
-	{#if operation === 'register'}
-		<label>{$_('auth.name')}<input name="name" autocomplete="name" required maxlength="50" /></label
-		>
-		<label
-			>{$_('auth.username')}<input
-				name="username"
-				autocomplete="username"
-				required
-				pattern={'[a-z0-9_]{3,30}'}
-			/></label
-		>
-	{/if}
-	{#if operation !== 'reset'}<label
-			>{$_('auth.email')}<input name="email" type="email" autocomplete="email" required /></label
-		>{/if}
-	{#if operation !== 'request-reset'}<label
-			>{$_('auth.password')}<input
-				name="password"
-				type="password"
-				autocomplete={operation === 'login' ? 'current-password' : 'new-password'}
-				required
-				minlength="8"
-				maxlength="128"
-			/></label
-		>{/if}
-	<button disabled={pending}
+<form onsubmit={submit} class="grid gap-4">
+	<AuthFields {operation} {fields} />
+	<Button type="submit" variant="primary" class="w-full" disabled={pending}
 		>{$_(
 			`auth.${operation === 'request-reset' || operation === 'reset' ? 'reset' : operation}`,
-		)}</button
+		)}</Button
 	>
-	{#if result}<p role="status">{$_(`auth.${result}`)}</p>{/if}
+	{#if success}<p role="status">{$_('auth.success')}</p>{/if}
+	{#if errorCode}<p role="alert">{$_(errorMessageKey(errorCode))}</p>{/if}
 </form>
-
-<style>
-	form,
-	label {
-		display: grid;
-		gap: 0.5rem;
-	}
-	form {
-		gap: 1rem;
-	}
-	input {
-		min-width: 0;
-		width: 100%;
-		padding: 0.6rem;
-		border: 1px solid var(--border);
-		border-radius: 0.5rem;
-	}
-</style>

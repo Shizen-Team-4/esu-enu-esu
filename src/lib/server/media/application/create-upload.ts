@@ -1,7 +1,6 @@
-import type { Clock } from '../../shared/application/ports'
+import type { Clock, IdGenerator } from '../../shared/application/ports'
 import { AppError } from '../../shared/domain/app-error'
 import { requireViewer, type Viewer } from '../../shared/domain/viewer'
-import type { IdGenerator } from '../../posts/application/ports'
 import { mimeTypes, validateUpload, type Upload } from '../domain/upload'
 import type { MediaRepository, MediaStorage } from './ports'
 
@@ -15,7 +14,13 @@ export const createUpload =
 			key = `${actor.id}/${id}.${mimeTypes[value.mimeType]}`
 		const thumbnailKey = value.type === 'video' ? `${actor.id}/${id}.poster.webp` : null
 		const expiresAt = new Date(now.getTime() + 900000)
-		const uploadUrl = await deps.storage.sign(key, value.mimeType, value.sizeBytes, expiresAt)
+		const uploadUrl = await deps.storage.sign(
+			key,
+			value.mimeType,
+			value.sizeBytes,
+			expiresAt,
+			value.purpose,
+		)
 		// The exact thumbnail length is declared by the browser and signed too.
 		const thumbnailSize =
 			input && typeof input === 'object' && 'thumbnailSizeBytes' in input
@@ -34,6 +39,7 @@ export const createUpload =
 				'image/webp',
 				thumbnail.sizeBytes,
 				expiresAt,
+				'post',
 			)
 		}
 		const upload: Upload = {

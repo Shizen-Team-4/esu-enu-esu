@@ -28,7 +28,7 @@ When this document and the contract disagree, **the contract wins**. Fix this do
 | **In scope** (in the contract) | Auth, me/profile, follow, user search, media upload, posts and reels, feed, like, save, share URL, comments, stories, preferences, language   |
 | **In scope** (not in contract) | Reports and moderation (#19). The contract already has its rate limit and `note` rule; the operations are proposed in [7.10](#710-reports-19) |
 | **Deferred**                   | Notifications (#28–#32), accessibility preferences (#24). Design kept in [8](#8-deferred-features) so the work can start when the team agrees |
-| **Out of scope**               | Post visibility settings, automatic story expiry (contract line 9), push notifications, "recommended" feed order, private accounts            |
+| **Out of scope**               | Post visibility settings, push notifications, "recommended" feed order, private accounts                                                      |
 
 The contract decided to drop notifications, but issues #28–#32 are still open with owners. The team must close them or bring notifications back into the contract (see [10](#10-decisions-needed-from-the-team)).
 
@@ -44,7 +44,7 @@ The contract decided to drop notifications, but issues #28–#32 are still open 
 | `listUserStories` had no 🔒                           | Now 🔒                                                              |
 | Push notification setting had no subscription flow    | Notifications removed from `Preferences`                            |
 | Visibility rules (`public` / `followers` / `private`) | Removed. All posts and reels are public                             |
-| Story expiry after 24 h                               | Removed. Stories stay until the author deletes them                 |
+| Story expiry after 24 h                               | Back in the contract: `expiresAt`, 24 h lifetime, `likeStory`       |
 | REST URLs were the contract                           | Contract now defines **operations**; URLs are implementation detail |
 
 ### 2.2 Still open — must fix before the backend starts
@@ -59,17 +59,17 @@ The contract decided to drop notifications, but issues #28–#32 are still open 
 
 ### 2.3 Should clarify
 
-| #   | Problem                                                                                                                           | Suggested fix                                                                                                      |
-| --- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| F   | When is `EMAIL_NOT_VERIFIED` returned? Only on sign-in, or also on posting / commenting?                                          | Sign-in only (BetterAuth `requireEmailVerification: true`). Google users are verified already                      |
-| G   | OAuth users have `username: ""`. A unique column cannot hold `""` for many users                                                  | Store `NULL`, return `""`. Pages that need a username redirect to "pick a username"                                |
-| H   | A bad `limit` (`0`, `51`, `"abc"`) is not defined. Only a bad `cursor` is                                                         | `VALIDATION_FAILED`, `fields.limit = "INVALID_FORMAT"`                                                             |
-| I   | Can a username be changed? Old profile links break                                                                                | Allow it, at most once per 30 days **(proposed)**                                                                  |
-| J   | What happens to saves and comments when a post is deleted?                                                                        | Lists hide them (joins check `posts.deleted_at IS NULL`). The cleanup job deletes them with the post after 30 days |
-| K   | Rate limit counters: KV is eventually consistent and allows 1 write/s per key, so it is bad for counters                          | Count rows already in D1 ([6.6](#66-rate-limits))                                                                  |
-| L   | Search with `_` or `%` in `q` acts as SQL wildcards                                                                               | Escape them (`LIKE ? ESCAPE '\'`)                                                                                  |
-| M   | Stories never expire, so the tray shows every followed user who has **ever** posted a story, and "unseen" rings stay until viewed | Accept for now, or bring back an expiry. Recorded in [10](#10-decisions-needed-from-the-team)                      |
-| N   | Who can delete a comment? Contract 3.4 says "comment author or post author (proposed)"                                            | Keep the proposal; it is implemented in [7.8](#78-comments-new)                                                    |
+| #   | Problem                                                                                                                                   | Suggested fix                                                                                                      |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| F   | When is `EMAIL_NOT_VERIFIED` returned? Only on sign-in, or also on posting / commenting?                                                  | Sign-in only (BetterAuth `requireEmailVerification: true`). Google users are verified already                      |
+| G   | OAuth users have `username: ""`. A unique column cannot hold `""` for many users                                                          | Store `NULL`, return `""`. Pages that need a username redirect to "pick a username"                                |
+| H   | A bad `limit` (`0`, `51`, `"abc"`) is not defined. Only a bad `cursor` is                                                                 | `VALIDATION_FAILED`, `fields.limit = "INVALID_FORMAT"`                                                             |
+| I   | Can a username be changed? Old profile links break                                                                                        | Allow it, at most once per 30 days **(proposed)**                                                                  |
+| J   | What happens to saves and comments when a post is deleted?                                                                                | Lists hide them (joins check `posts.deleted_at IS NULL`). The cleanup job deletes them with the post after 30 days |
+| K   | Rate limit counters: KV is eventually consistent and allows 1 write/s per key, so it is bad for counters                                  | Count rows already in D1 ([6.6](#66-rate-limits))                                                                  |
+| L   | Search with `_` or `%` in `q` acts as SQL wildcards                                                                                       | Escape them (`LIKE ? ESCAPE '\'`)                                                                                  |
+| M   | ~~Stories never expire, so the tray grows~~ **Resolved:** stories expire after 24 h (`expires_at`), so the tray only shows active stories | None                                                                                                               |
+| N   | Who can delete a comment? Contract 3.4 says "comment author or post author (proposed)"                                                    | Keep the proposal; it is implemented in [7.8](#78-comments-new)                                                    |
 
 ### 2.4 Code notes
 
@@ -112,7 +112,7 @@ src/lib/server/
   feed/              listFeed, listReels
   reactions/         likePost, unlikePost, savePost, unsavePost, listSavedPosts
   comments/          listComments, listReplies, createComment, deleteComment
-  stories/           createStory, listStoryTray, listUserStories, markStorySeen, deleteStory
+  stories/           createStory, listStoryTray, listUserStories, markStorySeen, likeStory, deleteStory
   reports/           reportPost, listReports, resolveReport
   preferences/       getPreferences, updatePreferences, ports: PreferencesCache (KV)
   jobs/              cleanup use cases ([6.9](#69-background-and-cleanup-work))
@@ -219,29 +219,29 @@ Secrets go in `wrangler secret put` for production and `.dev.vars` locally. Neve
 
 Every contract operation, its use case folder, tables and owner issue. **Rows marked NEW need an issue.**
 
-| Area                     | Operations                                                                                    | Feature folder | Tables                                       | Issue    |
-| ------------------------ | --------------------------------------------------------------------------------------------- | -------------- | -------------------------------------------- | -------- |
-| Auth setup, session hook | BetterAuth handler, `getSession`, `hooks.server.ts`, `requireUser`                            | `auth`         | `user`, `session`, `account`, `verification` | #10      |
-| Sign-up / sign-in        | `signUp`, `signIn`, `signInWithGoogle`, `signOut`                                             | `auth`         | same + `rate_limit`                          | #11      |
-| Sessions in KV           | BetterAuth `secondaryStorage`                                                                 | `auth`         | KV                                           | #12      |
-| Reset, email verify      | `requestPasswordReset`, `resetPassword`, `verifyEmail`                                        | `auth`         | `verification`                               | #13      |
-| **Me / profile**         | `getMe`, `updateMe`, `getProfile`                                                             | `users`        | `user`, `follows`, `posts`, `media`          | **NEW**  |
-| **Follow**               | `followUser`, `unfollowUser`, `listFollowers`, `listFollowing`                                | `follows`      | `follows`                                    | **NEW**  |
-| **User search**          | `searchUsers`                                                                                 | `users`        | `user`                                       | **NEW**  |
-| Upload                   | `createUpload`, `completeUpload`                                                              | `media`        | `media`                                      | #18      |
-| Post model               | —                                                                                             | `posts`        | `posts`, `post_media`, `post_edits`          | #15      |
-| Post CRUD                | `createPost`, `getPost`, `updatePost`, `deletePost`, `listUserPosts`                          | `posts`        | same                                         | #16      |
-| Feed, reels, cursor      | `listFeed`, `listReels`                                                                       | `feed`         | `posts`, `follows`                           | #17      |
-| **Like / save**          | `likePost`, `unlikePost`, `savePost`, `unsavePost`, `listSavedPosts`                          | `reactions`    | `likes`, `saves`                             | **NEW**  |
-| **Comments**             | `listComments`, `listReplies`, `createComment`, `deleteComment`                               | `comments`     | `comments`                                   | **NEW**  |
-| **Stories**              | `createStory`, `listStoryTray`, `listUserStories`, `markStorySeen`, `deleteStory`             | `stories`      | `stories`, `story_views`                     | **NEW**  |
-| Reports                  | `reportPost`, `listReports`, `resolveReport` (proposed)                                       | `reports`      | `reports`                                    | #19      |
-| Preferences              | `getPreferences`, `updatePreferences`                                                         | `preferences`  | `preferences`                                | #21, #22 |
-| Preferences cache        | —                                                                                             | `preferences`  | KV                                           | #23      |
-| Language                 | `updatePreferences { language }`, SSR language in hooks                                       | `preferences`  | `preferences`                                | #26      |
-| Translation check        | `pnpm check:i18n` (`scripts/check-translations.js`)                                           | —              | —                                            | #27      |
-| **Shared kernel**        | `AppError`, `Page`, cursor, clock, ids, rate limiter, mappers, error adapters, `container.ts` | `shared`       | —                                            | **NEW**  |
-| **Cleanup job**          | orphan media, deleted posts, deleted stories                                                  | `jobs`         | `media`, `posts`, `stories`                  | **NEW**  |
+| Area                     | Operations                                                                                     | Feature folder | Tables                                       | Issue    |
+| ------------------------ | ---------------------------------------------------------------------------------------------- | -------------- | -------------------------------------------- | -------- |
+| Auth setup, session hook | BetterAuth handler, `getSession`, `hooks.server.ts`, `requireUser`                             | `auth`         | `user`, `session`, `account`, `verification` | #10      |
+| Sign-up / sign-in        | `signUp`, `signIn`, `signInWithGoogle`, `signOut`                                              | `auth`         | same + `rate_limit`                          | #11      |
+| Sessions in KV           | BetterAuth `secondaryStorage`                                                                  | `auth`         | KV                                           | #12      |
+| Reset, email verify      | `requestPasswordReset`, `resetPassword`, `verifyEmail`                                         | `auth`         | `verification`                               | #13      |
+| **Me / profile**         | `getMe`, `updateMe`, `getProfile`                                                              | `users`        | `user`, `follows`, `posts`, `media`          | **NEW**  |
+| **Follow**               | `followUser`, `unfollowUser`, `listFollowers`, `listFollowing`                                 | `follows`      | `follows`                                    | **NEW**  |
+| **User search**          | `searchUsers`                                                                                  | `users`        | `user`                                       | **NEW**  |
+| Upload                   | `createUpload`, `completeUpload`                                                               | `media`        | `media`                                      | #18      |
+| Post model               | —                                                                                              | `posts`        | `posts`, `post_media`, `post_edits`          | #15      |
+| Post CRUD                | `createPost`, `getPost`, `updatePost`, `deletePost`, `listUserPosts`                           | `posts`        | same                                         | #16      |
+| Feed, reels, cursor      | `listFeed`, `listReels`                                                                        | `feed`         | `posts`, `follows`                           | #17      |
+| **Like / save**          | `likePost`, `unlikePost`, `savePost`, `unsavePost`, `listSavedPosts`                           | `reactions`    | `likes`, `saves`                             | **NEW**  |
+| **Comments**             | `listComments`, `listReplies`, `createComment`, `deleteComment`                                | `comments`     | `comments`                                   | **NEW**  |
+| **Stories**              | `createStory`, `listStoryTray`, `listUserStories`, `markStorySeen`, `likeStory`, `deleteStory` | `stories`      | `stories`, `story_views`, `story_likes`      | **NEW**  |
+| Reports                  | `reportPost`, `listReports`, `resolveReport` (proposed)                                        | `reports`      | `reports`                                    | #19      |
+| Preferences              | `getPreferences`, `updatePreferences`                                                          | `preferences`  | `preferences`                                | #21, #22 |
+| Preferences cache        | —                                                                                              | `preferences`  | KV                                           | #23      |
+| Language                 | `updatePreferences { language }`, SSR language in hooks                                        | `preferences`  | `preferences`                                | #26      |
+| Translation check        | `pnpm check:i18n` (`scripts/check-translations.js`)                                            | —              | —                                            | #27      |
+| **Shared kernel**        | `AppError`, `Page`, cursor, clock, ids, rate limiter, mappers, error adapters, `container.ts`  | `shared`       | —                                            | **NEW**  |
+| **Cleanup job**          | orphan media, deleted posts, deleted stories                                                   | `jobs`         | `media`, `posts`, `stories`                  | **NEW**  |
 
 **Order**, so nobody waits:
 
@@ -264,13 +264,13 @@ Lives in `src/lib/server/shared/` and is reused by every feature.
 
 ### 6.2 Access rules
 
-| Object  | Viewer can see it when                                                                 | Otherwise   |
-| ------- | -------------------------------------------------------------------------------------- | ----------- |
-| Post    | `deleted_at IS NULL` and the author is not banned                                      | `NOT_FOUND` |
-| Profile | user exists, has a username, not banned                                                | `NOT_FOUND` |
-| Comment | its post is visible                                                                    | `NOT_FOUND` |
-| Story   | viewer is the author **or** follows the author, and the author is not banned           | `NOT_FOUND` |
-| Media   | only the owner can complete or attach it; anyone can load its public URL once attached | `NOT_FOUND` |
+| Object  | Viewer can see it when                                                                                 | Otherwise   |
+| ------- | ------------------------------------------------------------------------------------------------------ | ----------- |
+| Post    | `deleted_at IS NULL` and the author is not banned                                                      | `NOT_FOUND` |
+| Profile | user exists, has a username, not banned                                                                | `NOT_FOUND` |
+| Comment | its post is visible                                                                                    | `NOT_FOUND` |
+| Story   | viewer is the author **or** follows the author, the author is not banned, and the story is not expired | `NOT_FOUND` |
+| Media   | only the owner can complete or attach it; anyone can load its public URL once attached                 | `NOT_FOUND` |
 
 Write the post rule **once** as a repository helper (a Drizzle `sql` fragment) and reuse it in feed, reels, profile posts, saved posts, single post and comments. Moderators bypass it only inside `listReports`.
 
@@ -474,10 +474,11 @@ Lists: `listComments` = `parent_id IS NULL`, newest first. `listReplies` = `pare
 ### 7.9 Stories (NEW)
 
 - `createStory { mediaId }`: media owned, `purpose = 'story'`, `ready`. Any `caption` key → `VALIDATION_FAILED { caption: "NOT_ALLOWED" }`. Rate limit 30 / hour (with posts). Batch: insert story, media `attached`.
-- Access rule: author or follower ([6.2](#62-access-rules)). No expiry: stories stay until deleted.
-- `listStoryTray`: users = viewer + people the viewer follows who have at least one story. For each: `hasUnseen` = any story without a `story_views` row for the viewer; `latestAt` = newest story time; `stories` oldest first. Sort: viewer first → `hasUnseen` → `latestAt` desc → user id. The cursor encodes `(isMe, hasUnseen, latestAtMs, userId)`.
+- Access rule: author or follower ([6.2](#62-access-rules)), and `expires_at > now` (24 h after creation). Expired stories behave as `NOT_FOUND`.
+- `likeStory { id, active }`: access rule → `INSERT OR IGNORE` / `DELETE` on `story_likes` → `{ liked, likes }`.
+- `listStoryTray`: users = viewer + people the viewer follows who have at least one story. For each: `hasUnseen` = any story without a `story_views` row for the viewer; `latestAt` = newest story time; `storyCount` = number of active stories. Sort: viewer first → `hasUnseen` → `latestAt` desc → user id. The cursor encodes `(isMe, hasUnseen, latestAtMs, userId)`.
 - `listUserStories { username }`: access rule → `{ items }`, oldest first. Not allowed → `NOT_FOUND`.
-- `markStorySeen { id }`: access rule → `INSERT OR IGNORE story_views`. Your own story is a no-op.
+- `markStorySeen { id }`: access rule → `INSERT OR IGNORE story_views` (also for your own story).
 - `deleteStory { id }`: author only → else `FORBIDDEN`. Delete the row (views cascade), then delete the R2 object and `media` row through `TaskRunner`.
 
 ### 7.10 Reports (#19)
@@ -576,6 +577,6 @@ Answer these in the contract PR, then update `api-contract.md` and this file.
 5. Video poster upload flow ([2.2 C](#22-still-open--must-fix-before-the-backend-starts)).
 6. Email provider ([2.2 E](#22-still-open--must-fix-before-the-backend-starts)).
 7. `EMAIL_NOT_VERIFIED` only at sign-in? ([2.3 F](#23-should-clarify))
-8. Stories without expiry: is the always-growing tray acceptable? ([2.3 M](#23-should-clarify))
+8. ~~Stories without expiry~~ Resolved: stories expire after 24 h ([2.3 M](#23-should-clarify)).
 9. How the cleanup cron runs ([6.9](#69-background-and-cleanup-work)).
 10. All values marked **(proposed)** in this file and in the contract.

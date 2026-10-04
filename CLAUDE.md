@@ -108,7 +108,67 @@ Every change to logic ships with tests. Run with `pnpm test` (Vitest, `src/**/*.
   - new and changed code: **≥ 80%** line coverage (the SonarCloud "Sonar way" bar for new code).
   - domain and application layers: **≥ 90%** line coverage.
 
-## 5. Workflow for Claude
+## 5. Frontend Implementation
+
+These are the design decisions from the design exports. Every UI change must follow them. If a design and these rules disagree, stop and ask before building.
+
+### Visual style
+
+- Use the tokens from `docs/sns-color-palette.md` / `src/app.css`: Space Grotesk for all text, a gray page background, white surfaces, thin borders, and the `primary` blue for primary actions and selection. The red `accent` is only for the liked heart. The dark theme comes from the same tokens (`.dark`). Don't add other accent colors.
+- Define colors, spacing and type as shared tokens (Tailwind theme / CSS variables) and use the tokens. No hard-coded hex values or one-off spacing inside components.
+- Posts are flat: no shadows and no rounded cards. Only comment bubbles get rounded corners.
+
+### Layout and spacing
+
+- Build mobile-first. The reference width is **390px**, with **12px outer gutters**, and content starts **24px from the screen edge**.
+- Long mockups show scrolling content, not fixed page heights. Never set a fixed height on a page to match a mockup.
+- Don't draw the phone status bar or home indicator from the mockups. Use safe-area insets (`env(safe-area-inset-*)`) instead.
+- Breakpoints (see `docs/responsive-ui-rules.md`): below `md` (768px) is mobile with a bottom bar; `md` to `lg` is tablet with an icon rail; `lg` (1024px) and up is desktop.
+- Desktop follows the layout of `docs/design/sns-dashboard-mockup.html`: a top header (logo on the left; bell, avatar and menu on the right), a centered search input under the header, and a 3-column grid. The left sidebar has a "Your space" label, Home, Notifications, Bookmarks and a "Create post" primary button. The center column has left and right borders and holds the stories section, For you / Following tabs and flat posts separated by thin borders. The right column is reserved and empty for now.
+- When the mockup and these rules disagree on colors or fonts, the tokens win. The mockup sets the layout only.
+
+### Post separation
+
+- Separate major sections (for example the story tray and the feed) with the diagonal hatch band. Separate posts from each other with thin borders, as in the mockup. Build the band once as a shared component or class and reuse it.
+- Use the same hatch pattern to fill unused space around media.
+
+### Media
+
+- Keep the original aspect ratio. Never stretch or crop media (`object-fit: contain`, never `cover` or `fill`). Fill leftover space with the hatch pattern.
+- Carousels have previous/next arrows and an item counter (e.g. `2 / 5`).
+- Avatars are circles and may use `object-cover`. Post and story media are never cropped.
+
+### Navigation
+
+- The mobile bottom bar has exactly five labelled destinations, in this order: Home, Search, Create, Notifications, Bookmarks.
+- Create is the raised blue button. The other four are plain labelled icons, and the active item shows a top indicator line.
+- Desktop (`lg` and up): the sidebar has Home, Notifications, Bookmarks and a "Create post" primary button. Search lives in the header.
+- Notifications is a placeholder page until a notifications backend exists.
+- Reels have no nav entry. They show in the home feed and in the profile Reels tab.
+
+### Comments
+
+- Show only **two visual levels**: parent and reply. Never indent deeper than one reply level.
+- For deeper threads, open a focused branch: the selected comment moves to the parent position, and its ancestors stay visible above it as context.
+- Solid lines connect visible replies. Dashed lines show ancestor context in a focused branch.
+- Collapsed replies show a reply-count button that expands them. Expanded replies show "Hide replies".
+- The reply composer stays visible above the bottom navigation and the on-screen keyboard while the comment list scrolls.
+
+### Video
+
+- The video viewer is dark and supports portrait, square and landscape media.
+- Portrait video: engagement controls sit beside the video. Square and landscape video: controls sit below it.
+- Comments on a video open in a white bottom sheet. The video shrinks so it stays visible above the sheet.
+
+### Frontend guard rails
+
+- Components follow section 2: one UI concern each, split at ~150 lines. Thread layout, carousel, hatch band, bottom sheet and composer are separate components.
+- Logic that is not rendering (thread flattening/focusing, carousel index, aspect-ratio class choice) goes in plain TS modules in `src/lib/` with unit tests.
+- All user-facing text, including button labels and `aria-label`s, goes through `svelte-i18n` (section 6, step 6).
+- Interactive elements are real `<button>` / `<a>` elements with accessible names and visible focus styles. Icon-only buttons need an `aria-label`.
+- Check every new or changed screen at 390px and on a wide screen before calling it done.
+
+## 6. Workflow for Claude
 
 1. Read the relevant docs and existing code for the feature before writing anything.
 2. Decide which layer each piece belongs in (section 1) before writing it.
@@ -124,9 +184,9 @@ Every change to logic ships with tests. Run with `pnpm test` (Vitest, `src/**/*.
 5. Follow the existing style (Prettier: tabs, single quotes, no semicolons, width 100). Use `pnpm format` if needed.
 6. New user-facing text goes through `svelte-i18n` with keys in every locale file (`en`, `ja`, `km`); `pnpm check:i18n` must pass.
 7. Commit or push only when asked. Never commit `.env` or secrets.
-8. Before opening or merging a pull request, pass the gate in section 6.
+8. Before opening or merging a pull request, pass the gate in section 7.
 
-## 6. Pre-PR / Pre-merge gate (mandatory, run locally)
+## 7. Pre-PR / Pre-merge gate (mandatory, run locally)
 
 **Rule: before opening a pull request or merging one, run this gate locally. Don't open or merge until every step passes.** If a step fails, stop, fix it (or tell the user why it can't be fixed), and run the whole gate again. Never skip a step, and never say a branch is ready without showing the results.
 
@@ -157,13 +217,13 @@ Read `git diff <base-branch>...HEAD` (`dev` or `main`) and fix anything that mat
 - Bugs: unhandled promises, missing `await`, possible `null`/`undefined` access, wrong error codes for `docs/api-contract.md`.
 - Security: hard-coded secrets or tokens, SQL built from strings, unescaped `LIKE` input, missing auth or ownership checks, input that is not validated.
 - Code smells: unused imports/variables, `any`, empty `catch`, nested ternaries, duplicated blocks, long or deeply nested functions, leftover `console.log` or commented-out code.
-- The rules in sections 1–4 (layers, single responsibility, decoupling, tests).
+- The rules in sections 1–5 (layers, single responsibility, decoupling, tests, frontend).
 
 ### 4. Report
 
 Tell the user the result of each command, the test count, coverage of the changed files, and anything found in the self-review and how it was fixed.
 
-## 7. Review checklist
+## 8. Review checklist
 
 Before finishing, check each item:
 
@@ -174,4 +234,5 @@ Before finishing, check each item:
 - [ ] New logic has unit tests using fakes, covering success and error paths.
 - [ ] `pnpm test:coverage`, `pnpm check`, `pnpm lint` and `pnpm spellcheck` pass.
 - [ ] Changed code has ≥ 80% coverage (≥ 90% for domain and application).
-- [ ] Before PR / merge: the local gate in section 6 passed.
+- [ ] UI changes follow section 5 (tokens, two-level comments, media ratios, safe areas, i18n, checked at 390px).
+- [ ] Before PR / merge: the local gate in section 7 passed.

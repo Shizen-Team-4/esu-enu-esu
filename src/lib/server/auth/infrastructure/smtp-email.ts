@@ -2,16 +2,11 @@ import nodemailer from 'nodemailer'
 import type { EmailSender } from '../application/email'
 
 export interface SmtpConfig {
-	GOOGLE_CLIENT_ID?: string
-	GOOGLE_CLIENT_SECRET?: string
-	BETTER_AUTH_SECRET?: string
 	SMTP_HOST?: string
 	SMTP_PORT?: string
 	SMTP_USER?: string
 	SMTP_TOKEN?: string
 	SMTP_FROM?: string
-	BETTER_AUTH_URL?: string
-	MEDIA_PUBLIC_URL?: string
 }
 
 export function createSmtpSender(config: SmtpConfig): EmailSender {

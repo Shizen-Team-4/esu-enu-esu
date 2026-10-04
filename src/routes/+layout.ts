@@ -8,5 +8,6 @@ export const load: LayoutLoad = async ({ data }) => {
 	return {
 		lang: data.lang,
 		theme: data.theme,
+		me: data.me,
 	}
 }

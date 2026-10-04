@@ -10,5 +10,4 @@ export const deletePost =
 		if (!post) throw new AppError('NOT_FOUND')
 		if (post.author.id !== author.id) throw new AppError('FORBIDDEN')
 		await deps.posts.delete(id, deps.clock.now())
-		return { ok: true as const }
 	}
