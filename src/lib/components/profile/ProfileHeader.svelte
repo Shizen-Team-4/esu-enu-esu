@@ -23,7 +23,7 @@
 		<h1 class="m-0 min-w-0 break-words text-xl font-semibold md:text-[22px]">
 			@{profile.username}
 		</h1>
-		<ProfileActions viewer={profile.viewer} {errorCode} />
+		<ProfileActions username={profile.username} viewer={profile.viewer} {errorCode} />
 	</div>
 	<div class="col-span-2 row-start-3 grid gap-2 md:col-span-1 md:col-start-2">
 		<strong class="text-body font-bold">{profile.displayName}</strong>

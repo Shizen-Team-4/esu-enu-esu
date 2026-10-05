@@ -2,6 +2,7 @@
 	import Button from '$lib/components/ui/Button.svelte'
 	import { _ } from 'svelte-i18n'
 	import { enhance } from '$app/forms'
+	import type { FieldErrorCode } from '$lib/types/error'
 	import { errorMessageKey } from '$lib/errors/error-message'
 	import AuthHeading from '$lib/components/auth/AuthHeading.svelte'
 	import TextField from '$lib/components/ui/TextField.svelte'
@@ -21,7 +22,7 @@
 		autocomplete="username"
 		autocapitalize="none"
 		required
-		error={form?.error?.fields?.username}
+		error={form?.error?.fields?.username as FieldErrorCode | undefined}
 	/>
 	{#if form?.error?.code && !form.error.fields?.username}
 		<p role="alert">{$_(errorMessageKey(form.error.code))}</p>

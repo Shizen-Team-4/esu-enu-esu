@@ -25,7 +25,7 @@
 
 <!-- svelte-ignore a11y_no_noninteractive_tabindex, a11y_no_noninteractive_element_interactions -->
 <div
-	class="relative hatch flex justify-center"
+	class="post-media relative flex justify-center overflow-hidden rounded-control border border-line bg-background"
 	role="group"
 	aria-roledescription="carousel"
 	aria-label={$_('carousel.label')}
@@ -43,6 +43,7 @@
 				class="max-h-(--media-max-height) w-full object-contain"
 			/>
 		{:else}
+			<!-- svelte-ignore a11y_media_has_caption -->
 			<video
 				src={item.url}
 				poster={item.thumbnailUrl ?? undefined}
@@ -50,11 +51,14 @@
 				height={item.height}
 				controls
 				preload="metadata"
-				class="max-h-(--media-max-height) w-full object-contain"><track kind="captions" /></video
-			>
+				class="max-h-(--media-max-height) w-full object-contain"
+			></video>
 		{/if}
 	{/key}
 	{#if many}
+		<span class="sr-only" aria-live="polite" aria-atomic="true"
+			>{$_('carousel.counter', { values: counterValues(index, media.length) })}</span
+		>
 		{#if hasPrevious(index)}
 			<IconButton
 				label={$_('carousel.previous')}
@@ -72,7 +76,7 @@
 			>
 		{/if}
 		<span
-			class="absolute top-2 right-2 rounded-xs border border-line bg-surface px-2 text-meta text-fg"
+			class="absolute top-2 right-2 rounded-full border border-line bg-surface px-2 text-meta text-fg"
 			>{$_('carousel.counter', { values: counterValues(index, media.length) })}</span
 		>
 	{/if}

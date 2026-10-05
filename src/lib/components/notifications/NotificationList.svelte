@@ -4,7 +4,6 @@
 	import { fetchNotifications } from '$lib/notifications/fetch-notifications'
 	import { createNotificationList } from '$lib/notifications/notification-list'
 	import { startVisiblePolling } from '$lib/notifications/visible-polling'
-	import { errorMessageKey } from '$lib/errors/error-message'
 	import NotificationRow from './NotificationRow.svelte'
 	import Button from '../ui/Button.svelte'
 	import EmptyState from '../ui/EmptyState.svelte'
@@ -56,8 +55,8 @@
 {/if}
 {#if snapshot.errorCode}
 	<ErrorState
-		message={$_(errorMessageKey(snapshot.errorCode))}
-		onretry={() => {
+		code={snapshot.errorCode as import('$lib/types/error').ErrorCode}
+		onRetry={() => {
 			void list.retry()
 		}}
 	/>

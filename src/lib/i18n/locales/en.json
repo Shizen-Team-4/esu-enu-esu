@@ -32,7 +32,12 @@
 		"resetSubtitle": "Choose a new password for your account."
 	},
 	"common": {
-		"back": "Back"
+		"back": "Back",
+		"close": "Close",
+		"retry": "Retry",
+		"loading": "Loading",
+		"more": "More",
+		"less": "Less"
 	},
 	"post": {
 		"like": "Like",
@@ -48,7 +53,11 @@
 		"unlike": "Remove like",
 		"save": "Save",
 		"unsave": "Remove from saved",
-		"copied": "Link copied"
+		"copied": "Link copied",
+		"menu": "Post options",
+		"edit": "Edit",
+		"report": "Report",
+		"edited": "edited"
 	},
 	"home": {
 		"description": "Share moments and connect with your community."
@@ -77,7 +86,10 @@
 		"editProfile": "Edit profile",
 		"addBio": "Add a bio",
 		"photoPost": "Photo post",
-		"reel": "Reel"
+		"reel": "Reel",
+		"shareFirst": "Share your first photo",
+		"noPosts": "Share your world",
+		"noPostsHint": "Your photos and videos will appear here."
 	},
 	"follows": {
 		"emptyFollowers": "No followers yet",
@@ -93,7 +105,21 @@
 		"title": "Story",
 		"next": "Next",
 		"circle": "Stories from your circle",
-		"add": "Add story"
+		"add": "Add story",
+		"share": "Share story",
+		"yourStory": "Your story",
+		"views": "Viewers",
+		"noViews": "No views yet. Views appear here when someone watches.",
+		"pause": "Pause story",
+		"play": "Play story",
+		"reply": "Reply to story…",
+		"finished": "You’re all caught up",
+		"finishedHint": "No more stories to show right now.",
+		"backHome": "Back to feed",
+		"viewError": "Unable to load viewers.",
+		"addAnother": "Add another story",
+		"mute": "Mute video",
+		"unmute": "Unmute video"
 	},
 	"feed": {
 		"more": "Load more",
@@ -104,6 +130,9 @@
 		"emptyAll": "No posts yet. Be the first to share something.",
 		"emptyFollowing": "Nothing here yet. Follow people to see their posts.",
 		"error": "We could not load your feed."
+	},
+	"reels": {
+		"empty": "No reels yet. Be the first to share a video."
 	},
 	"bookmarks": {
 		"title": "Bookmarks",
@@ -119,7 +148,9 @@
 		"notifications": "Notifications",
 		"bookmarks": "Bookmarks",
 		"yourSpace": "Your space",
-		"createPost": "Create post"
+		"createPost": "Create post",
+		"messages": "Messages",
+		"more": "More"
 	},
 	"account": {
 		"title": "Profile",
@@ -136,7 +167,7 @@
 		"VALIDATION_FAILED": "Please check the highlighted fields and try again.",
 		"UNAUTHENTICATED": "Please log in to continue.",
 		"FORBIDDEN": "You do not have permission to do that.",
-		"NOT_FOUND": "We could not find what you were looking for.",
+		"NOT_FOUND": "We could not find what you are looking for.",
 		"CONFLICT": "This conflicts with existing data.",
 		"RATE_LIMITED": "Too many attempts. Please wait a moment and try again.",
 		"INTERNAL": "Something went wrong. Please try again.",
@@ -267,5 +298,45 @@
 		"deleted": "Comment deleted.",
 		"focused": "Focused comment",
 		"conversation": "Other replies in this conversation"
+	},
+	"messages": {
+		"new": "New message",
+		"conversations": "Conversations",
+		"sayHello": "Say hello",
+		"unread": "Unread messages",
+		"noConversations": "Your conversations will appear here.",
+		"search": "Search people",
+		"noPeople": "No people found.",
+		"yourMessages": "Your messages",
+		"intro": "Share a little of your day. Send a private message to someone on SNS.",
+		"placeholder": "Message…",
+		"send": "Send",
+		"sending": "Sending…",
+		"sent": "Sent",
+		"seen": "Seen",
+		"older": "Load earlier messages",
+		"viewProfile": "View profile",
+		"conversation": "Conversation",
+		"reconnecting": "Unable to refresh. Retrying when connected…",
+		"emoji": "Emoji",
+		"gif": "GIF stickers",
+		"openInbox": "Open inbox",
+		"close": "Close messages",
+		"stickers": "Send a little joy",
+		"heart": "Love",
+		"wave": "Hello",
+		"celebrate": "Celebrate",
+		"star": "Amazing"
+	},
+	"media": {
+		"previous": "Previous",
+		"next": "Next",
+		"position": "{current} / {total}",
+		"loadFailed": "Could not load this media",
+		"gallery": "Post media"
+	},
+	"video": {
+		"play": "Play video",
+		"pause": "Pause video"
 	}
 }

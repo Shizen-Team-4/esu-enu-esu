@@ -20,7 +20,9 @@
 				? 'bg-primary-soft'
 				: 'bg-surface'}"
 		>
-			<Avatar src={notification.actor?.avatarUrl} {name} />
+			<Avatar
+				user={notification.actor ?? { id: '', username: '', displayName: name, avatarUrl: null }}
+			/>
 			<span class="min-w-0 flex-1">
 				<span
 					class="block break-words text-body {notification.readAt === null ? 'font-semibold' : ''}"

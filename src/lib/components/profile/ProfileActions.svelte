@@ -5,8 +5,11 @@
 	import { errorMessageKey } from '$lib/errors/error-message'
 	import type { Profile } from '$lib/contract'
 
-	let { viewer, errorCode = null }: { viewer: Profile['viewer']; errorCode?: string | null } =
-		$props()
+	let {
+		viewer,
+		username,
+		errorCode = null,
+	}: { viewer: Profile['viewer']; username: string; errorCode?: string | null } = $props()
 	let pending = $state(false)
 </script>
 
@@ -44,6 +47,7 @@
 				>{$_(viewer.following ? 'profile.unfollow' : 'profile.follow')}</Button
 			>
 		</form>
+		<Button href={'/messages?to=' + encodeURIComponent(username)}>{$_('nav.messages')}</Button>
 	{/if}
 	{#if errorCode}<p role="alert" class="m-0 text-meta text-danger">
 			{$_(errorMessageKey(errorCode))}

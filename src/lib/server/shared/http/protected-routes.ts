@@ -5,6 +5,7 @@ const protectedRoots = [
 	'/create',
 	'/bookmarks',
 	'/notifications',
+	'/messages',
 ]
 
 export function isProtectedPath(pathname: string): boolean {

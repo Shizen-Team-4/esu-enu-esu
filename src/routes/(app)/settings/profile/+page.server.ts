@@ -1,3 +1,4 @@
+import { redirect } from '@sveltejs/kit'
 import { optionalViewer } from '$lib/server/auth/viewer'
 import { profileFormInput } from '$lib/server/shared/http/profile-form'
 import { toActionFailure } from '$lib/server/shared/http/error-response'
@@ -21,14 +22,16 @@ export const actions: Actions = {
 	default: async ({ locals, request }) => {
 		const user = requireUser(locals)
 		const services = requireServices(locals)
+		let username: string
 		try {
-			await services.users.updateMe(
+			const updated = await services.users.updateMe(
 				optionalViewer(user),
 				profileFormInput(await request.formData()),
 			)
+			username = updated.username
 		} catch (cause) {
 			return toActionFailure(cause)
 		}
-		return { saved: true }
+		redirect(303, `/u/${encodeURIComponent(username)}`)
 	},
 }

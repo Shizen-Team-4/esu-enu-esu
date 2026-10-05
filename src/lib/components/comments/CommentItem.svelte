@@ -10,6 +10,7 @@
 		comment,
 		context = false,
 		branchCount = 0,
+		expanded = false,
 		onReply,
 		onExpandBranch,
 		onDeleted,
@@ -19,6 +20,7 @@
 		comment: Comment
 		context?: boolean
 		branchCount?: number
+		expanded?: boolean
 		onReply: (comment: Comment) => void
 		onExpandBranch?: (comment: Comment) => void
 		onDeleted: (comment: Comment) => void
@@ -30,7 +32,7 @@
 
 <article class="comment-item relative min-w-0" data-comment-id={comment.id}>
 	<header class="flex items-start gap-3">
-		<Avatar src={comment.author.avatarUrl} name={comment.author.displayName} />
+		<Avatar user={comment.author} />
 		<div class="min-w-0 flex-1">
 			<a {href} class="block truncate text-body font-semibold text-fg no-underline"
 				>{comment.author.displayName}</a
@@ -68,7 +70,7 @@
 			type="button"
 			class="ml-12 min-h-11 px-2 text-meta text-fg-muted"
 			onclick={() => onExpandBranch?.(comment)}
-			aria-expanded="false"
+			aria-expanded={expanded}
 		>
 			{$_('comments.replyCount', { values: { count: branchCount } })}
 		</button>

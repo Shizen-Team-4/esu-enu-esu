@@ -16,7 +16,7 @@ export const actions: Actions = {
 		} catch (cause) {
 			return toActionFailure(cause)
 		}
-		redirect(303, '/')
+		redirect(303, `/stories/${encodeURIComponent(user.username || user.id)}?latest=1`)
 	},
 	post: async ({ locals, request }) => {
 		const user = requireUser(locals)
