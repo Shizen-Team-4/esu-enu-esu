@@ -8,8 +8,10 @@
 	import { showToast } from '$lib/toast/toast-state'
 	import NavIcon from './NavIcon.svelte'
 	import Button from './ui/Button.svelte'
+	import ConfirmationDialog from './ui/ConfirmationDialog.svelte'
 	let { me }: { me: UserSummary | null } = $props()
 	let open = $state(false)
+	let logoutDialogOpen = $state(false)
 	let root = $state<HTMLElement>()
 	const itemClass =
 		'flex min-h-11 w-full cursor-pointer items-center rounded-lg border-0 bg-transparent px-3 text-body text-fg no-underline hover:bg-elevated'
@@ -58,10 +60,33 @@
 					<a href="/settings" class={itemClass}>{$_('preferences.title')}</a>
 				</li>
 				<li>
-					<button type="button" class={itemClass} onclick={logout}>{$_('auth.logout')}</button>
+					<button
+						type="button"
+						class={itemClass}
+						onclick={() => {
+							open = false
+							logoutDialogOpen = true
+						}}>{$_('auth.logout')}</button
+					>
 				</li>
 			</ul>
 		{/if}
+
+		<ConfirmationDialog
+			open={logoutDialogOpen}
+			title={$_('auth.logoutTitle')}
+			message={$_('auth.logoutConfirm')}
+			cancelLabel={$_('post.cancel')}
+			oncancel={() => (logoutDialogOpen = false)}
+		>
+			{#snippet children()}
+				<button
+					type="button"
+					class="min-h-11 cursor-pointer border border-danger bg-danger px-5 py-2 text-body text-white hover:opacity-90"
+					onclick={logout}>{$_('auth.logout')}</button
+				>
+			{/snippet}
+		</ConfirmationDialog>
 	</div>
 {:else}
 	<Button href="/login" variant="primary">{$_('auth.login')}</Button>

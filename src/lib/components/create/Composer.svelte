@@ -82,16 +82,14 @@
 	onDestroy(() => items.forEach((item) => URL.revokeObjectURL(item.url)))
 </script>
 
-<CreateHeader {canPost} />
-<div
-	class="mx-auto w-full max-w-[620px] pb-[calc(5rem+env(safe-area-inset-bottom))] md:my-8 md:pb-0"
->
-	<h1 class="mb-4 hidden text-xl font-semibold md:block">{$_('create.title')}</h1>
+<CreateHeader />
+<div class="mx-auto my-8 w-full max-w-[620px]">
+	<h1 class="mb-4 text-xl font-semibold">{$_('create.title')}</h1>
 	<form
 		id="composer-form"
 		method="POST"
 		action={type === 'story' ? '?/story' : '?/post'}
-		class="grid gap-4 bg-surface p-3.5 md:border md:border-line md:p-6"
+		class="grid gap-4 border border-line bg-surface p-6"
 	>
 		<ComposerAuthor {me} bind:type locked={items.length > 0} />
 		<input type="hidden" name="type" value={type} />
@@ -107,7 +105,8 @@
 					placeholder={$_('create.placeholder')}
 					aria-invalid={error?.fields?.caption ? 'true' : undefined}
 					aria-describedby={error?.fields?.caption ? 'composer-caption-error' : undefined}
-					class="min-h-[150px] w-full resize-y border-0 bg-transparent p-0 text-[15px] leading-relaxed text-fg outline-none placeholder:text-fg-muted md:min-h-[130px]"
+					rows="2"
+					class="min-h-16 w-full resize-y border-0 bg-transparent p-0 text-[15px] leading-relaxed text-fg outline-none placeholder:text-fg-muted md:min-h-20"
 				></textarea>
 				<FieldError code={error?.fields?.caption} id="composer-caption-error" />
 			</label>

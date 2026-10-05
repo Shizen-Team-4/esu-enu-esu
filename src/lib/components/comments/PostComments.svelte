@@ -9,11 +9,13 @@
 		comments,
 		me,
 		form,
+		editing,
 	}: {
 		post: Post
 		comments: Page<Comment>
 		me: UserSummary | null
 		form: { error?: ErrorEnvelope['error']; body?: string; parentId?: string } | null
+		editing: boolean
 	} = $props()
 	let delta = $state(0)
 	const current = $derived({
@@ -24,14 +26,16 @@
 
 <div class="post-comments">
 	<PageBar />
-	<PostCard post={current} />
-	<CommentSection
-		postId={post.id}
-		initial={comments}
-		{me}
-		{form}
-		onCountChange={(change) => (delta += change)}
-	/>
+	<PostCard post={current} editing={editing && current.viewer.isAuthor} />
+	{#if !editing}
+		<CommentSection
+			postId={post.id}
+			initial={comments}
+			{me}
+			{form}
+			onCountChange={(change) => (delta += change)}
+		/>
+	{/if}
 </div>
 
 <style>

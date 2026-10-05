@@ -7,7 +7,7 @@ export interface UserSummary {
 export interface Profile extends UserSummary {
 	bio: string
 	counts: { posts: number; followers: number; following: number }
-	viewer: { isMe: boolean; following: boolean }
+	viewer: { isMe: boolean; following: boolean; followsViewer?: boolean }
 	createdAt: string
 }
 export interface Me extends Profile {

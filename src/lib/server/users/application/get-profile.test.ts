@@ -24,6 +24,17 @@ describe('getProfile', () => {
 		})
 	})
 
+	it('reports when the profile follows the viewer', async () => {
+		const profile = await getProfile(
+			new InMemoryUserRepository({
+				users: [aUser({ id: 'usr_2', username: 'dara' })],
+				follows: [['usr_2', viewer.id]],
+			}),
+		)(viewer, 'dara')
+
+		expect(profile.viewer.followsViewer).toBe(true)
+	})
+
 	it('reports an unknown username', async () => {
 		await expect(getProfile(setup())(viewer, 'nobody')).rejects.toMatchObject({
 			code: 'NOT_FOUND',

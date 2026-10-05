@@ -132,7 +132,13 @@ export class InMemoryUserRepository implements UserRepository {
 		return {
 			items: items.map(({ user }): FollowListItem => {
 				const { id, username, displayName, avatarUrl, viewer } = this.view(user, viewerId)
-				return { id, username, displayName, avatarUrl, viewer }
+				return {
+					id,
+					username,
+					displayName,
+					avatarUrl,
+					viewer: { isMe: viewer.isMe, following: viewer.following },
+				}
 			}),
 			nextCursor:
 				rows.length > page.limit && last
@@ -147,6 +153,10 @@ export class InMemoryUserRepository implements UserRepository {
 
 	private isFollowing(viewerId: string | null, userId: string) {
 		return viewerId !== null && this.follows.has(`${viewerId}|${userId}`)
+	}
+
+	private isFollowedBy(viewerId: string | null, userId: string) {
+		return viewerId !== null && this.follows.has(`${userId}|${viewerId}`)
 	}
 
 	private matches(user: StoredUser, q: string) {
@@ -171,7 +181,11 @@ export class InMemoryUserRepository implements UserRepository {
 		return {
 			...user,
 			counts: { ...user.counts, followers: this.followerCount(user.id), following },
-			viewer: { isMe: user.id === viewerId, following: this.isFollowing(viewerId, user.id) },
+			viewer: {
+				isMe: user.id === viewerId,
+				following: this.isFollowing(viewerId, user.id),
+				followsViewer: this.isFollowedBy(viewerId, user.id),
+			},
 		}
 	}
 }

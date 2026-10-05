@@ -7,7 +7,7 @@
 {#if items.length > 0}
 	<ul class="m-0 grid list-none gap-3 p-0" aria-label={$_('create.preview')}>
 		{#each items as item (item.key)}
-			<li class="hatch relative flex max-h-[22rem] justify-center">
+			<li class="relative flex max-h-[22rem] justify-center">
 				{#if item.file.type.startsWith('video/')}
 					<!-- svelte-ignore a11y_media_has_caption -->
 					<video src={item.url} muted playsinline class="max-h-[22rem] max-w-full object-contain"

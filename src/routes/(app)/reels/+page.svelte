@@ -1,7 +1,6 @@
 <script lang="ts">
 	import Button from '$lib/components/ui/Button.svelte'
 	import PostCard from '$lib/components/post/PostCard.svelte'
-	import HatchBand from '$lib/components/ui/HatchBand.svelte'
 	import { _ } from 'svelte-i18n'
 	let { data } = $props()
 </script>
@@ -10,8 +9,7 @@
 <div class="grid gap-4 py-4">
 	<h1 class="text-title font-semibold">{$_('nav.reels')}</h1>
 	<div class="post-list">
-		{#each data.reels.items as post, index (post.id)}
-			{#if index > 0}<HatchBand />{/if}
+		{#each data.reels.items as post (post.id)}
 			<PostCard {post} />
 		{/each}
 	</div>

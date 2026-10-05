@@ -30,7 +30,7 @@
 </script>
 
 <div
-	class="fixed inset-x-0 bottom-0 flex items-center justify-between gap-3 border-t border-line bg-surface px-3.5 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] md:static md:border-t md:px-0 md:pb-0"
+	class="flex items-center justify-between gap-3 border-t border-line bg-surface px-0 pt-2 pb-0 max-md:mt-4"
 >
 	<div class="flex items-center">
 		{#if type !== 'reel'}
@@ -95,11 +95,7 @@
 				: $_('create.remaining', { values: { count: left } })}</span
 		>
 	{/if}
-	<Button
-		type="submit"
-		form="composer-form"
-		variant="primary"
-		disabled={!canPost}
-		class="max-md:hidden">{$_('post.publish')}</Button
+	<Button type="submit" form="composer-form" variant="primary" disabled={!canPost}
+		>{$_('post.publish')}</Button
 	>
 </div>

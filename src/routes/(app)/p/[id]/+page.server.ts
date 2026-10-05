@@ -5,13 +5,14 @@ import { toActionFailure, toHttpError } from '$lib/server/shared/http/error-resp
 import { requireServices, requireUser } from '$lib/server/shared/http/guards'
 import type { Actions, PageServerLoad } from './$types'
 
-export const load: PageServerLoad = async ({ locals, params }) => {
+export const load: PageServerLoad = async ({ locals, params, url }) => {
 	const services = requireServices(locals)
 	const viewer = optionalViewer(locals.user)
 	try {
 		return {
 			post: await services.posts.getPost(viewer, params.id),
 			comments: await services.comments.listComments(viewer, { postId: params.id }),
+			edit: url.searchParams.get('edit') === '1',
 		}
 	} catch (cause) {
 		return toHttpError(cause)
@@ -36,15 +37,17 @@ export const actions: Actions = {
 			return toActionFailure(cause)
 		}
 	},
-	delete: async ({ locals, params }) => {
+	delete: async ({ locals, params, request }) => {
 		const user = requireUser(locals)
 		const services = requireServices(locals)
+		const data = await request.formData()
 		try {
 			await services.posts.deletePost(optionalViewer(user), params.id)
 		} catch (cause) {
 			return toActionFailure(cause)
 		}
-		redirect(303, '/profile')
+		const returnTo = safeReturnPath(data.get('returnTo'), params.id)
+		redirect(303, returnTo)
 	},
 	comment: async ({ locals, params, request }) => {
 		const user = requireUser(locals)
@@ -77,4 +80,10 @@ export const actions: Actions = {
 		}
 		return { deleted: true }
 	},
+}
+
+function safeReturnPath(value: FormDataEntryValue | null, postId: string): string {
+	if (typeof value !== 'string' || !value.startsWith('/') || value.startsWith('//')) return '/'
+	if (value === `/p/${postId}` || value.startsWith(`/p/${postId}?`)) return '/'
+	return value
 }

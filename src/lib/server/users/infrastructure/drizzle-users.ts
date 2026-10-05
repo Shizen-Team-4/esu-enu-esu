@@ -20,6 +20,7 @@ type UserRow = {
 	followers: number
 	following: number
 	viewerFollowing: number
+	viewerFollowedBy: number
 }
 const columns = sql`u.id, u.username, u.name, u.image, u.bio, u.email, u.email_verified AS emailVerified, u.created_at AS createdAt,
 (SELECT COUNT(*) FROM posts WHERE author_id = u.id AND deleted_at IS NULL) AS posts,
@@ -38,7 +39,11 @@ export function createUserRepository(db: ReturnType<typeof getDb>): UserReposito
 			emailVerified: Boolean(row.emailVerified),
 			createdAt: new Date(row.createdAt).toISOString(),
 			counts: { posts: row.posts, followers: row.followers, following: row.following },
-			viewer: { isMe: row.id === viewerId, following: Boolean(row.viewerFollowing) },
+			viewer: {
+				isMe: row.id === viewerId,
+				following: Boolean(row.viewerFollowing),
+				followsViewer: Boolean(row.viewerFollowedBy),
+			},
 		}
 	}
 	async function listFollows(
@@ -85,7 +90,10 @@ export function createUserRepository(db: ReturnType<typeof getDb>): UserReposito
 		async find(input, viewerId) {
 			const where = input.id ? sql`u.id = ${input.id}` : sql`u.username = ${input.username}`
 			const row = await db.get<UserRow>(
-				sql`SELECT ${columns}, EXISTS(SELECT 1 FROM follows WHERE follower_id = ${viewerId} AND followee_id = u.id) AS viewerFollowing FROM user u WHERE ${where} AND u.banned = 0`,
+				sql`SELECT ${columns},
+					EXISTS(SELECT 1 FROM follows WHERE follower_id = ${viewerId} AND followee_id = u.id) AS viewerFollowing,
+					EXISTS(SELECT 1 FROM follows WHERE follower_id = u.id AND followee_id = ${viewerId}) AS viewerFollowedBy
+					FROM user u WHERE ${where} AND u.banned = 0`,
 			)
 			return row ? map(row, viewerId) : null
 		},

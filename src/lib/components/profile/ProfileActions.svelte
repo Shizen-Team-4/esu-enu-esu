@@ -41,7 +41,13 @@
 				disabled={pending}
 				variant={viewer.following ? 'secondary' : 'primary'}
 				class="flex-1 md:flex-none"
-				>{$_(viewer.following ? 'profile.unfollow' : 'profile.follow')}</Button
+				>{$_(
+					viewer.following
+						? 'profile.unfollow'
+						: viewer.followsViewer
+							? 'profile.followBack'
+							: 'profile.follow',
+				)}</Button
 			>
 		</form>
 	{/if}
