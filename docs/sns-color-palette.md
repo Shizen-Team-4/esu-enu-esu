@@ -4,22 +4,22 @@ Primary color: sky blue `#12A9F2`. It stays the same in light and dark mode.
 
 ## 1. Color Tokens
 
-| Tailwind name  | Use                              | Light     | Dark      |
-| -------------- | -------------------------------- | --------- | --------- |
-| `primary`      | Buttons, sent bubble, map pin    | `#12A9F2` | `#12A9F2` |
-| `on-primary`   | Text on primary                  | `#0B1B2B` | `#0B1B2B` |
-| `primary-soft` | Chips, tags, highlights          | `#E6F6FE` | `#0F2A3A` |
-| `link`         | Blue text, links, pressed state  | `#0369A1` | `#5CC4F7` |
-| `background`   | Page background                  | `#F5F5F5` | `#0F0F12` |
-| `surface`      | Cards                            | `#FFFFFF` | `#1C1C1F` |
-| `elevated`     | Modals, inputs                   | `#FFFFFF` | `#2A2A2E` |
-| `bubble-in`    | Received bubble                  | `#EBEBEB` | `#2C2C30` |
-| `fg`           | Main text                        | `#1C1C1E` | `#F2F2F7` |
-| `fg-muted`     | Secondary text                   | `#6B6B70` | `#9A9AA1` |
-| `line`         | Border, divider                  | `#E5E5EA` | `#2E2E33` |
-| `accent`       | Like (heart), notification badge | `#FF3040` | `#FF4D5E` |
-| `danger`       | Error                            | `#EF4444` | `#F87171` |
-| `success`      | Success                          | `#22C55E` | `#4ADE80` |
+| Tailwind name  | Use                             | Light     | Dark      |
+| -------------- | ------------------------------- | --------- | --------- |
+| `primary`      | Buttons, sent bubble, map pin   | `#12A9F2` | `#12A9F2` |
+| `on-primary`   | Text on primary                 | `#0B1B2B` | `#0B1B2B` |
+| `primary-soft` | Chips, tags, highlights         | `#E6F6FE` | `#0F2A3A` |
+| `link`         | Blue text, links, pressed state | `#0369A1` | `#5CC4F7` |
+| `background`   | Page background                 | `#F5F5F5` | `#0F0F12` |
+| `surface`      | Cards                           | `#FFFFFF` | `#1C1C1F` |
+| `elevated`     | Modals, inputs                  | `#FFFFFF` | `#2A2A2E` |
+| `bubble-in`    | Received bubble                 | `#EBEBEB` | `#2C2C30` |
+| `fg`           | Main text                       | `#1C1C1E` | `#F2F2F7` |
+| `fg-muted`     | Secondary text                  | `#6B6B70` | `#9A9AA1` |
+| `line`         | Border, divider                 | `#E5E5EA` | `#2E2E33` |
+| `accent`       | Like (heart)                    | `#FF3040` | `#FF4D5E` |
+| `danger`       | Error                           | `#EF4444` | `#F87171` |
+| `success`      | Success                         | `#22C55E` | `#4ADE80` |
 
 ## 2. Setup
 

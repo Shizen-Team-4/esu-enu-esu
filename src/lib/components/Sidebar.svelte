@@ -5,7 +5,8 @@
 	import type { UserSummary } from '$lib/contract'
 	import Button from './ui/Button.svelte'
 	import NavIcon from './NavIcon.svelte'
-	let { me }: { me: UserSummary | null } = $props()
+	import UnreadBadge from './notifications/UnreadBadge.svelte'
+	let { me, unreadCount = null }: { me: UserSummary | null; unreadCount?: number | null } = $props()
 	const items = $derived(withProfileHref(sidebarNavItems, me?.username))
 </script>
 
@@ -22,6 +23,7 @@
 					: 'border-transparent text-fg hover:bg-elevated'}"
 			>
 				<NavIcon path={item.path} size={20} />{$_(`nav.${item.key}`)}
+				{#if item.key === 'notifications'}<UnreadBadge count={unreadCount} />{/if}
 			</a>
 		{/each}
 	</nav>

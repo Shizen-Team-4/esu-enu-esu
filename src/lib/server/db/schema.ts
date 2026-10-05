@@ -359,6 +359,29 @@ export const preferences = sqliteTable('preferences', {
 	updatedAt: ts('updated_at').notNull().default(now),
 })
 
+export const notifications = sqliteTable(
+	'notifications',
+	{
+		id: text('id').primaryKey(),
+		recipientId: text('recipient_id')
+			.notNull()
+			.references(() => user.id, { onDelete: 'cascade' }),
+		type: text('type', { enum: ['post', 'like', 'comment', 'reply', 'follow'] }).notNull(),
+		actorId: text('actor_id').references(() => user.id, { onDelete: 'set null' }),
+		postId: text('post_id').references(() => posts.id, { onDelete: 'set null' }),
+		commentId: text('comment_id').references(() => comments.id, { onDelete: 'set null' }),
+		dedupeKey: text('dedupe_key').notNull().unique(),
+		readAt: ts('read_at'),
+		createdAt: ts('created_at').notNull().default(now),
+	},
+	(t) => [
+		index('notifications_list_idx').on(t.recipientId, t.createdAt, t.id),
+		index('notifications_unread_idx')
+			.on(t.recipientId)
+			.where(sql`${t.readAt} IS NULL`),
+	],
+)
+
 // ─── BetterAuth rate limit (contract 2.7, storage: "database") ──────────────
 // Compare with `npx @better-auth/cli generate`; map the model name to this table if needed.
 

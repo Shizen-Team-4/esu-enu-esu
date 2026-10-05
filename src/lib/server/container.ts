@@ -53,6 +53,14 @@ import { validateGuestPreferences } from './preferences/application/validate-gue
 import { createLocalUploadReceiver } from './media/infrastructure/local-upload'
 import { createHealthCheck } from './health/infrastructure/health-check'
 import { normalizeMediaUrl } from './shared/infrastructure/media-public-url'
+import { createNotificationRepository } from './notifications/infrastructure/drizzle-notifications'
+import { createNotificationFollowers } from './notifications/infrastructure/drizzle-notification-followers'
+import { createBackgroundNotifier } from './notifications/infrastructure/background-notifier'
+import { createNotifications } from './notifications/application/create-notifications'
+import { listNotifications } from './notifications/application/list-notifications'
+import { getUnreadCount } from './notifications/application/get-unread-count'
+import { markNotificationRead } from './notifications/application/mark-notification-read'
+import { markAllNotificationsRead } from './notifications/application/mark-all-notifications-read'
 
 function authorDirectory(users: ReturnType<typeof createUserRepository>): AuthorDirectory {
 	return {
@@ -109,7 +117,23 @@ export function createContainer(
 	const commentRepository = createCommentRepository(db, env.DB)
 	const commentPosts = postLookup(posts)
 	const stories = createStoryRepository(db, env.DB, mediaPublicUrl)
+	const notifications = createNotificationRepository(db, env.DB)
+	const notifier = createBackgroundNotifier({
+		deliver: createNotifications({
+			notifications,
+			followers: createNotificationFollowers(db),
+			ids,
+		}),
+		tasks,
+		report: (cause) => console.error('Notification delivery failed', cause),
+	})
 	return {
+		notifications: {
+			listNotifications: listNotifications(notifications),
+			getUnreadCount: getUnreadCount(notifications),
+			markNotificationRead: markNotificationRead({ notifications, clock }),
+			markAllNotificationsRead: markAllNotificationsRead({ notifications, clock }),
+		},
 		health: createHealthCheck({ kv: env.KV, d1: env.DB, db }),
 		stories: {
 			createStory: createStory({ stories, clock, ids }),
@@ -152,13 +176,13 @@ export function createContainer(
 				listSavedPosts: listSavedPosts(posts),
 			}),
 			searchUsers: searchUsers(users),
-			followUser: followUser({ users, clock }),
+			followUser: followUser({ users, clock, notifier }),
 			updateMe: updateMe({ users, avatars: avatarMedia(mediaRepository, mediaPublicUrl) }),
 			listFollowers: listFollowers(users),
 			listFollowing: listFollowing(users),
 		},
 		posts: {
-			createPost: createPost({ posts, clock, ids }),
+			createPost: createPost({ posts, clock, ids, notifier }),
 			getPost: getPost(posts),
 			updatePost: updatePost({ posts, clock }),
 			deletePost: deletePost({ posts, clock }),
@@ -166,7 +190,7 @@ export function createContainer(
 			listReels: listReels(posts),
 			listUserPosts: listUserPosts({ posts, authors: authorDirectory(users) }),
 			listSavedPosts: listSavedPosts(posts),
-			likePost: likePost({ posts, clock }),
+			likePost: likePost({ posts, clock, notifier }),
 			unlikePost: unlikePost({ posts, clock }),
 			savePost: savePost({ posts, clock }),
 			unsavePost: unsavePost({ posts, clock }),
@@ -179,6 +203,7 @@ export function createContainer(
 				posts: commentPosts,
 				clock,
 				ids,
+				notifier,
 			}),
 			deleteComment: deleteComment({ comments: commentRepository, posts: commentPosts }),
 		},

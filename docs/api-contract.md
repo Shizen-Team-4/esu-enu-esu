@@ -6,7 +6,7 @@ This document defines shared data shapes, operation inputs/results and rules, so
 
 For this SvelteKit app, `+page.server.ts` loads read data and form actions handle mutations through server-side services/repositories. They do not need to fetch the app's own `/api` routes. SvelteKit handles the request and data transfer, but does not automatically create REST endpoints. Add `+server.ts` endpoints only when needed, such as incremental feed loading or browser-initiated uploads. These adapters use the same operations below; their paths are implementation details.
 
-Server repositories receive the current session/viewer from trusted server context, never from a client-supplied user ID. Database access and credentials remain server-only. Notifications and post visibility settings are out of scope for now. The app shows a Notifications nav slot as a UI placeholder page only; there is no notifications API.
+Server repositories receive the current session/viewer from trusted server context, never from a client-supplied user ID. Database access and credentials remain server-only. In-app notifications are in scope; email, browser push and post visibility settings are not.
 
 Items marked **(proposed)** are suggested defaults. They have not been agreed by the whole team yet. Change them in this file first, then in code.
 
@@ -442,3 +442,35 @@ Files are uploaded **directly to Cloudflare R2 with a presigned URL**. They do n
 | `updatePreferences` | 🔒   | Any of `{ theme, language }` | `Preferences` | `VALIDATION_FAILED` |
 
 - After `language` changes, server-rendered pages use the saved language instead of `Accept-Language` (#26).
+
+### 4.9 In-app notifications
+
+```ts
+Notification {
+  id: string                         // ntf_…
+  type: 'post' | 'like' | 'comment' | 'reply' | 'follow'
+  actor: UserSummary | null           // unavailable/deleted/banned actor → null
+  post: { id: string; type: 'post' | 'reel' } | null
+  commentId: string | null            // deleted comment or unavailable post → null
+  createdAt: string
+  readAt: string | null
+}
+```
+
+| Operation                  | Auth | Input                 | Result                                                   | Errors                           |
+| -------------------------- | ---- | --------------------- | -------------------------------------------------------- | -------------------------------- |
+| `listNotifications`        | 🔒   | `{ cursor?, limit? }` | `Page<Notification>` (newest first)                      | `VALIDATION_FAILED`              |
+| `getUnreadCount`           | 🔒   | none                  | `{ unreadCount: number }`                                | none                             |
+| `markNotificationRead`     | 🔒   | `{ id }`              | `Notification` (updated read state and available target) | `VALIDATION_FAILED`, `NOT_FOUND` |
+| `markAllNotificationsRead` | 🔒   | none                  | `void`                                                   | none                             |
+
+- Only activity after deployment generates notifications; existing activity is not backfilled.
+- A new post **or reel** notifies its author's followers. Likes notify the post/reel author. New top-level comments notify the post/reel author.
+- A reply notifies the author of the **exact comment answered**, not the thread root merely because it is an ancestor. The post author also receives `comment`, unless already receiving `reply` for this event.
+- Never notify the actor; at most one notification per recipient per event. No story, bookmark, edit, email or push notifications, and no new reaction types or preference controls.
+- Like and follow notifications are deduplicated for the lifetime of the actor/target pair, including unlike→like and unfollow→follow. Repeated requests without a new database insertion do not notify.
+- History remains after undoing likes/follows or deleting content. Unavailable posts become `post: null` and cannot be opened; deleted comments fall back to the available post. History is not automatically expired.
+- All reads/writes are scoped to the trusted viewer. Marking another user's notification read returns `NOT_FOUND`; repeated marks preserve the original `readAt`.
+- Opening Notifications does not mark entries read. Clicking an entry marks it read and opens the available post/profile; unavailable entries can still be marked read. A separate “Mark all as read” action marks existing unread entries.
+- Initial page loads fetch immediately. Visible signed-in app tabs poll the unread badge every **30 seconds** and also refresh the list when Notifications is open. Hidden tabs pause polling and refresh immediately upon becoming visible. Failures retain existing data and show retry UI on the notification page.
+- Page loads/form actions use these operations; `GET /api/notifications` supports pagination/refresh and `GET /api/notifications/unread` supports the badge. Responses are private and not cached.

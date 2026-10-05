@@ -147,7 +147,7 @@ These are the design decisions from the design exports. Every UI change must fol
 - Profile tabs are Posts, Reels, then Bookmarks. Bookmarks is visible and accessible only on the viewer's own profile. Legacy `/bookmarks` links redirect to that tab, preserving pagination.
 - The header has no notification button. Its hamburger menu keeps Profile, Preferences and Log out, with matching alignment and rounded hover styles.
 - Profile container borders extend to the viewport bottom even when there are no posts; pages remain content-driven, never fixed-height.
-- Notifications is a placeholder page until a notifications backend exists.
+- Notifications uses the in-app backend from `docs/api-contract.md` section 4.9. The header still has no notification button.
 - Reels have no nav entry. They show in the home feed and in the profile Reels tab.
 
 ### Comments

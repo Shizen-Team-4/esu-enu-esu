@@ -89,11 +89,13 @@ export class InMemoryPostRepository implements PostRepository {
 	async react(id: string, viewerId: string, kind: 'like' | 'save', active: boolean, now: Date) {
 		this.writes++
 		const key = `${id}|${viewerId}`
+		const created = active && !(kind === 'like' ? this.likes.has(key) : this.saves.has(key))
 		if (kind === 'like') {
 			if (active) this.likes.add(key)
 			else this.likes.delete(key)
 		} else if (!active) this.saves.delete(key)
 		else if (!this.saves.has(key)) this.saves.set(key, now.getTime())
+		return created
 	}
 
 	async checkMedia() {

@@ -9,6 +9,11 @@ export default defineConfig({
 		include: ['src/**/*.test.ts'],
 		coverage: {
 			include: [
+				'src/lib/server/notifications/{domain,application}/**/*.ts',
+				'src/lib/server/notifications/infrastructure/**/*.ts',
+				'src/lib/server/posts/infrastructure/drizzle-posts.ts',
+				'src/lib/server/users/infrastructure/drizzle-users.ts',
+				'src/lib/notifications/**/*.ts',
 				'src/lib/i18n/**/*.ts',
 				'src/lib/server/preferences/{domain,application}/**/*.ts',
 				'src/lib/server/shared/domain/**/*.ts',

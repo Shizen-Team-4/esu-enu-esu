@@ -81,9 +81,11 @@ export class InMemoryUserRepository implements UserRepository {
 	}
 
 	async follow(viewerId: string, userId: string, active: boolean) {
-		if (active) this.follows.set(`${viewerId}|${userId}`, this.follows.size + 1000)
-		else this.follows.delete(`${viewerId}|${userId}`)
-		return this.followerCount(userId)
+		const key = `${viewerId}|${userId}`
+		const created = active && !this.follows.has(key)
+		if (created) this.follows.set(key, this.follows.size + 1000)
+		else if (!active) this.follows.delete(key)
+		return { followers: this.followerCount(userId), created }
 	}
 
 	async update(id: string, patch: UserUpdate) {

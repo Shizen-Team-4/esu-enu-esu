@@ -8,9 +8,10 @@ import {
 	retryAfterSec,
 } from '../../shared/domain/creation-rate-limit'
 import type { PostRepository } from './ports'
+import type { Notifier } from '../../shared/application/notifier'
 
 export const createPost =
-	(deps: { posts: PostRepository; clock: Clock; ids: IdGenerator }) =>
+	(deps: { posts: PostRepository; clock: Clock; ids: IdGenerator; notifier: Notifier }) =>
 	async (viewer: Viewer | null, input: unknown) => {
 		const author = requireViewer(viewer)
 		const value = validatePost(input)
@@ -27,5 +28,6 @@ export const createPost =
 		await deps.posts.create(id, author.id, value, now)
 		const post = await deps.posts.find(id, author.id)
 		if (!post) throw new AppError('INTERNAL')
+		deps.notifier.notify({ type: 'post', actorId: author.id, postId: id, createdAt: now })
 		return post
 	}

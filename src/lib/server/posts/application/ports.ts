@@ -16,13 +16,14 @@ export interface PostRepository {
 	create(id: string, authorId: string, input: CreatePostInput, now: Date): Promise<void>
 	update(id: string, caption: string, now: Date): Promise<void>
 	delete(id: string, now: Date): Promise<void>
+	/** True only when this call inserted a new active reaction row. */
 	react(
 		id: string,
 		viewerId: string,
 		kind: 'like' | 'save',
 		active: boolean,
 		now: Date,
-	): Promise<void>
+	): Promise<boolean>
 	checkMedia(ids: string[], ownerId: string, type: 'post' | 'reel'): Promise<boolean>
 	creationWindow(authorId: string, since: Date): Promise<{ count: number; oldest: Date | null }>
 }

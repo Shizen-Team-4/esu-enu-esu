@@ -4,7 +4,8 @@
 	import { isActive, mobileNavItems, withProfileHref } from '$lib/navigation/nav-items'
 	import type { UserSummary } from '$lib/contract'
 	import NavIcon from './NavIcon.svelte'
-	let { me }: { me: UserSummary | null } = $props()
+	import UnreadBadge from './notifications/UnreadBadge.svelte'
+	let { me, unreadCount = null }: { me: UserSummary | null; unreadCount?: number | null } = $props()
 	const items = $derived(withProfileHref(mobileNavItems, me?.username))
 </script>
 
@@ -34,7 +35,12 @@
 					><NavIcon path={item.path} /></span
 				>
 			{:else}
-				<NavIcon path={item.path} />
+				<span class="relative inline-flex">
+					<NavIcon path={item.path} />
+					{#if item.key === 'notifications'}
+						<span class="absolute -right-2 -top-2"><UnreadBadge count={unreadCount} /></span>
+					{/if}
+				</span>
 			{/if}
 			<span class={isCreate ? 'sr-only' : 'max-w-full truncate md:sr-only'}
 				>{$_(`nav.${item.key}`)}</span

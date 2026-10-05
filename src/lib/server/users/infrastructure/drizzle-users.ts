@@ -132,21 +132,20 @@ export function createUserRepository(db: ReturnType<typeof getDb>): UserReposito
 			}
 		},
 		async follow(viewerId, userId, active, now) {
-			if (active)
-				await db.run(
-					sql`INSERT OR IGNORE INTO follows (follower_id, followee_id, created_at) VALUES (${viewerId}, ${userId}, ${now.getTime()})`,
-				)
-			else
-				await db.run(
-					sql`DELETE FROM follows WHERE follower_id = ${viewerId} AND followee_id = ${userId}`,
-				)
-			return (
+			const result = active
+				? await db.run(
+						sql`INSERT OR IGNORE INTO follows (follower_id, followee_id, created_at) VALUES (${viewerId}, ${userId}, ${now.getTime()})`,
+					)
+				: await db.run(
+						sql`DELETE FROM follows WHERE follower_id = ${viewerId} AND followee_id = ${userId}`,
+					)
+			const followers =
 				(
 					await db.get<{ count: number }>(
 						sql`SELECT COUNT(*) AS count FROM follows WHERE followee_id = ${userId}`,
 					)
 				)?.count ?? 0
-			)
+			return { followers, created: active && result.meta.changes > 0 }
 		},
 		async update(id, patch) {
 			const values: Partial<typeof user.$inferInsert> = { updatedAt: new Date() }
