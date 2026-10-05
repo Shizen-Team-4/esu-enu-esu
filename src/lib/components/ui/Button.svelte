@@ -12,6 +12,7 @@
 		size = 'md',
 		href,
 		type = 'button',
+		form,
 		loading = false,
 		disabled = false,
 		onclick,
@@ -24,6 +25,7 @@
 		type?: 'button' | 'submit' | 'reset'
 		loading?: boolean
 		disabled?: boolean
+		form?: string
 		onclick?: (event: MouseEvent) => void
 		class?: string
 		children: Snippet
@@ -73,7 +75,14 @@
 		{@render content()}
 	</a>
 {:else}
-	<button {type} class={classes} disabled={inactive} aria-busy={loading || undefined} {onclick}>
+	<button
+		{type}
+		{form}
+		class={classes}
+		disabled={inactive}
+		aria-busy={loading || undefined}
+		{onclick}
+	>
 		{@render content()}
 	</button>
 {/if}

@@ -10,6 +10,6 @@
 <div role="alert" class="flex flex-col items-center gap-3 p-6 text-center">
 	<p class="text-base text-foreground">{$_(errorMessageKey(code))}</p>
 	{#if onRetry && isRetryable(code)}
-		<Button variant="secondary" onclick={() => onRetry()}>{$_('common.retry')}</Button>
+		<Button variant="secondary" onclick={() => onRetry()}>{$_('error.retry')}</Button>
 	{/if}
 </div>

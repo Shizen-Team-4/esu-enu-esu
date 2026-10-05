@@ -1,6 +1,9 @@
 # Git hooks, installed automatically by `pnpm install` (lefthook postinstall).
 # Skip once with LEFTHOOK=0 git commit ... / git push --no-verify.
 
+no_tty: true
+colors: false
+
 pre-commit:
   parallel: true
   jobs:

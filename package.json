@@ -61,6 +61,9 @@
 		"wrangler": "^4.0.0"
 	},
 	"dependencies": {
+		"@fontsource/space-grotesk": "^5.3.0",
+		"aws4fetch": "^1.0.20",
+		"better-auth": "1.7.7",
 		"svelte-i18n": "^4.0.1"
 	}
 }

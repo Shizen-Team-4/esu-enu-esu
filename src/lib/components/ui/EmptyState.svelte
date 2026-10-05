@@ -1,5 +1,7 @@
 <script lang="ts">
-	let { title, description }: { title: string; description?: string } = $props()
+	import type { Snippet } from 'svelte'
+	let { title, description, action }: { title: string; description?: string; action?: Snippet } =
+		$props()
 </script>
 
 <div class="flex flex-col items-center gap-1 p-8 text-center">
@@ -7,4 +9,5 @@
 	{#if description}
 		<p class="text-sm text-muted-foreground">{description}</p>
 	{/if}
+	{#if action}{@render action()}{/if}
 </div>

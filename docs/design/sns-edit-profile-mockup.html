@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gather – Edit profile</title>
+<style>
+:root{--blue:#1a56ff;--ink:#14161a;--mute:#6b7280;--line:#e5e7eb;--soft:#f3f6ff;--bg:#f8f8f9;--card:#fff;--field:#fff;--dis:#c9d6ff}
+:root[data-theme="dark"]{--ink:#f2f3f5;--mute:#9aa0aa;--line:#2a2d34;--soft:#18233f;--bg:#0f1115;--card:#16181d;--field:#1d2025;--dis:#27345c}
+@media(prefers-color-scheme:dark){:root[data-theme="system"]{--ink:#f2f3f5;--mute:#9aa0aa;--line:#2a2d34;--soft:#18233f;--bg:#0f1115;--card:#16181d;--field:#1d2025;--dis:#27345c}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Helvetica Neue",Arial,sans-serif;color:var(--ink);background:var(--bg);font-size:13px;min-height:100vh}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+header{display:flex;align-items:center;gap:14px;height:64px;padding:0 24px;background:var(--card);border-bottom:1px solid var(--line)}
+header a{color:var(--ink);display:flex}
+header b{font-size:16px}
+header .save{margin-left:auto;display:none}
+.page{max-width:520px;margin:28px auto 60px;padding:0 16px}
+.card{background:var(--card);border:1px solid var(--line);padding:22px}
+.avatar{display:flex;align-items:center;gap:16px;margin-bottom:24px}
+.pic{width:72px;height:72px;border-radius:50%;background:linear-gradient(#6b5545,#2a2018);flex:none;position:relative}
+.pic.none{background:var(--soft)}
+.pic.none::after{content:"N";position:absolute;inset:0;display:grid;place-items:center;color:var(--blue);font-weight:700;font-size:24px}
+.ghost{background:var(--card);border:1px solid var(--line);padding:8px 14px;border-radius:3px;font-size:12px}
+.ghost:hover{background:var(--soft)}
+.chk{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:12px;cursor:pointer;color:var(--mute)}
+.chk input{accent-color:var(--blue);width:15px;height:15px}
+.f{margin-bottom:18px}
+.lbl{font-size:11px;font-weight:600;margin-bottom:6px;display:block}
+.f input,.f textarea{width:100%;background:var(--field);border:1px solid var(--line);border-radius:3px;padding:11px 12px;outline:0}
+.f textarea{min-height:96px;resize:vertical;line-height:1.5}
+.f input:focus,.f textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,86,255,.18)}
+.pre{display:flex;align-items:center;background:var(--field);border:1px solid var(--line);border-radius:3px}
+.pre:focus-within{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,86,255,.18)}
+.pre span{padding-left:12px;color:var(--mute)}
+.pre input{border:0;box-shadow:none!important;padding-left:2px}
+.hint{display:flex;justify-content:space-between;margin-top:6px;font-size:11px;color:var(--mute)}
+.foot{display:flex;align-items:center;justify-content:flex-end;gap:12px;border-top:1px solid var(--line);margin:4px -22px -22px;padding:14px 22px}
+.foot .msg{margin-right:auto;font-size:11px;color:var(--mute)}
+.ok{color:#14803c!important}
+.save{background:var(--blue);color:#fff;border:0;padding:10px 22px;font-weight:600;font-size:12px}
+.save:hover:not(:disabled){background:#0f45e0}
+.save:disabled{background:var(--dis);cursor:not-allowed}
+.cancel{background:none;border:0;color:var(--mute);font-size:12px;padding:10px 6px}
+@media(max-width:560px){header{padding:0 14px}.card{padding:18px}.foot{margin:4px -18px -18px;padding:12px 18px}}
+</style>
+</head>
+<body>
+<header>
+  <a href="#" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></a>
+  <b>Edit profile</b>
+</header>
+
+<main class="page">
+  <section class="card">
+    <div class="avatar">
+      <div class="pic" id="pic"></div>
+      <div>
+        <button class="ghost" type="button">Change photo</button>
+        <label class="chk"><input type="checkbox" id="rmPhoto"> Remove profile photo</label>
+      </div>
+    </div>
+
+    <div class="f"><label class="lbl" for="user">Username</label><div class="pre"><span>@</span><input id="user" value="nak" autocomplete="username"></div></div>
+    <div class="f"><label class="lbl" for="name">Display name</label><input id="name" value="nak" autocomplete="name"></div>
+    <div class="f"><label class="lbl" for="bio">Bio</label><textarea id="bio" maxlength="160" placeholder="Tell people a little about yourself"></textarea><div class="hint"><span>Shown on your profile.</span><span id="cnt">0 / 160</span></div></div>
+
+    <div class="foot">
+      <span class="msg" id="msg" aria-live="polite"></span>
+      <button class="cancel" type="button">Cancel</button>
+      <button class="save" id="save" disabled>Save changes</button>
+    </div>
+  </section>
+</main>
+
+<script>
+const $=id=>document.getElementById(id),read=()=>[user.value,name.value,bio.value,rmPhoto.checked].join('|');
+let base=read();
+document.addEventListener('input',check);document.addEventListener('change',check);
+function check(){
+  cnt.textContent=bio.value.length+' / 160';pic.classList.toggle('none',rmPhoto.checked);
+  save.disabled=read()===base;msg.classList.remove('ok');msg.textContent=save.disabled?'':'You have unsaved changes.';
+}
+save.addEventListener('click',()=>{base=read();save.disabled=true;msg.textContent='Profile saved.';msg.classList.add('ok')});
+</script>
+</body>
+</html>

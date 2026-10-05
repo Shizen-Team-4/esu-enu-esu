@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { Snippet } from 'svelte'
 	import type { LucideIcon } from '@lucide/svelte'
 	import { cn } from '$lib/ui/class-names'
 	import Icon from './Icon.svelte'
@@ -10,8 +11,9 @@
 		disabled = false,
 		onclick,
 		class: className,
+		children,
 	}: {
-		icon: LucideIcon
+		icon?: LucideIcon
 		/** Required: becomes the accessible name. */
 		label: string
 		/** Sets aria-pressed for toggle buttons. */
@@ -19,6 +21,7 @@
 		disabled?: boolean
 		onclick?: (event: MouseEvent) => void
 		class?: string
+		children?: Snippet
 	} = $props()
 </script>
 
@@ -35,5 +38,6 @@
 		className,
 	)}
 >
-	<Icon {icon} />
+	{#if icon}<Icon {icon} />{/if}
+	{#if children}{@render children()}{/if}
 </button>
