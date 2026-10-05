@@ -164,7 +164,22 @@
 	},
 	"notifications": {
 		"title": "通知",
-		"empty": "通知機能は近日公開予定です"
+		"empty": "まだ通知はありません",
+		"markAllRead": "すべて既読にする",
+		"loading": "通知を読み込み中…",
+		"more": "もっと見る",
+		"unread": "未読",
+		"unreadCount": "未読の通知が{count}件あります",
+		"badgeOverflow": "99+",
+		"someone": "誰か",
+		"unavailable": "このコンテンツは現在利用できません",
+		"activity": {
+			"post": "{name}さんが新しい投稿を公開しました",
+			"like": "{name}さんがあなたの投稿にいいねしました",
+			"comment": "{name}さんがあなたの投稿にコメントしました",
+			"reply": "{name}さんがあなたのコメントに返信しました",
+			"follow": "{name}さんがあなたをフォローしました"
+		}
 	},
 	"errorPage": {
 		"title": "問題が発生しました",

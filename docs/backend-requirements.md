@@ -27,10 +27,11 @@ When this document and the contract disagree, **the contract wins**. Fix this do
 | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | **In scope** (in the contract) | Auth, me/profile, follow, user search, media upload, posts and reels, feed, like, save, share URL, comments, stories, preferences, language   |
 | **In scope** (not in contract) | Reports and moderation (#19). The contract already has its rate limit and `note` rule; the operations are proposed in [7.10](#710-reports-19) |
-| **Deferred**                   | Notifications (#28–#32), accessibility preferences (#24). Design kept in [8](#8-deferred-features) so the work can start when the team agrees |
+| **In scope** (notifications)   | In-app activity notifications (#28–#32), read state and 30-second visible-tab polling; see contract 4.9                                       |
+| **Deferred**                   | Accessibility preferences (#24), notification email and settings                                                                              |
 | **Out of scope**               | Post visibility settings, push notifications, "recommended" feed order, private accounts                                                      |
 
-The contract decided to drop notifications, but issues #28–#32 are still open with owners. The team must close them or bring notifications back into the contract (see [10](#10-decisions-needed-from-the-team)).
+The notification implementation follows contract 4.9. It needs only the existing D1 binding, not new Cloudflare services.
 
 ---
 
@@ -527,25 +528,29 @@ Report {
 
 ## 8. Deferred features
 
-Not in the contract. Do **not** build these until the team updates the contract. The design is kept here so the issues are not lost.
+Accessibility and notification email/preferences remain deferred. In-app notifications were brought into contract 4.9; their updated design is retained here for existing issue links.
 
-### 8.1 Notifications (#28–#32)
+### 8.1 Notifications (#28–#32, now in scope)
 
-- Contract additions needed: a `Notification` object, operations `listNotifications`, `getUnreadCount`, `markNotificationRead`, `markAllNotificationsRead`, and `notifications: { inApp, email }` in `Preferences` (#31).
-- Table: `notifications` (kept in [`db-schema.md`](./db-schema.md) section 5, not in the first migration).
+- Contract 4.9 defines `Notification`, `listNotifications`, `getUnreadCount`, `markNotificationRead` and `markAllNotificationsRead`. Email and notification preferences remain deferred.
+- Add `notifications` through an additive migration; never rewrite deployed migrations. Keep history and dedupe keys indefinitely.
 
-| Event             | Recipient(s)                                                                                         | Type              | `dedupe_key`            |
-| ----------------- | ---------------------------------------------------------------------------------------------------- | ----------------- | ----------------------- |
-| Like post         | post author                                                                                          | `like`            | `like:<actor>:<post>`   |
-| Follow            | followed user                                                                                        | `follow`          | `follow:<actor>:<user>` |
-| Top-level comment | post author                                                                                          | `comment`         | `NULL`                  |
-| Reply             | parent comment author and `replyToUser` get `reply`; post author gets `comment` only if not notified | `reply`/`comment` | `NULL`                  |
+| Event             | Recipient(s)                                                                                        | Type              | `dedupe_key`                    |
+| ----------------- | --------------------------------------------------------------------------------------------------- | ----------------- | ------------------------------- |
+| New post/reel     | author's followers at publication (excluding actor)                                                 | `post`            | `post:<post>:<recipient>`       |
+| Like post         | post author                                                                                         | `like`            | `like:<actor>:<post>`           |
+| Follow            | followed user                                                                                       | `follow`          | `follow:<actor>:<user>`         |
+| Top-level comment | post author                                                                                         | `comment`         | `comment:<comment>:<recipient>` |
+| Reply             | exact answered comment author gets `reply`; post author gets `comment` only if not already notified | `reply`/`comment` | `comment:<comment>:<recipient>` |
 
 - Never notify the actor. One notification per person per event.
-- Created through `TaskRunner` after the like / follow / comment write, via a `Notifier` port, so those use cases do not change when notifications are switched on (they call `notifier.notify(event)`; the default implementation does nothing).
+- Created through `TaskRunner` after the post / like / follow / comment write, via the injected `Notifier` port. Production wires the background adapter; tests use a recording fake.
 - `INSERT … ON CONFLICT(dedupe_key) DO NOTHING` → like → unlike → like creates one notification (#30).
 - Read API (#32): list newest first; deleted posts become `post: null`; unread count uses the partial index; mark-read must be the recipient's → else `NOT_FOUND`.
-- Cleanup: delete read notifications older than 90 days **(proposed)**.
+- No automatic notification cleanup. Nullable content references use `ON DELETE SET NULL` so history and dedupe survive deletion; never expose banned actors or unavailable content. Unread count and list use the same history visibility.
+- Feature use cases receive a shared `Notifier` port; the composition root wires background persistence through `TaskRunner`. Failed delivery is logged without failing an already committed social action. This is best-effort background delivery, not a durable queue; large fan-out is constrained by Worker execution limits.
+- Reads use recipient-scoped indexes and cursor pagination. Like/follow repositories report whether a row was actually inserted, so old relationships and repeated requests do not generate new activity.
+- Polling is client-only, paused while hidden, non-overlapping and cleaned up on navigation/sign-out. Badge failures preserve the previous count; list failures retain rows with a translated retry message.
 
 ### 8.2 Accessibility preferences (#24)
 
@@ -577,7 +582,7 @@ Answer these in the contract PR, then update `api-contract.md` and this file.
 
 1. Create issues for the **NEW** rows in [5](#5-work-list), and pick owners.
 2. Add the report operations ([7.10](#710-reports-19)) to the contract.
-3. Notifications (#28–#32): close the issues, or add notifications back to the contract ([8.1](#81-notifications-2832)).
+3. Notifications (#28–#32): in-app notifications are now in contract 4.9; email and preference controls remain deferred.
 4. Accessibility preferences (#24): add to the contract or drop ([8.2](#82-accessibility-preferences-24)).
 5. Video poster upload flow ([2.2 C](#22-still-open--must-fix-before-the-backend-starts)).
 6. Email provider ([2.2 E](#22-still-open--must-fix-before-the-backend-starts)).

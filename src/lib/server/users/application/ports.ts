@@ -29,7 +29,13 @@ export interface UserRepository {
 		items: (FollowListItem & { viewer: Profile['viewer'] })[]
 		nextCursor: string | null
 	}>
-	follow(viewerId: string, userId: string, active: boolean, now: Date): Promise<number>
+	/** `created` is true only for a newly inserted follow, never an unfollow or retry. */
+	follow(
+		viewerId: string,
+		userId: string,
+		active: boolean,
+		now: Date,
+	): Promise<{ followers: number; created: boolean }>
 	/** Throws `AppError('CONFLICT', { username: 'TAKEN' })` when the username is taken meanwhile. */
 	update(id: string, patch: UserUpdate): Promise<void>
 	isUsernameTaken(username: string, exceptUserId: string): Promise<boolean>

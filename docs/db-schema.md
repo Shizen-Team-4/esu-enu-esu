@@ -1,6 +1,6 @@
 # Database Schema (proposal)
 
-Issues: #15 (posts), #21 (preferences), plus tables the contract needs but no issue owns yet. Notifications (#29) are deferred (section 5). Status: **proposal for team review**.
+Issues: #15 (posts), #21 (preferences), plus tables the contract needs but no issue owns yet. In-app notifications (#29) are included through an additive migration (section 5.1). Status: **proposal for team review**.
 
 This is the D1 (SQLite) schema that backs every shape in [`api-contract.md`](./api-contract.md). It is written in Drizzle so it can be copied into `src/lib/server/db/schema.ts` as-is. It type-checks against `drizzle-orm@0.45.3` and `pnpm db:generate` produces a valid 17-table migration from it (section 3). Section 5 holds tables for deferred features; they are **not** part of the first migration.
 
@@ -458,9 +458,11 @@ export const rateLimit = sqliteTable('rate_limit', {
 
 ## 5. Deferred tables
 
-Not part of the first migration. Add them only after the contract includes the feature (`backend-requirements.md` section 8).
+Not part of the first migration. In-app notifications now have their own additive migration after being included in contract 4.9. Other deferred additions require contract approval (`backend-requirements.md` section 8).
 
-### 5.1 Notifications (#29, #30, #32)
+### 5.1 Notifications (#29, #30, #32, now in scope)
+
+Contract 4.9 brings this table into scope. Add it after the existing migrations; other tables in section 5 remain deferred.
 
 ```ts
 // ─── Notifications (#29, #30, #32) ───────────────────────────────────────────
@@ -472,13 +474,11 @@ export const notifications = sqliteTable(
 		recipientId: text('recipient_id')
 			.notNull()
 			.references(() => user.id, { onDelete: 'cascade' }),
-		type: text('type', { enum: ['like', 'comment', 'reply', 'follow', 'system'] }).notNull(),
-		actorId: text('actor_id').references(() => user.id, { onDelete: 'cascade' }),
-		postId: text('post_id').references(() => posts.id, { onDelete: 'cascade' }),
-		commentId: text('comment_id').references(() => comments.id, { onDelete: 'cascade' }),
-		message: text('message'), // system only
-		// "like:<actor>:<post>" / "follow:<actor>:<recipient>"; NULL = no dedupe
-		dedupeKey: text('dedupe_key').unique(),
+		type: text('type', { enum: ['post', 'like', 'comment', 'reply', 'follow'] }).notNull(),
+		actorId: text('actor_id').references(() => user.id, { onDelete: 'set null' }),
+		postId: text('post_id').references(() => posts.id, { onDelete: 'set null' }),
+		commentId: text('comment_id').references(() => comments.id, { onDelete: 'set null' }),
+		dedupeKey: text('dedupe_key').notNull().unique(),
 		readAt: ts('read_at'),
 		createdAt: ts('created_at').notNull().default(now),
 	},
@@ -492,9 +492,9 @@ export const notifications = sqliteTable(
 ```
 
 - IDs use the prefix `ntf_`.
-- `dedupe_key` is `UNIQUE` and nullable. Likes and follows set it, so `INSERT … ON CONFLICT DO NOTHING` creates only one notification (#30). Comments and replies leave it `NULL`, so each one creates a notification.
+- `dedupe_key` is required and unique: `like:<actor>:<post>`, `follow:<actor>:<recipient>`, `post:<post>:<recipient>` or `comment:<comment>:<recipient>`. Likes/follows dedupe for the lifetime of the pair; post/comment keys make background delivery idempotent without merging separate events.
 - The partial index `WHERE read_at IS NULL` keeps the unread count fast.
-- Notification settings (#31) would add `notify_in_app` and `notify_email` (boolean, default `true`) to `preferences`.
+- Notification settings (#31) and email remain deferred; the current notification feature does not change `preferences`.
 
 ### 5.2 Accessibility preferences (#24)
 

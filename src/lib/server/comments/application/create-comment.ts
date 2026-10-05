@@ -14,9 +14,16 @@ import {
 	type ResolvedParent,
 } from '../domain/comment'
 import type { CommentRepository, PostLookup } from './ports'
+import type { Notifier } from '../../shared/application/notifier'
 
 export const createComment =
-	(deps: { comments: CommentRepository; posts: PostLookup; clock: Clock; ids: IdGenerator }) =>
+	(deps: {
+		comments: CommentRepository
+		posts: PostLookup
+		clock: Clock
+		ids: IdGenerator
+		notifier: Notifier
+	}) =>
 	async (viewer: Viewer | null, input: unknown) => {
 		const author = requireViewer(viewer)
 		const value = (input && typeof input === 'object' ? input : {}) as Record<string, unknown>
@@ -25,20 +32,34 @@ export const createComment =
 		const postId = typeof value.postId === 'string' ? value.postId : ''
 		const post = await deps.posts.find(postId)
 		if (!post) throw new AppError('NOT_FOUND')
+		const target = requestedParent === null ? null : await deps.comments.find(requestedParent)
 		const parent: ResolvedParent =
 			requestedParent === null
 				? { parentId: null, replyToUserId: null, replyToCommentId: null }
-				: resolveParent(postId, await deps.comments.find(requestedParent))
+				: resolveParent(postId, target)
 		const now = deps.clock.now()
-		const window = await deps.comments.creationWindow(
-			author.id,
-			new Date(now.getTime() - CREATION_RATE_WINDOW_MS),
-		)
-		if (window.count >= COMMENT_RATE_LIMIT)
-			throw new AppError('RATE_LIMITED', undefined, retryAfterSec(window.oldest, now))
+		await enforceCommentRate(deps.comments, author.id, now)
 		const id = deps.ids.generate('cmt')
 		await deps.comments.create({ id, postId, authorId: author.id, body, ...parent }, now)
 		const created = await deps.comments.find(id)
 		if (!created) throw new AppError('INTERNAL')
+		deps.notifier.notify({
+			type: 'comment',
+			actorId: author.id,
+			postId,
+			commentId: id,
+			postAuthorId: post.authorId,
+			replyAuthorId: target?.author.id ?? null,
+			createdAt: now,
+		})
 		return withViewer(created, author.id, post.authorId)
 	}
+
+async function enforceCommentRate(comments: CommentRepository, authorId: string, now: Date) {
+	const window = await comments.creationWindow(
+		authorId,
+		new Date(now.getTime() - CREATION_RATE_WINDOW_MS),
+	)
+	if (window.count >= COMMENT_RATE_LIMIT)
+		throw new AppError('RATE_LIMITED', undefined, retryAfterSec(window.oldest, now))
+}

@@ -12,8 +12,9 @@ export async function setReaction(
 ) {
 	const user = requireViewer(viewer)
 	if (!(await deps.posts.find(id, user.id))) throw new AppError('NOT_FOUND')
-	await deps.posts.react(id, user.id, kind, active, deps.clock.now())
+	const now = deps.clock.now()
+	const created = await deps.posts.react(id, user.id, kind, active, now)
 	const post = await deps.posts.find(id, user.id)
 	if (!post) throw new AppError('NOT_FOUND')
-	return post
+	return { post, created, now }
 }

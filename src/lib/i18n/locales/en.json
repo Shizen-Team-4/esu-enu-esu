@@ -164,7 +164,22 @@
 	},
 	"notifications": {
 		"title": "Notifications",
-		"empty": "Notifications are coming soon"
+		"empty": "No notifications yet",
+		"markAllRead": "Mark all as read",
+		"loading": "Loading notifications…",
+		"more": "Show more",
+		"unread": "Unread",
+		"unreadCount": "{count, plural, one {# unread notification} other {# unread notifications}}",
+		"badgeOverflow": "99+",
+		"someone": "Someone",
+		"unavailable": "This content is no longer available",
+		"activity": {
+			"post": "{name} published a new post",
+			"like": "{name} liked your post",
+			"comment": "{name} commented on your post",
+			"reply": "{name} replied to your comment",
+			"follow": "{name} started following you"
+		}
 	},
 	"errorPage": {
 		"title": "Something went wrong",

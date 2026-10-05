@@ -16,6 +16,7 @@
 		"D1",
 		"libsql",
 		"drizzle",
+		"dedupe",
 		"wrangler",
 		"workerd",
 		"Cloudflare",

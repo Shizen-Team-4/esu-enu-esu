@@ -202,10 +202,10 @@ export function createPostRepository(
 						.bind(id, viewerId, now.getTime())
 				: d1.prepare(`DELETE FROM ${table} WHERE post_id = ? AND user_id = ?`).bind(id, viewerId)
 			if (kind === 'save') {
-				await write.run()
-				return
+				const result = await write.run()
+				return active && result.meta.changes > 0
 			}
-			await d1.batch([
+			const result = await d1.batch([
 				write,
 				d1
 					.prepare(
@@ -213,6 +213,7 @@ export function createPostRepository(
 					)
 					.bind(id, id),
 			])
+			return active && result[0].meta.changes > 0
 		},
 	}
 }

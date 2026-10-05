@@ -8,22 +8,25 @@ import {
 	inMemoryPostLookup,
 } from './testing/in-memory-comment-repository'
 import { createComment } from './create-comment'
+import { RecordingNotifier } from '../../shared/testing/recording-notifier'
 
 const posts = inMemoryPostLookup({ pst_1: 'usr_9', pst_2: 'usr_9' })
 const setup = (comments: Parameters<typeof aComment>[0][] = []) => {
 	const repository = new InMemoryCommentRepository(comments.map((c) => aComment(c)))
+	const notifier = new RecordingNotifier()
 	const create = createComment({
 		comments: repository,
 		posts,
 		clock: fixedClock(),
 		ids: sequentialIds(),
+		notifier,
 	})
-	return { repository, create }
+	return { repository, create, notifier }
 }
 
 describe('createComment', () => {
 	it('creates a top-level comment and counts it on the post', async () => {
-		const { repository, create } = setup()
+		const { repository, create, notifier } = setup()
 		const comment = await create(viewer, { postId: 'pst_1', body: ' Hello ', parentId: null })
 		expect(comment).toMatchObject({
 			id: 'cmt_1',
@@ -38,6 +41,15 @@ describe('createComment', () => {
 		})
 		expect(comment.author.id).toBe(viewer.id)
 		expect(repository.postCounts.get('pst_1')).toBe(1)
+		expect(notifier.events).toMatchObject([
+			{
+				type: 'comment',
+				actorId: viewer.id,
+				postAuthorId: 'usr_9',
+				replyAuthorId: null,
+				commentId: comment.id,
+			},
+		])
 	})
 
 	it('replies to a top-level comment without a replyTo user', async () => {
@@ -48,7 +60,7 @@ describe('createComment', () => {
 	})
 
 	it('flattens a reply to a reply under the top-level comment', async () => {
-		const { repository, create } = setup([
+		const { repository, create, notifier } = setup([
 			{ id: 'cmt_10' },
 			{ id: 'cmt_11', parentId: 'cmt_10', authorId: 'usr_3' },
 		])
@@ -57,6 +69,31 @@ describe('createComment', () => {
 		expect(reply.replyToCommentId).toBe('cmt_11')
 		expect(reply.replyToUser?.id).toBe('usr_3')
 		expect((await repository.find('cmt_10'))?.replyCount).toBe(1)
+		expect(notifier.events).toMatchObject([{ replyAuthorId: 'usr_3', commentId: reply.id }])
+	})
+
+	it('uses the exact top-level target author when replying directly', async () => {
+		const { create, notifier } = setup([{ id: 'cmt_10', authorId: 'usr_4' }])
+		await create(viewer, { postId: 'pst_1', body: 'Reply', parentId: 'cmt_10' })
+		expect(notifier.events).toMatchObject([{ replyAuthorId: 'usr_4' }])
+	})
+
+	it('does not notify when persistence fails', async () => {
+		const { create, repository, notifier } = setup()
+		repository.create = async () => {
+			throw new Error('write failed')
+		}
+		await expect(create(viewer, { postId: 'pst_1', body: 'Hello' })).rejects.toThrow('write failed')
+		expect(notifier.events).toEqual([])
+	})
+
+	it('does not notify if the created comment cannot be loaded', async () => {
+		const { create, repository, notifier } = setup()
+		repository.find = async () => null
+		await expect(create(viewer, { postId: 'pst_1', body: 'Hello' })).rejects.toMatchObject({
+			code: 'INTERNAL',
+		})
+		expect(notifier.events).toEqual([])
 	})
 
 	it('requires a logged-in viewer', async () => {
