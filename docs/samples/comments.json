@@ -17,7 +17,8 @@
 				"viewer": {
 					"canDelete": false
 				},
-				"createdAt": "2026-09-28T04:00:00.000Z"
+				"createdAt": "2026-09-28T04:00:00.000Z",
+				"replyToCommentId": null
 			},
 			{
 				"id": "cmt_301",
@@ -35,7 +36,8 @@
 				"viewer": {
 					"canDelete": true
 				},
-				"createdAt": "2026-09-28T02:00:00.000Z"
+				"createdAt": "2026-09-28T02:00:00.000Z",
+				"replyToCommentId": null
 			}
 		],
 		"nextCursor": null
@@ -59,7 +61,8 @@
 					"viewer": {
 						"canDelete": false
 					},
-					"createdAt": "2026-09-28T02:10:00.000Z"
+					"createdAt": "2026-09-28T02:10:00.000Z",
+					"replyToCommentId": "cmt_301"
 				},
 				{
 					"id": "cmt_312",
@@ -82,7 +85,8 @@
 					"viewer": {
 						"canDelete": false
 					},
-					"createdAt": "2026-09-28T02:30:00.000Z"
+					"createdAt": "2026-09-28T02:30:00.000Z",
+					"replyToCommentId": "cmt_311"
 				},
 				{
 					"id": "cmt_313",
@@ -105,7 +109,8 @@
 					"viewer": {
 						"canDelete": true
 					},
-					"createdAt": "2026-09-28T03:00:00.000Z"
+					"createdAt": "2026-09-28T03:00:00.000Z",
+					"replyToCommentId": "cmt_312"
 				}
 			],
 			"nextCursor": null

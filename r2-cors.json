@@ -1,0 +1,12 @@
+{
+	"rules": [
+		{
+			"allowed": {
+				"origins": ["https://sns.eykorban.me"],
+				"methods": ["PUT"],
+				"headers": ["content-type", "if-none-match"]
+			},
+			"maxAgeSeconds": 3600
+		}
+	]
+}

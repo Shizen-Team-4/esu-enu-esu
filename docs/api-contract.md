@@ -6,7 +6,7 @@ This document defines shared data shapes, operation inputs/results and rules, so
 
 For this SvelteKit app, `+page.server.ts` loads read data and form actions handle mutations through server-side services/repositories. They do not need to fetch the app's own `/api` routes. SvelteKit handles the request and data transfer, but does not automatically create REST endpoints. Add `+server.ts` endpoints only when needed, such as incremental feed loading or browser-initiated uploads. These adapters use the same operations below; their paths are implementation details.
 
-Server repositories receive the current session/viewer from trusted server context, never from a client-supplied user ID. Database access and credentials remain server-only. Notifications, post visibility settings and automatic story expiration are out of scope for now.
+Server repositories receive the current session/viewer from trusted server context, never from a client-supplied user ID. Database access and credentials remain server-only. In-app notifications are in scope; email, browser push and post visibility settings are not.
 
 Items marked **(proposed)** are suggested defaults. They have not been agreed by the whole team yet. Change them in this file first, then in code.
 
@@ -156,6 +156,7 @@ Values are per user, or per IP when logged out. Going over the limit → `RATE_L
 | Action                                     | Limit       |
 | ------------------------------------------ | ----------- |
 | Sign-in                                    | 10 / 15 min |
+| Sign-up                                    | 3 / hour    |
 | Password reset / resend verification email | 3 / hour    |
 | Report a post                              | 10 / hour   |
 | Create post, reel, story                   | 30 / hour   |
@@ -250,6 +251,7 @@ Comment {
   author: UserSummary
   body: string
   parentId: string | null          // null = top-level; otherwise always the id of a TOP-LEVEL comment
+  replyToCommentId: string | null  // exact comment answered; null for roots, legacy data or a deleted target
   replyToUser: UserSummary | null  // set when replying to a reply → UI shows "@username"
   replyCount: number               // top-level only; 0 for replies
   viewer: { canDelete: boolean }   // comment author or post author (proposed)
@@ -257,7 +259,9 @@ Comment {
 }
 ```
 
-**Flatten rule:** if the user replies to a reply, the server stores the new comment under the **same top-level comment**, not one level deeper. It sets `parentId` to the top-level id and `replyToUser` to the author of the reply they answered. See `cmt_312` and `cmt_313` in [`comments.json`](./samples/comments.json).
+**Flatten rule:** if the user replies to a reply, the server stores the new comment under the **same top-level comment**, not one level deeper. It retains the exact answered comment as `replyToCommentId`, sets `parentId` to the top-level id and `replyToUser` to the author of the reply they answered. See `cmt_312` and `cmt_313` in [`comments.json`](./samples/comments.json).
+
+The UI shows only parent and reply levels. Expanding a reply’s children promotes that reply to the parent position and shows its exact ancestors above it with dashed connectors. Older comments without an exact target remain flat; do not infer ancestry from `replyToUser`.
 
 Comments cannot be edited or liked.
 
@@ -269,20 +273,22 @@ Story {
   author: UserSummary
   media: Media            // exactly one image or video; stories have NO caption
   createdAt: string
-  viewer: { seen: boolean }
+  expiresAt: string       // createdAt + 24 h
+  viewer: { seen: boolean; liked: boolean }
+  likes: number
 }
 
 StoryTrayItem {           // one circle in the story tray
   user: UserSummary
   hasUnseen: boolean      // ring is highlighted when true
   latestAt: string
-  stories: Story[]        // oldest first, i.e. play order
+  storyCount: number      // active stories; load them with listUserStories
 }
 ```
 
 Who can see a story **(proposed)**: the author and the author's followers.
 
-Stories do not expire automatically. They remain available until the author deletes them. There is no expiration field, archive or expired-story state.
+Stories expire **24 hours** after creation (`expiresAt` = `createdAt` + 24 h). An expired story is hidden everywhere (tray, `listUserStories`, `markStorySeen`, `likeStory`) and behaves as `NOT_FOUND`. The author can also delete a story earlier. There is no archive.
 
 ### 3.6 Preferences
 
@@ -308,20 +314,22 @@ Operation names define repository methods, not URLs. 🔒 means login is require
 
 Authentication stays with the BetterAuth client/server integration (#10), rather than custom application endpoints. These are frontend auth repository operations; the integration maps the provider's results and errors.
 
-| Operation              | Input                                 | Success                                           | Errors                                                       |
-| ---------------------- | ------------------------------------- | ------------------------------------------------- | ------------------------------------------------------------ |
-| `signUp`               | `{ email, password, name, username }` | Verification email sent                           | `VALIDATION_FAILED`, `CONFLICT` (`email`/`username` `TAKEN`) |
-| `signIn`               | `{ email, password }`                 | Session cookie set                                | `INVALID_CREDENTIALS`, `EMAIL_NOT_VERIFIED`                  |
-| `signInWithGoogle`     | `{ callbackURL }`                     | Redirect to provider                              | `VALIDATION_FAILED`                                          |
-| `signOut`              | none                                  | Cookie cleared, KV session removed                | none                                                         |
-| `getSession`           | none                                  | BetterAuth session/user or `null` when logged out | none                                                         |
-| `verifyEmail`          | `{ token }`                           | Redirect to app                                   | `VALIDATION_FAILED` (`token` invalid or expired)             |
-| `requestPasswordReset` | `{ email, redirectTo }`               | Same result whether or not the email exists       | `RATE_LIMITED`                                               |
-| `resetPassword`        | `{ token, newPassword }`              | Password updated                                  | `VALIDATION_FAILED` (`token` expired, `newPassword` rules)   |
+| Operation               | Input                                 | Success                                                                                                   | Errors                                                                                                        |
+| ----------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `signUp`                | `{ email, password, name, username }` | Generic success, even for an existing email; verification email sent only for a new or unverified account | `VALIDATION_FAILED`, `CONFLICT` (`username` `TAKEN` only)                                                     |
+| `signIn`                | `{ email, password }`                 | Session cookie set                                                                                        | `INVALID_CREDENTIALS`, `EMAIL_NOT_VERIFIED` (also sends a new verification link)                              |
+| `signInWithGoogle`      | `{ callbackURL }`                     | Redirect to provider                                                                                      | `VALIDATION_FAILED`, redirect to `/login?error=account_not_linked` (existing email, local account unverified) |
+| `signOut`               | none                                  | Cookie cleared, KV session removed                                                                        | none                                                                                                          |
+| `getSession`            | none                                  | BetterAuth session/user or `null` when logged out                                                         | none                                                                                                          |
+| `verifyEmail`           | `{ token }`                           | User signed in, then redirect to `/login` (which forwards to `/` or `/onboard`)                           | Redirect to `/login?error=invalid_token` or `token_expired`                                                   |
+| `sendVerificationEmail` | `{ email }` (+ `callbackURL`)         | Same result whether or not the email exists                                                               | `RATE_LIMITED`                                                                                                |
+| `requestPasswordReset`  | `{ email, redirectTo }`               | Same result whether or not the email exists                                                               | `RATE_LIMITED`                                                                                                |
+| `resetPassword`         | `{ token, newPassword }`              | Password updated                                                                                          | `VALIDATION_FAILED` (`token` expired, `newPassword` rules)                                                    |
 
 - `name` is used as the first `displayName`.
 - `username` needs the BetterAuth username plugin **(proposed)**.
 - Google is the OAuth provider (`GOOGLE_CLIENT_ID` is in `.env.example`).
+- Google sign-in links automatically to an existing account with the same email only if that account's email is verified; otherwise it redirects to `/login?error=account_not_linked`.
 - New OAuth users have no username yet. After the first OAuth login, `getMe` returns `username: ""`, and the frontend asks the user to pick one with `updateMe` **(proposed)**.
 
 ### 4.2 Users, profile, follow, search
@@ -340,6 +348,7 @@ Authentication stays with the BetterAuth client/server integration (#10), rather
 - Following is **instant**. There are no private accounts or follow requests.
 - Follow/unfollow are idempotent: following twice is not an error.
 - Search matches the start of `username` or `displayName` (case-insensitive). It searches **users only**.
+- The header search dropdown loads results incrementally through a `GET /api/users/search?q=&cursor=` `+server.ts` adapter that calls `searchUsers` (allowed by §1).
 
 ### 4.3 Media upload
 
@@ -352,13 +361,15 @@ Files are uploaded **directly to Cloudflare R2 with a presigned URL**. They do n
 4. createPost / createStory / updateMe with the mediaId(s)
 ```
 
-| Operation        | Auth | Input                                                                                               | Result                                                                                  | Errors                                                                                   |
-| ---------------- | ---- | --------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `createUpload`   | 🔒   | `{ purpose: "post" \| "reel" \| "story" \| "avatar", mimeType, sizeBytes }`                         | `{ mediaId, uploadUrl, method: "PUT", headers: { "Content-Type": string }, expiresAt }` | `VALIDATION_FAILED`, `PAYLOAD_TOO_LARGE`, `UNSUPPORTED_MEDIA_TYPE`                       |
-| `completeUpload` | 🔒   | `{ mediaId, width, height, durationSec: number \| null }` (dimensions/duration read by the browser) | `Media`                                                                                 | `NOT_FOUND`, `VALIDATION_FAILED` (file missing or does not match `mimeType`/`sizeBytes`) |
+| Operation        | Auth | Input                                                                                               | Result                                                                                                                                            | Errors                                                                                   |
+| ---------------- | ---- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `createUpload`   | 🔒   | `{ purpose: "post" \| "reel" \| "story" \| "avatar", mimeType, sizeBytes, thumbnailSizeBytes? }`    | `{ mediaId, uploadUrl, method: "PUT", headers: { "Content-Type": string, "If-None-Match": "*" }, expiresAt, thumbnailUploadUrl: string \| null }` | `VALIDATION_FAILED`, `PAYLOAD_TOO_LARGE`, `UNSUPPORTED_MEDIA_TYPE`                       |
+| `completeUpload` | 🔒   | `{ mediaId, width, height, durationSec: number \| null }` (dimensions/duration read by the browser) | `Media`                                                                                                                                           | `NOT_FOUND`, `VALIDATION_FAILED` (file missing or does not match `mimeType`/`sizeBytes`) |
 
 - The browser sends raw file bytes to R2 with the supplied headers. R2 returns `200` on success or `403` if the signed URL has expired; the upload adapter handles these separately from domain errors.
 - The upload URL is valid for **15 minutes** **(proposed)**. Its `expiresAt` is a security limit, not story expiration.
+- Uploads are write-once: send `If-None-Match: *` with the PUT. A second PUT to the same key is rejected.
+- For video, `thumbnailSizeBytes` (exact byte length of the poster) is required. The poster is `image/webp` and at most **1 MB**, otherwise `PAYLOAD_TOO_LARGE`. The result then carries `thumbnailUploadUrl`, a second signed PUT URL for the poster (same headers rule, `Content-Type: image/webp`). For images `thumbnailUploadUrl` is `null` and `thumbnailSizeBytes` is ignored.
 - Media that is not attached to a post, story or avatar within 24 h is deleted **(proposed)**.
 - `purpose: "reel"` only allows video. `"avatar"` only allows images.
 - Only the upload owner can complete or attach media. The server checks the real file type, not only the extension (#18).
@@ -404,7 +415,7 @@ Files are uploaded **directly to Cloudflare R2 with a presigned URL**. They do n
 | `deleteComment` | 🔒   | `{ id }`                                     | `void`                                         | `FORBIDDEN`, `NOT_FOUND`                          |
 
 - `parentId` may be a top-level comment **or a reply** on the same post. The server applies the flatten rule ([3.4](#34-comment)).
-- Deleting a top-level comment also deletes its replies **(proposed)**. `Post.counts.comments` goes down by the total number removed.
+- Deleting a comment removes only that comment. Replies of a deleted top-level comment become top-level comments, preserving other users’ comments (including the post author’s). `Post.counts.comments` goes down by one.
 
 ### 4.7 Stories
 
@@ -414,10 +425,12 @@ Files are uploaded **directly to Cloudflare R2 with a presigned URL**. They do n
 | `listStoryTray`   | 🔒   | `{ cursor?, limit? }` | `Page<StoryTrayItem>`               | none                                                        |
 | `listUserStories` | 🔒   | `{ username }`        | `{ items: Story[] }` (oldest first) | `NOT_FOUND` (user missing or viewer is not author/follower) |
 | `markStorySeen`   | 🔒   | `{ id }`              | `void`                              | `NOT_FOUND`                                                 |
+| `likeStory`       | 🔒   | `{ id, active }`      | `{ liked, likes }`                  | `NOT_FOUND`                                                 |
 | `deleteStory`     | 🔒   | `{ id }`              | `void`                              | `FORBIDDEN`, `NOT_FOUND`                                    |
 
 - Stories have **no caption**. A `caption` field in the input → `VALIDATION_FAILED` (`caption` `NOT_ALLOWED`).
-- Stories remain until deleted by the author; lists have no time-based expiration filter.
+- Stories expire 24 h after `createdAt` (`expiresAt`). Expired stories are excluded from the tray and lists, and `markStorySeen`, `likeStory` and `deleteStory` return `NOT_FOUND` for them.
+- `likeStory` sets (`active: true`) or clears (`active: false`) the viewer's like. It is idempotent and returns the new `liked` state and total `likes`. Only viewers who can see the story can like it.
 - The tray contains your own stories and stories by people you follow. Read and seen operations enforce author/follower access on the server; inaccessible stories return `NOT_FOUND`.
 - Tray order: your own stories first, then users with unseen stories, then the rest. Within each group, the newest `latestAt` comes first.
 
@@ -429,3 +442,35 @@ Files are uploaded **directly to Cloudflare R2 with a presigned URL**. They do n
 | `updatePreferences` | 🔒   | Any of `{ theme, language }` | `Preferences` | `VALIDATION_FAILED` |
 
 - After `language` changes, server-rendered pages use the saved language instead of `Accept-Language` (#26).
+
+### 4.9 In-app notifications
+
+```ts
+Notification {
+  id: string                         // ntf_…
+  type: 'post' | 'like' | 'comment' | 'reply' | 'follow'
+  actor: UserSummary | null           // unavailable/deleted/banned actor → null
+  post: { id: string; type: 'post' | 'reel' } | null
+  commentId: string | null            // deleted comment or unavailable post → null
+  createdAt: string
+  readAt: string | null
+}
+```
+
+| Operation                  | Auth | Input                 | Result                                                   | Errors                           |
+| -------------------------- | ---- | --------------------- | -------------------------------------------------------- | -------------------------------- |
+| `listNotifications`        | 🔒   | `{ cursor?, limit? }` | `Page<Notification>` (newest first)                      | `VALIDATION_FAILED`              |
+| `getUnreadCount`           | 🔒   | none                  | `{ unreadCount: number }`                                | none                             |
+| `markNotificationRead`     | 🔒   | `{ id }`              | `Notification` (updated read state and available target) | `VALIDATION_FAILED`, `NOT_FOUND` |
+| `markAllNotificationsRead` | 🔒   | none                  | `void`                                                   | none                             |
+
+- Only activity after deployment generates notifications; existing activity is not backfilled.
+- A new post **or reel** notifies its author's followers. Likes notify the post/reel author. New top-level comments notify the post/reel author.
+- A reply notifies the author of the **exact comment answered**, not the thread root merely because it is an ancestor. The post author also receives `comment`, unless already receiving `reply` for this event.
+- Never notify the actor; at most one notification per recipient per event. No story, bookmark, edit, email or push notifications, and no new reaction types or preference controls.
+- Like and follow notifications are deduplicated for the lifetime of the actor/target pair, including unlike→like and unfollow→follow. Repeated requests without a new database insertion do not notify.
+- History remains after undoing likes/follows or deleting content. Unavailable posts become `post: null` and cannot be opened; deleted comments fall back to the available post. History is not automatically expired.
+- All reads/writes are scoped to the trusted viewer. Marking another user's notification read returns `NOT_FOUND`; repeated marks preserve the original `readAt`.
+- Opening Notifications does not mark entries read. Clicking an entry marks it read and opens the available post/profile; unavailable entries can still be marked read. A separate “Mark all as read” action marks existing unread entries.
+- Initial page loads fetch immediately. Visible signed-in app tabs poll the unread badge every **30 seconds** and also refresh the list when Notifications is open. Hidden tabs pause polling and refresh immediately upon becoming visible. Failures retain existing data and show retry UI on the notification page.
+- Page loads/form actions use these operations; `GET /api/notifications` supports pagination/refresh and `GET /api/notifications/unread` supports the badge. Responses are private and not cached.

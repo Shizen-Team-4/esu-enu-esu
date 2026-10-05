@@ -2,69 +2,270 @@
 	"auth": {
 		"login": "Log in",
 		"register": "Register",
-		"logout": "Log out"
+		"logout": "Log out",
+		"google": "Continue with Google",
+		"name": "Display name",
+		"reset": "Reset password",
+		"username": "Username",
+		"password": "Password",
+		"success": "Check your email, or sign in with your updated password.",
+		"email": "Email",
+		"checkEmail": "If this email can be used, we sent a verification link to it. Check your inbox and spam folder.",
+		"resendVerification": "Resend verification email",
+		"verificationSent": "If the account needs it, a new verification link is on its way.",
+		"verifyLinkInvalid": "This verification link is invalid or has expired. Sign in and we will send you a new one.",
+		"googleAccountNotLinked": "This email is already registered but not verified yet. Open the verification link we emailed you, or sign in with your password to get a new one. Then you can continue with Google.",
+		"showPassword": "Show",
+		"hidePassword": "Hide",
+		"signIn": "Sign in",
+		"createAccount": "Create account",
+		"tabsLabel": "Authentication",
+		"loginTitle": "Welcome back.",
+		"loginSubtitle": "Sign in to see what your circle is up to.",
+		"registerTitle": "Make yourself at home.",
+		"registerSubtitle": "Create an account to join communities and share your moments.",
+		"orContinue": "or continue with",
+		"forgotPassword": "Forgot password?",
+		"backToSignIn": "Back to sign in",
+		"usernameHint": "3–30 lowercase letters, numbers or underscores.",
+		"forgotSubtitle": "Enter your email and we will send you a reset link.",
+		"resetSubtitle": "Choose a new password for your account."
+	},
+	"common": {
+		"back": "Back"
 	},
 	"post": {
 		"like": "Like",
 		"comment": "Comment",
 		"share": "Share",
-		"save": "Save",
-		"menu": "Post options",
-		"edit": "Edit",
+		"publish": "Publish",
+		"caption": "Write a post",
+		"media": "Photos and videos",
 		"delete": "Delete",
-		"report": "Report",
-		"edited": "edited"
+		"uploading": "Uploading and verifying media…",
+		"type": "Content type",
+		"comments": "Comments",
+		"unlike": "Remove like",
+		"save": "Save",
+		"unsave": "Remove from saved",
+		"copied": "Link copied"
 	},
-	"common": {
-		"back": "Back",
+	"home": {
+		"description": "Share moments and connect with your community."
+	},
+	"preferences": {
+		"dark": "Dark",
+		"theme": "Theme",
+		"themeHint": "Match your device or pick one.",
+		"languageHint": "Used across menus and buttons.",
+		"saved": "Saved",
+		"language": "Language",
+		"title": "Preferences",
+		"system": "System",
+		"light": "Light",
+		"en": "English",
+		"km": "ខ្មែរ",
+		"ja": "日本語"
+	},
+	"profile": {
+		"follow": "Follow",
+		"followers": "Followers",
+		"posts": "Posts",
+		"content": "Profile content",
+		"following": "Following",
+		"unfollow": "Unfollow",
+		"editProfile": "Edit profile",
+		"addBio": "Add a bio",
+		"photoPost": "Photo post",
+		"reel": "Reel"
+	},
+	"follows": {
+		"emptyFollowers": "No followers yet",
+		"emptyFollowing": "Not following anyone yet",
+		"loading": "Loading people…"
+	},
+	"story": {
+		"love": "Love this story",
+		"expires": "Stories disappear after 24 hours.",
 		"close": "Close",
-		"retry": "Try again",
-		"loading": "Loading",
-		"more": "More",
-		"less": "Less"
+		"previous": "Previous",
+		"expired": "This story has expired or is no longer available.",
+		"title": "Story",
+		"next": "Next",
+		"circle": "Stories from your circle",
+		"add": "Add story"
 	},
-	"error": {
-		"VALIDATION_FAILED": "Some of the information is not valid. Please check it and try again.",
-		"UNAUTHENTICATED": "Please log in to continue.",
-		"INVALID_CREDENTIALS": "The email or password is wrong.",
-		"FORBIDDEN": "You are not allowed to do this.",
-		"EMAIL_NOT_VERIFIED": "Please verify your email first.",
-		"NOT_FOUND": "We could not find what you are looking for.",
-		"CONFLICT": "This already exists.",
-		"PAYLOAD_TOO_LARGE": "The file is too large.",
-		"UNSUPPORTED_MEDIA_TYPE": "This file type is not supported.",
-		"RATE_LIMITED": "Too many requests. Please wait a moment and try again.",
-		"INTERNAL": "Something went wrong. Please try again."
+	"feed": {
+		"more": "Load more",
+		"empty": "No posts yet",
+		"tabs": "Feed",
+		"forYou": "For you",
+		"following": "Following",
+		"emptyAll": "No posts yet. Be the first to share something.",
+		"emptyFollowing": "Nothing here yet. Follow people to see their posts.",
+		"error": "We could not load your feed."
 	},
-	"field": {
-		"REQUIRED": "This field is required.",
-		"TOO_SHORT": "This is too short.",
-		"TOO_LONG": "This is too long.",
-		"TOO_MANY": "There are too many items.",
-		"INVALID_FORMAT": "The format is not valid.",
-		"NOT_ALLOWED": "This value is not allowed.",
-		"TAKEN": "This is already taken."
-	},
-	"empty": {
-		"posts": "No posts yet"
+	"bookmarks": {
+		"title": "Bookmarks",
+		"empty": "You have not saved any posts yet"
 	},
 	"nav": {
-		"home": "Home",
 		"search": "Search",
+		"label": "Main navigation",
 		"create": "Create",
 		"reels": "Reels",
+		"home": "Home",
 		"profile": "Profile",
-		"label": "Main navigation"
+		"notifications": "Notifications",
+		"bookmarks": "Bookmarks",
+		"yourSpace": "Your space",
+		"createPost": "Create post"
 	},
-	"media": {
-		"previous": "Previous",
-		"next": "Next",
-		"position": "{current} / {total}",
-		"loadFailed": "Could not load this media",
-		"gallery": "Post media"
+	"account": {
+		"title": "Profile",
+		"bio": "Bio",
+		"removeAvatar": "Remove profile photo",
+		"save": "Save profile"
 	},
-	"video": {
-		"play": "Play video",
-		"pause": "Pause video"
+	"onboard": {
+		"title": "Choose a username",
+		"description": "Pick a username to finish setting up your account.",
+		"submit": "Continue"
+	},
+	"error": {
+		"VALIDATION_FAILED": "Please check the highlighted fields and try again.",
+		"UNAUTHENTICATED": "Please log in to continue.",
+		"FORBIDDEN": "You do not have permission to do that.",
+		"NOT_FOUND": "We could not find what you were looking for.",
+		"CONFLICT": "This conflicts with existing data.",
+		"RATE_LIMITED": "Too many attempts. Please wait a moment and try again.",
+		"INTERNAL": "Something went wrong. Please try again.",
+		"PAYLOAD_TOO_LARGE": "This file is too large.",
+		"UNSUPPORTED_MEDIA_TYPE": "This file type is not supported.",
+		"INVALID_CREDENTIALS": "Incorrect email or password.",
+		"EMAIL_NOT_VERIFIED": "Please verify your email first. We sent you a new link.",
+		"UPLOAD_EXPIRED": "The upload link expired. Please try again.",
+		"field": {
+			"REQUIRED": "This field is required.",
+			"TOO_SHORT": "This is too short.",
+			"TOO_LONG": "This is too long.",
+			"TOO_MANY": "Too many items selected.",
+			"INVALID_FORMAT": "This format is not valid.",
+			"NOT_ALLOWED": "This value is not allowed.",
+			"TAKEN": "This is already taken."
+		},
+		"retry": "Try again"
+	},
+	"app": {
+		"name": "SNS"
+	},
+	"header": {
+		"menu": "Account menu"
+	},
+	"notifications": {
+		"title": "Notifications",
+		"empty": "No notifications yet",
+		"markAllRead": "Mark all as read",
+		"loading": "Loading notifications…",
+		"more": "Show more",
+		"unread": "Unread",
+		"unreadCount": "{count, plural, one {# unread notification} other {# unread notifications}}",
+		"badgeOverflow": "99+",
+		"someone": "Someone",
+		"unavailable": "This content is no longer available",
+		"activity": {
+			"post": "{name} published a new post",
+			"like": "{name} liked your post",
+			"comment": "{name} commented on your post",
+			"reply": "{name} replied to your comment",
+			"follow": "{name} started following you"
+		}
+	},
+	"errorPage": {
+		"title": "Something went wrong",
+		"notFound": "We could not find that page.",
+		"generic": "An unexpected error occurred. Please try again.",
+		"home": "Back to home",
+		"notFoundTitle": "Page not found"
+	},
+	"search": {
+		"placeholder": "Search people",
+		"results": "Search results",
+		"noResults": "No people found",
+		"loading": "Searching…",
+		"error": "Couldn't load results. Try again.",
+		"more": "Show more"
+	},
+	"toast": {
+		"dismiss": "Dismiss"
+	},
+	"carousel": {
+		"label": "Media",
+		"previous": "Previous media",
+		"next": "Next media",
+		"counter": "{current} / {total}"
+	},
+	"authShowcase": {
+		"name": "Alex Morgan",
+		"handle": "@alex",
+		"caption": "Sunday morning walk by the river. Who wants to join next time?",
+		"tagline": "Share moments with the people who matter."
+	},
+	"editProfile": {
+		"title": "Edit profile",
+		"changePhoto": "Change photo",
+		"uploading": "Uploading…",
+		"bioHint": "Shown on your profile.",
+		"unsaved": "You have unsaved changes.",
+		"saved": "Profile saved.",
+		"cancel": "Cancel",
+		"save": "Save"
+	},
+	"create": {
+		"title": "Create post",
+		"cancel": "Cancel",
+		"placeholder": "What did you notice today?",
+		"addPhoto": "Add photo",
+		"addVideo": "Add video",
+		"removeMedia": "Remove media",
+		"hint": "Photos and videos must be within the upload limit. Reels and stories take one video or photo.",
+		"remaining": "{count} characters remaining",
+		"over": "{count} characters over the limit",
+		"uploadingItem": "Uploading…",
+		"failedItem": "Upload failed",
+		"preview": "Selected media",
+		"typeLocked": "Remove the selected media to change the content type.",
+		"post": "Post",
+		"reel": "Reel",
+		"story": "Story"
+	},
+	"comments": {
+		"focus": "Focus thread",
+		"reply": "Reply",
+		"cancel": "Cancel",
+		"confirmDelete": "Delete this comment?",
+		"confirmDeleteThread": "Delete this comment and all its replies?",
+		"deleting": "Deleting…",
+		"context": "Parent comment context",
+		"hideReplies": "Hide replies",
+		"replyCount": "{count, plural, one {# reply} other {# replies}}",
+		"loading": "Loading comments…",
+		"moreReplies": "Load more replies",
+		"backToMainThread": "Back to main thread",
+		"empty": "No comments yet",
+		"emptyHint": "Start the conversation.",
+		"more": "Load more comments",
+		"write": "Write a comment…",
+		"writeReply": "Write a reply…",
+		"replyingTo": "Replying to @{username}",
+		"cancelReply": "Cancel reply",
+		"send": "Send",
+		"sending": "Sending…",
+		"counter": "{count} / {max} characters",
+		"loginHint": "Log in to join the conversation.",
+		"posted": "Comment posted.",
+		"deleted": "Comment deleted.",
+		"focused": "Focused comment",
+		"conversation": "Other replies in this conversation"
 	}
 }

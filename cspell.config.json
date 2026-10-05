@@ -3,12 +3,20 @@
 	"language": "en",
 	"useGitignore": true,
 	"words": [
+		"fontsource",
+		"networkidle",
+		"onretry",
+		"ftypisom",
+		"Grotesk",
+		"nosniff",
+		"wordmark",
 		"SvelteKit",
 		"sveltekit",
 		"Turso",
 		"D1",
 		"libsql",
 		"drizzle",
+		"dedupe",
 		"wrangler",
 		"workerd",
 		"Cloudflare",
@@ -47,16 +55,9 @@
 		"subsecond",
 		"ftyp",
 		"Unfollowing",
-		"geist",
-		"fontsource",
-		"lucide",
-		"jsdom",
-		"styleguide",
-		"describedby",
-		"unstub",
-		"networkidle",
-		"roledescription",
-		"uppercased"
+		"minmax",
+		"autoincrement",
+		"ខ្មែរ"
 	],
 	"ignorePaths": [
 		"**/.git/**",
@@ -66,6 +67,7 @@
 		"**/.svelte-kit/**",
 		"**/.wrangler/**",
 		"pnpm-lock.yaml",
+		"docs/design/**",
 		"*.min.js",
 		"**/locales/km.json"
 	]

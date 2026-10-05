@@ -1,7 +1,15 @@
 <!doctype html>
-<html lang="%lang%">
+<html lang="%lang%" class="%theme-class%" data-theme="%theme%">
 	<head>
 		<meta charset="utf-8" />
+		<script>
+			if (document.documentElement.dataset.theme === 'system') {
+				document.documentElement.classList.toggle(
+					'dark',
+					matchMedia('(prefers-color-scheme: dark)').matches,
+				)
+			}
+		</script>
 		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 		<link rel="icon" href="%sveltekit.assets%/favicon.ico" />
 		%sveltekit.head%
