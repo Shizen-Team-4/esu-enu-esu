@@ -8,10 +8,10 @@
 <nav aria-label={$_('story.title')} class="story-tray">
 	<a href="/create?type=story" class="story-item">
 		<span class="story-avatar relative"
-			><Avatar src={me?.avatarUrl} name={me?.displayName ?? ''} size="lg" /><span
-				class="story-add"
-				aria-hidden="true">+</span
-			></span
+			><Avatar
+				user={me ?? { id: '', username: '', displayName: '', avatarUrl: null }}
+				size={48}
+			/><span class="story-add" aria-hidden="true">+</span></span
 		>
 		<span class="story-name">{$_('story.add')}</span>
 	</a>
@@ -23,7 +23,7 @@
 			aria-label={name}
 		>
 			<span class="story-avatar" class:unseen={item.hasUnseen}
-				><Avatar src={item.user.avatarUrl} name={item.user.displayName} size="lg" /></span
+				><Avatar user={item.user} size={48} /></span
 			>
 			<span class="story-name">{name}</span>
 		</a>

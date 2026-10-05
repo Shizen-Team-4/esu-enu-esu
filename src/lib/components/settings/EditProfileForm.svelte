@@ -4,6 +4,7 @@
 	import TextField from '$lib/components/ui/TextField.svelte'
 	import AvatarPicker from './AvatarPicker.svelte'
 	import EditProfileFooter from './EditProfileFooter.svelte'
+	import type { FieldErrorCode } from '$lib/types/error'
 	import { errorMessageKey } from '$lib/errors/error-message'
 	import { charCount } from '$lib/format/char-count'
 	import { BIO_MAX } from '$lib/contract'
@@ -59,7 +60,7 @@
 		bind:mediaId
 		bind:removed
 		bind:uploading
-		error={fields?.avatarMediaId}
+		error={fields?.avatarMediaId as FieldErrorCode | undefined}
 	/>
 	<TextField
 		id="edit-profile-username"
@@ -68,14 +69,14 @@
 		prefix="@"
 		autocapitalize="none"
 		bind:value={username}
-		error={fields?.username}
+		error={fields?.username as FieldErrorCode | undefined}
 	/>
 	<TextField
 		id="edit-profile-display-name"
 		name="displayName"
 		label={$_('auth.name')}
 		bind:value={displayName}
-		error={fields?.displayName}
+		error={fields?.displayName as FieldErrorCode | undefined}
 	/>
 	<TextField
 		id="edit-profile-bio"
@@ -86,7 +87,7 @@
 		hint={$_('editProfile.bioHint')}
 		counter={`${charCount(bio)} / ${BIO_MAX}`}
 		bind:value={bio}
-		error={fields?.bio}
+		error={fields?.bio as FieldErrorCode | undefined}
 	/>
 	<EditProfileFooter
 		{status}

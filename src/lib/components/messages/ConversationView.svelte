@@ -99,7 +99,7 @@
 				class="grid size-11 place-items-center text-fg md:hidden"
 				><NavIcon path="m15 18-6-6 6-6" /></a
 			>{/if}
-		<Avatar src={conversation.peer.avatarUrl} name={conversation.peer.displayName} />
+		<Avatar user={conversation.peer} />
 		<a href="/u/{conversation.peer.username}" class="min-w-0 text-fg no-underline"
 			><strong class="block truncate text-sm">{conversation.peer.displayName}</strong><span
 				class="text-xs text-fg-muted">@{conversation.peer.username}</span
@@ -117,13 +117,8 @@
 				onclick={older}>{$_('messages.older')}</button
 			>{/if}
 		<div class="conversation-intro">
-			<Avatar
-				src={conversation.peer.avatarUrl}
-				name={conversation.peer.displayName}
-				size="lg"
-			/><strong>{conversation.peer.displayName}</strong><span class="text-sm text-fg-muted"
-				>@{conversation.peer.username}</span
-			><a
+			<Avatar user={conversation.peer} size={48} /><strong>{conversation.peer.displayName}</strong
+			><span class="text-sm text-fg-muted">@{conversation.peer.username}</span><a
 				href="/u/{conversation.peer.username}"
 				class="mt-2 rounded-lg bg-elevated px-4 py-2 text-sm font-semibold text-fg no-underline"
 				>{$_('messages.viewProfile')}</a

@@ -20,7 +20,7 @@
 <div class="flex flex-wrap items-center justify-between gap-3">
 	{#if me}
 		<div class="flex items-center gap-3">
-			<Avatar src={me.avatarUrl} name={me.displayName} />
+			<Avatar user={me} />
 			<div class="grid leading-tight">
 				<span class="font-semibold text-fg">{me.displayName}</span>
 				<span class="text-meta text-fg-muted">@{me.username}</span>

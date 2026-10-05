@@ -4,7 +4,6 @@
 	import { fetchFollows, type FollowListKind } from '$lib/follows/fetch-follows'
 	import { createPager, type Pager } from '$lib/pagination/create-pager'
 	import { observeMore } from '$lib/pagination/observe-more'
-	import { errorMessageKey } from '$lib/errors/error-message'
 	import EmptyState from '../ui/EmptyState.svelte'
 	import ErrorState from '../ui/ErrorState.svelte'
 	import FollowListRow from './FollowListRow.svelte'
@@ -51,7 +50,10 @@
 	</ul>
 {/if}
 {#if snap.status === 'error'}
-	<ErrorState message={$_(errorMessageKey(snap.errorCode))} onretry={() => pager.retry()} />
+	<ErrorState
+		code={snap.errorCode as import('$lib/types/error').ErrorCode}
+		onRetry={() => pager.retry()}
+	/>
 {:else if snap.status === 'loading'}
 	<p role="status" class="py-4 text-center text-meta text-fg-muted">{$_('follows.loading')}</p>
 {:else if snap.nextCursor !== null}

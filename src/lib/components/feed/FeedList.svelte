@@ -6,7 +6,6 @@
 	import PostCard from '$lib/components/post/PostCard.svelte'
 	import HatchBand from '$lib/components/ui/HatchBand.svelte'
 	import type { Page, Post } from '$lib/contract'
-	import { errorMessageKey } from '$lib/errors/error-message'
 	import { createFeedPager, type FeedPager } from '$lib/feed/feed-pager'
 	import { fetchFeed } from '$lib/feed/fetch-feed'
 
@@ -48,7 +47,10 @@
 		{/each}
 	</div>
 	{#if snap.status === 'error'}
-		<ErrorState message={$_(errorMessageKey(snap.errorCode))} onretry={() => pager.retry()} />
+		<ErrorState
+			code={snap.errorCode as import('$lib/types/error').ErrorCode}
+			onRetry={() => pager.retry()}
+		/>
 	{:else if snap.nextCursor !== null}
 		<div class="grid justify-items-center py-6">
 			<Button disabled={snap.status === 'loading'} onclick={() => pager.loadMore()}

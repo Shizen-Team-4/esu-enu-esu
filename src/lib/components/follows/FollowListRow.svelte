@@ -21,7 +21,7 @@
 		href="/u/{user.username}"
 		class="flex min-h-11 min-w-0 flex-1 items-center gap-3 text-fg no-underline"
 	>
-		<Avatar src={user.avatarUrl} name={user.displayName} size="md" />
+		<Avatar {user} />
 		<span class="grid min-w-0">
 			<strong class="truncate text-body font-semibold">{user.displayName}</strong>
 			<span class="truncate text-meta text-fg-muted">@{user.username}</span>

@@ -47,7 +47,7 @@
 					}
 				}}
 			>
-				<Avatar src={item.avatarUrl} name={item.displayName} size="sm" />
+				<Avatar user={item} size={32} />
 				<span class="text-body text-fg">{item.displayName}</span>
 				<span class="text-meta text-fg-muted">@{item.username}</span>
 			</li>

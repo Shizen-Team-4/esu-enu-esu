@@ -19,11 +19,10 @@
 			class="relative grid min-h-14 min-w-11 place-items-center text-fg no-underline"
 		>
 			<span class="relative inline-flex">
-				{#if item.key === 'profile' && me}<Avatar
-						src={me.avatarUrl}
-						name={me.displayName}
-						size="sm"
-					/>{:else}<NavIcon path={item.path} size={26} />{/if}
+				{#if item.key === 'profile' && me}<Avatar user={me} size={32} />{:else}<NavIcon
+						path={item.path}
+						size={26}
+					/>{/if}
 				{#if item.key === 'messages'}<span class="absolute -top-2 -right-2"
 						><UnreadBadge count={messageCount} /></span
 					>{/if}

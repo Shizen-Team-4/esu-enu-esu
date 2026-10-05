@@ -119,8 +119,7 @@
 						type="button"
 						onclick={() => openThread(thread.id)}
 						aria-label="{thread.peer.displayName}: {thread.lastMessage || $_('messages.sayHello')}"
-						><Avatar src={thread.peer.avatarUrl} name={thread.peer.displayName} /><span
-							class="min-w-0 flex-1 text-left"
+						><Avatar user={thread.peer} /><span class="min-w-0 flex-1 text-left"
 							><strong class="block truncate text-sm">{thread.peer.displayName}</strong><small
 								class="block truncate text-fg-muted"
 								>{thread.lastMessage || $_('messages.sayHello')}</small
@@ -152,8 +151,7 @@
 		></span
 	>
 	<strong class="flex-1 text-left text-sm">{$_('nav.messages')}</strong><Avatar
-		src={me.avatarUrl}
-		name={me.displayName}
-		size="sm"
+		user={me}
+		size={32}
 	/>
 </button>

@@ -61,7 +61,15 @@
 		"onpick",
 		"unmute",
 		"Unmute",
-		"ខ្មែរ"
+		"ខ្មែរ",
+		"geist",
+		"lucide",
+		"jsdom",
+		"styleguide",
+		"describedby",
+		"unstub",
+		"roledescription",
+		"uppercased"
 	],
 	"ignorePaths": [
 		"**/.git/**",

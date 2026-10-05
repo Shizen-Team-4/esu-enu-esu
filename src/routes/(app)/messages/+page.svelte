@@ -40,7 +40,7 @@
 						<input type="hidden" name="recipientId" value={person.id} /><button
 							type="submit"
 							class="flex min-h-20 w-full cursor-pointer items-center gap-4 rounded-xl p-3 text-left hover:bg-elevated"
-							><Avatar src={person.avatarUrl} name={person.displayName} /><span class="grid"
+							><Avatar user={person} /><span class="grid"
 								><strong class="text-sm">{person.username}</strong><span
 									class="text-sm text-fg-muted">{person.displayName}</span
 								></span

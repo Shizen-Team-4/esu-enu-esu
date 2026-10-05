@@ -33,7 +33,11 @@
 	},
 	"common": {
 		"back": "Back",
-		"retry": "Retry"
+		"close": "Close",
+		"retry": "Retry",
+		"loading": "Loading",
+		"more": "More",
+		"less": "Less"
 	},
 	"post": {
 		"like": "Like",
@@ -49,7 +53,11 @@
 		"unlike": "Remove like",
 		"save": "Save",
 		"unsave": "Remove from saved",
-		"copied": "Link copied"
+		"copied": "Link copied",
+		"menu": "Post options",
+		"edit": "Edit",
+		"report": "Report",
+		"edited": "edited"
 	},
 	"home": {
 		"description": "Share moments and connect with your community."
@@ -319,5 +327,16 @@
 		"wave": "Hello",
 		"celebrate": "Celebrate",
 		"star": "Amazing"
+	},
+	"media": {
+		"previous": "Previous",
+		"next": "Next",
+		"position": "{current} / {total}",
+		"loadFailed": "Could not load this media",
+		"gallery": "Post media"
+	},
+	"video": {
+		"play": "Play video",
+		"pause": "Pause video"
 	}
 }

@@ -27,14 +27,12 @@
 			<a
 				href="/u/{post.author.username}"
 				class="flex items-center gap-3 font-semibold text-inherit no-underline"
-				><Avatar src={post.author.avatarUrl} name={post.author.displayName} /><span
-					>{post.author.username}</span
-				></a
+				><Avatar user={post.author} /><span>{post.author.username}</span></a
 			>
 			{#if post.caption}<p class="mt-3 line-clamp-3 text-sm">{post.caption}</p>{/if}
 			<a href="/p/{post.id}" class="mt-2 inline-block text-xs text-inherit">{$_('post.comments')}</a
 			>
 		</div>
 	</div>
-	<div class="reel-actions"><PostActions {post} /></div>
+	<div class="reel-actions"><PostActions counts={post.counts} viewer={post.viewer} /></div>
 </article>

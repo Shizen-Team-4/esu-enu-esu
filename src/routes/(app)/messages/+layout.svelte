@@ -41,7 +41,7 @@
 					class:selected={selected === thread.id}
 					aria-current={selected === thread.id ? 'page' : undefined}
 				>
-					<Avatar src={thread.peer.avatarUrl} name={thread.peer.displayName} size="lg" />
+					<Avatar user={thread.peer} size={48} />
 					<div class="min-w-0 flex-1">
 						<p class="truncate text-sm" class:font-semibold={thread.unreadCount > 0}>
 							{thread.peer.displayName}

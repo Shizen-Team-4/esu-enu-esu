@@ -33,7 +33,11 @@
 	},
 	"common": {
 		"back": "戻る",
-		"retry": "再試行"
+		"close": "閉じる",
+		"retry": "再試行",
+		"loading": "読み込み中",
+		"more": "もっと見る",
+		"less": "折りたたむ"
 	},
 	"post": {
 		"like": "いいね",
@@ -49,7 +53,11 @@
 		"unlike": "いいねを取り消す",
 		"save": "保存",
 		"unsave": "保存を解除",
-		"copied": "リンクをコピーしました"
+		"copied": "リンクをコピーしました",
+		"menu": "投稿オプション",
+		"edit": "編集",
+		"report": "報告",
+		"edited": "編集済み"
 	},
 	"home": {
 		"description": "日常を共有して、コミュニティとつながりましょう。"
@@ -319,5 +327,16 @@
 		"wave": "こんにちは",
 		"celebrate": "お祝い",
 		"star": "すごい"
+	},
+	"media": {
+		"previous": "前へ",
+		"next": "次へ",
+		"position": "{current} / {total}",
+		"loadFailed": "メディアを読み込めませんでした",
+		"gallery": "投稿メディア"
+	},
+	"video": {
+		"play": "動画を再生",
+		"pause": "動画を一時停止"
 	}
 }

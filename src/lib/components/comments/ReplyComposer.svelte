@@ -80,7 +80,7 @@
 				>
 			</div>{/if}
 		<div class="flex items-start gap-3">
-			{#if !target}<Avatar src={me.avatarUrl} name={me.displayName} />{/if}
+			{#if !target}<Avatar user={me} />{/if}
 			<div class="min-w-0 flex-1">
 				<label for="comment-body" class="sr-only">{$_('comments.write')}</label>
 				<textarea

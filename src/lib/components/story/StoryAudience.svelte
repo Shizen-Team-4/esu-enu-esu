@@ -51,8 +51,7 @@
 	<ul class="story-audience-list">
 		{#each users as viewer (viewer.user.id)}
 			<li>
-				<Avatar src={viewer.user.avatarUrl} name={viewer.user.displayName} /><span
-					class="min-w-0 flex-1 truncate"
+				<Avatar user={viewer.user} /><span class="min-w-0 flex-1 truncate"
 					>{viewer.user.displayName}<small class="block text-fg-muted"
 						>@{viewer.user.username}</small
 					></span

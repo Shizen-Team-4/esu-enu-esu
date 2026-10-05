@@ -35,11 +35,10 @@
 				title={$_('nav.' + item.key)}
 			>
 				<span class="relative inline-flex shrink-0">
-					{#if item.key === 'profile' && me}<Avatar
-							src={me.avatarUrl}
-							name={me.displayName}
-							size="sm"
-						/>{:else}<NavIcon path={item.path} size={26} />{/if}
+					{#if item.key === 'profile' && me}<Avatar user={me} size={32} />{:else}<NavIcon
+							path={item.path}
+							size={26}
+						/>{/if}
 					{#if item.key === 'messages' || item.key === 'notifications'}<span
 							class="absolute -right-2 -top-2"
 							><UnreadBadge count={item.key === 'messages' ? messageCount : unreadCount} /></span

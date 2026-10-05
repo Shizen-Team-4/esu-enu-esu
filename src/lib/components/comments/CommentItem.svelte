@@ -32,7 +32,7 @@
 
 <article class="comment-item relative min-w-0" data-comment-id={comment.id}>
 	<header class="flex items-start gap-3">
-		<Avatar src={comment.author.avatarUrl} name={comment.author.displayName} />
+		<Avatar user={comment.author} />
 		<div class="min-w-0 flex-1">
 			<a {href} class="block truncate text-body font-semibold text-fg no-underline"
 				>{comment.author.displayName}</a

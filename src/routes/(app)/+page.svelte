@@ -5,7 +5,6 @@
 	import FeedTabs from '$lib/components/feed/FeedTabs.svelte'
 	import StoryTray from '$lib/components/StoryTray.svelte'
 	import ErrorState from '$lib/components/ui/ErrorState.svelte'
-	import { errorMessageKey } from '$lib/errors/error-message'
 
 	let { data } = $props()
 </script>
@@ -22,9 +21,6 @@
 	{#if data.feed}
 		<FeedList initial={data.feed} scope={data.scope} />
 	{:else}
-		<ErrorState
-			message={$_(errorMessageKey(data.feedError))}
-			onretry={() => void invalidateAll()}
-		/>
+		<ErrorState code={data.feedError ?? 'INTERNAL'} onRetry={() => void invalidateAll()} />
 	{/if}
 </div>

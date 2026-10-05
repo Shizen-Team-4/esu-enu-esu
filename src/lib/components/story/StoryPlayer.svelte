@@ -155,8 +155,8 @@
 						>{/each}
 				</div>
 				<div class="story-topline">
-					<Avatar src={story.author.avatarUrl} name={story.author.displayName} size="sm" /><a
-						href="/u/{story.author.username}">{story.author.username || story.author.displayName}</a
+					<Avatar user={story.author} size={32} /><a href="/u/{story.author.username}"
+						>{story.author.username || story.author.displayName}</a
 					><time datetime={story.createdAt}
 						>{Math.max(0, Math.floor((Date.now() - Date.parse(story.createdAt)) / 3600000))}h</time
 					>
