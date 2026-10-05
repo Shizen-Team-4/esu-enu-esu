@@ -1,92 +1,51 @@
 <script lang="ts">
-	import Button from '$lib/components/ui/Button.svelte'
-	import PageBar from '$lib/components/ui/PageBar.svelte'
 	import { _ } from 'svelte-i18n'
-	import { errorMessageKey } from '$lib/errors/error-message'
-	import { enhance } from '$app/forms'
-	import StorySeenForm from '$lib/components/StorySeenForm.svelte'
+	import StoryPlayer from '$lib/components/story/StoryPlayer.svelte'
 	let { data, form } = $props()
-	let index = $state(0)
+	// svelte-ignore state_referenced_locally
+	let index = $state(data.latest ? Math.max(0, data.items.length - 1) : 0)
+	// svelte-ignore state_referenced_locally
+	let finished = $state(data.items.length === 0)
 	let current = $derived(data.items[index])
-	let expired = $state(false)
-	$effect(() => {
-		if (!current) return
-		expired = Date.parse(current.expiresAt) <= Date.now()
-		const timeout = setTimeout(
-			() => {
-				expired = true
-			},
-			Math.max(0, Date.parse(current.expiresAt) - Date.now()),
-		)
-		return () => clearTimeout(timeout)
-	})
+	function next() {
+		if (index + 1 < data.items.length) index += 1
+		else finished = true
+	}
+	function previous() {
+		if (finished) finished = false
+		else if (index > 0) index -= 1
+	}
 </script>
 
 <svelte:head><title>{$_('story.title')} · {$_('app.name')}</title></svelte:head>
-
-<main class="mx-auto w-full max-w-content px-gutter py-6">
-	<PageBar />
-	<Button href="/">{$_('story.close')}</Button>
-	{#if form?.error?.code}<p role="alert">{$_(errorMessageKey(form.error.code))}</p>{/if}
-	{#if current && !expired}
-		{#key current.id}<StorySeenForm id={current.id} pending={!current.viewer.seen} />{/key}
-		<header class="my-4 flex items-center justify-between">
-			<strong>@{current.author.username || current.author.displayName}</strong><span
-				class="text-fg-muted">{index + 1} / {data.items.length}</span
-			>
-		</header>
-		{#if current.media.type === 'image'}<img
-				src={current.media.url}
-				width={current.media.width}
-				height={current.media.height}
-				alt=""
-				class="max-h-[70dvh] w-full rounded-card object-contain"
-			/>{:else}<video
-				src={current.media.url}
-				poster={current.media.thumbnailUrl ?? undefined}
-				width={current.media.width}
-				height={current.media.height}
-				controls
-				class="max-h-[70dvh] w-full rounded-card object-contain"><track kind="captions" /></video
-			>{/if}
-		<div class="mt-4 flex flex-wrap items-center gap-3">
-			<Button
-				disabled={index === 0}
-				onclick={() => {
-					index--
-				}}>{$_('story.previous')}</Button
-			>
-			<Button
-				disabled={index + 1 >= data.items.length}
-				onclick={() => {
-					index++
-				}}>{$_('story.next')}</Button
-			>
-			<form method="POST" action="?/love" use:enhance>
-				<input type="hidden" name="id" value={current.id} /><input
-					type="hidden"
-					name="active"
-					value={String(!current.viewer.liked)}
-				/><Button aria-label={$_('story.love')} aria-pressed={current.viewer.liked}
-					><svg
-						width="24"
-						height="24"
-						viewBox="0 0 24 24"
-						fill={current.viewer.liked ? 'currentColor' : 'none'}
-						stroke="currentColor"
-						stroke-width="2"
-						aria-hidden="true"
-						><path
-							d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"
-						/></svg
-					>{current.likes}</Button
-				>
-			</form>
-			{#if current.author.id === data.viewerId}<form method="POST" action="?/delete">
-					<input type="hidden" name="id" value={current.id} /><Button type="submit"
-						>{$_('post.delete')}</Button
-					>
-				</form>{/if}
+<main class="story-viewer">
+	<a class="story-viewer-brand" href="/" aria-label={$_('app.name')}>
+		<img src="/sns-logo-monochrome.png" alt={$_('app.name')} />
+	</a>
+	<a class="story-viewer-close" href="/" aria-label={$_('story.close')}>×</a>
+	{#if form?.error?.code}<p class="story-viewer-error" role="alert">{$_('story.viewError')}</p>{/if}
+	{#if !finished && current}
+		{#key current.id}
+			<StoryPlayer
+				story={current}
+				{index}
+				count={data.items.length}
+				viewerId={data.viewerId}
+				{next}
+				{previous}
+			/>
+		{/key}
+	{:else}
+		<div class="story-finished">
+			<div class="story-finished-icon" aria-hidden="true">✓</div>
+			<h1>{$_('story.finished')}</h1>
+			<p>{$_('story.finishedHint')}</p>
+			<div class="flex flex-wrap justify-center gap-3">
+				<a href="/" class="story-finished-action">{$_('story.backHome')}</a>
+				{#if data.items.length}<button type="button" onclick={previous}
+						>{$_('story.previous')}</button
+					>{/if}
+			</div>
 		</div>
-	{:else}<p class="my-8">{$_('story.expired')}</p>{/if}
+	{/if}
 </main>

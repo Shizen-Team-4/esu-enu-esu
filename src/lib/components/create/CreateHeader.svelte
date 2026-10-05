@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { _ } from 'svelte-i18n'
 	import Button from '$lib/components/ui/Button.svelte'
-	let { canPost }: { canPost: boolean } = $props()
+	let { canPost, type = 'post' }: { canPost: boolean; type?: string } = $props()
 
 	function goBack(event: MouseEvent) {
 		if (history.length <= 1) return
@@ -31,7 +31,7 @@
 	<span class="hidden text-title font-semibold text-fg md:block">{$_('app.name')}</span>
 	<div class="justify-self-end md:hidden">
 		<Button type="submit" form="composer-form" variant="primary" disabled={!canPost}
-			>{$_('create.post')}</Button
+			>{$_(type === 'story' ? 'story.share' : 'post.publish')}</Button
 		>
 	</div>
 </header>

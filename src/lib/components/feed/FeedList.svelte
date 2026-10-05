@@ -3,8 +3,8 @@
 	import Button from '$lib/components/ui/Button.svelte'
 	import EmptyState from '$lib/components/ui/EmptyState.svelte'
 	import ErrorState from '$lib/components/ui/ErrorState.svelte'
-	import HatchBand from '$lib/components/ui/HatchBand.svelte'
 	import PostCard from '$lib/components/post/PostCard.svelte'
+	import HatchBand from '$lib/components/ui/HatchBand.svelte'
 	import type { Page, Post } from '$lib/contract'
 	import { errorMessageKey } from '$lib/errors/error-message'
 	import { createFeedPager, type FeedPager } from '$lib/feed/feed-pager'
@@ -41,9 +41,9 @@
 		{/snippet}
 	</EmptyState>
 {:else}
-	<div class="post-list max-md:mt-3">
-		{#each snap.items as post, index (post.id)}
-			{#if index > 0}<HatchBand />{/if}
+	<div class="feed-posts post-list">
+		{#each snap.items as post, i (post.id)}
+			{#if i > 0}<HatchBand />{/if}
 			<PostCard {post} />
 		{/each}
 	</div>

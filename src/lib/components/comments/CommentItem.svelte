@@ -10,6 +10,7 @@
 		comment,
 		context = false,
 		branchCount = 0,
+		expanded = false,
 		onReply,
 		onExpandBranch,
 		onDeleted,
@@ -19,6 +20,7 @@
 		comment: Comment
 		context?: boolean
 		branchCount?: number
+		expanded?: boolean
 		onReply: (comment: Comment) => void
 		onExpandBranch?: (comment: Comment) => void
 		onDeleted: (comment: Comment) => void
@@ -68,7 +70,7 @@
 			type="button"
 			class="ml-12 min-h-11 px-2 text-meta text-fg-muted"
 			onclick={() => onExpandBranch?.(comment)}
-			aria-expanded="false"
+			aria-expanded={expanded}
 		>
 			{$_('comments.replyCount', { values: { count: branchCount } })}
 		</button>

@@ -11,6 +11,7 @@
 	<h1 class="text-title font-semibold">{$_('nav.search')}</h1>
 	<form class="my-6 flex gap-2">
 		<input
+			type="search"
 			name="q"
 			value={data.q}
 			aria-label={$_('nav.search')}

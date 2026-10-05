@@ -30,7 +30,7 @@
 	<fieldset
 		disabled={locked}
 		class="m-0 border-0 p-0"
-		title={locked ? $_('create.typeLocked') : ''}
+		title={locked ? $_('create.typeLocked') : undefined}
 	>
 		<SegmentedControl name="composer-type" label={$_('post.type')} {options} bind:value={type} />
 	</fieldset>

@@ -6,18 +6,23 @@
 
 {#if items.length > 0}
 	<ul class="m-0 grid list-none gap-3 p-0" aria-label={$_('create.preview')}>
-		{#each items as item (item.key)}
-			<li class="hatch relative flex max-h-[22rem] justify-center">
+		{#each items as item, i (item.key)}
+			<li class="relative flex max-h-[28rem] justify-center overflow-hidden rounded-xl bg-elevated">
 				{#if item.file.type.startsWith('video/')}
 					<!-- svelte-ignore a11y_media_has_caption -->
-					<video src={item.url} muted playsinline class="max-h-[22rem] max-w-full object-contain"
+					<video
+						src={item.url}
+						muted
+						playsinline
+						controls
+						class="max-h-[28rem] max-w-full object-contain"
 					></video>
 				{:else}
-					<img src={item.url} alt="" class="max-h-[22rem] max-w-full object-contain" />
+					<img src={item.url} alt="" class="max-h-[28rem] max-w-full object-contain" />
 				{/if}
 				<button
 					type="button"
-					aria-label={$_('create.removeMedia')}
+					aria-label="{$_('create.removeMedia')} {i + 1}"
 					onclick={() => onremove(item)}
 					class="absolute top-2 right-2 inline-grid size-8 cursor-pointer place-items-center rounded-full border border-line bg-surface text-fg"
 				>

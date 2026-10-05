@@ -57,6 +57,10 @@
 		"Unfollowing",
 		"minmax",
 		"autoincrement",
+		"onsent",
+		"onpick",
+		"unmute",
+		"Unmute",
 		"ខ្មែរ"
 	],
 	"ignorePaths": [

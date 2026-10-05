@@ -13,6 +13,50 @@ import {
 const ts = (name: string) => integer(name, { mode: 'timestamp_ms' })
 const now = sql`(cast(unixepoch('subsecond') * 1000 as integer))`
 
+export const directThreads = sqliteTable(
+	'direct_threads',
+	{
+		id: text('id').primaryKey(),
+		firstUserId: text('first_user_id')
+			.notNull()
+			.references(() => user.id, { onDelete: 'cascade' }),
+		secondUserId: text('second_user_id')
+			.notNull()
+			.references(() => user.id, { onDelete: 'cascade' }),
+		createdBy: text('created_by')
+			.notNull()
+			.references(() => user.id, { onDelete: 'cascade' }),
+		firstReadSequence: integer('first_read_sequence').notNull().default(0),
+		secondReadSequence: integer('second_read_sequence').notNull().default(0),
+		updatedAt: ts('updated_at').notNull(),
+	},
+	(t) => [
+		uniqueIndex('direct_threads_pair_idx').on(t.firstUserId, t.secondUserId),
+		index('direct_threads_first_idx').on(t.firstUserId, t.updatedAt),
+		index('direct_threads_second_idx').on(t.secondUserId, t.updatedAt),
+	],
+)
+
+export const directMessages = sqliteTable(
+	'direct_messages',
+	{
+		sequence: integer('sequence').primaryKey({ autoIncrement: true }),
+		id: text('id').notNull().unique(),
+		threadId: text('thread_id')
+			.notNull()
+			.references(() => directThreads.id, { onDelete: 'cascade' }),
+		senderId: text('sender_id')
+			.notNull()
+			.references(() => user.id, { onDelete: 'cascade' }),
+		body: text('body').notNull(),
+		createdAt: ts('created_at').notNull(),
+	},
+	(t) => [
+		index('direct_messages_thread_idx').on(t.threadId, t.sequence),
+		index('direct_messages_sender_idx').on(t.senderId, t.createdAt),
+	],
+)
+
 // ─── BetterAuth (core + username + admin plugins) ────────────────────────────
 // Column names must match what BetterAuth expects. Regenerate with
 // `npx @better-auth/cli generate` after changing plugins and compare.

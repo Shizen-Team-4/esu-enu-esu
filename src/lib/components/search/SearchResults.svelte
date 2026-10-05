@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation'
 	import { _ } from 'svelte-i18n'
 	import type { FollowListItem } from '$lib/contract'
 	import Avatar from '../ui/Avatar.svelte'
@@ -33,17 +34,22 @@
 				role="option"
 				id="{id}-{i}"
 				aria-selected={i === activeIndex}
-				class={i === activeIndex ? 'bg-primary-soft' : ''}
+				class="flex min-h-11 cursor-pointer items-center gap-3 px-3 {i === activeIndex
+					? 'bg-primary-soft'
+					: ''} hover:bg-elevated focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary"
+				tabindex="-1"
 				onmouseenter={() => onHover?.(i)}
+				onclick={() => goto('/u/' + item.username)}
+				onkeydown={(e) => {
+					if (e.key === 'Enter' || e.key === ' ') {
+						e.preventDefault()
+						goto('/u/' + item.username)
+					}
+				}}
 			>
-				<a
-					href="/u/{item.username}"
-					class="flex min-h-11 items-center gap-3 px-3 no-underline hover:bg-elevated focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary"
-				>
-					<Avatar src={item.avatarUrl} name={item.displayName} size="sm" />
-					<span class="text-body text-fg">{item.displayName}</span>
-					<span class="text-meta text-fg-muted">@{item.username}</span>
-				</a>
+				<Avatar src={item.avatarUrl} name={item.displayName} size="sm" />
+				<span class="text-body text-fg">{item.displayName}</span>
+				<span class="text-meta text-fg-muted">@{item.username}</span>
 			</li>
 		{/each}
 	</ul>

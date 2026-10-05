@@ -14,7 +14,7 @@ const create: NavItem = { key: 'create', href: '/create', path: 'M12 4v16 M4 12h
 const notifications: NavItem = {
 	key: 'notifications',
 	href: '/notifications',
-	path: 'M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9 M13.7 21a2 2 0 0 1-3.4 0',
+	path: 'M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8z',
 }
 const profile: NavItem = {
 	key: 'profile',
@@ -22,8 +22,26 @@ const profile: NavItem = {
 	path: 'M20 21v-2a8 8 0 0 0-16 0v2 M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0',
 }
 
-export const mobileNavItems: NavItem[] = [home, search, create, notifications, profile]
-export const sidebarNavItems: NavItem[] = [home, notifications, profile]
+const reels: NavItem = {
+	key: 'reels',
+	href: '/reels',
+	path: 'M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z M3 8h18 M8 3l3 5 M15 3l3 5 M10 12l6 3-6 3z',
+}
+const messages: NavItem = {
+	key: 'messages',
+	href: '/messages',
+	path: 'm22 2-7 20-4-9-9-4 20-7z M22 2 11 13',
+}
+export const mobileNavItems: NavItem[] = [home, reels, create, messages, profile]
+export const sidebarNavItems: NavItem[] = [
+	home,
+	reels,
+	messages,
+	search,
+	notifications,
+	create,
+	profile,
+]
 
 export function withProfileHref(items: NavItem[], username?: string): NavItem[] {
 	return items.map((item) =>

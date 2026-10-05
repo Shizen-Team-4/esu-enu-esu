@@ -3,19 +3,17 @@
 	import MediaCarousel from './MediaCarousel.svelte'
 	import PostActions from './PostActions.svelte'
 	import PostHeader from './PostHeader.svelte'
-
 	let { post }: { post: Post } = $props()
 </script>
 
-<article class="min-w-0 border-b border-line bg-surface max-md:border">
+<article class="feed-post">
 	<PostHeader {post} />
-	{#if post.caption}
-		<p class="px-gutter py-3 text-body wrap-anywhere whitespace-pre-wrap">{post.caption}</p>
-	{/if}
-	{#if post.media.length}
-		<div class:mt-3={!post.caption}>
-			<MediaCarousel media={post.media} />
-		</div>
-	{/if}
+	{#if post.media.length}<MediaCarousel media={post.media} />{/if}
 	<PostActions {post} />
+	{#if post.caption}<p class="post-caption">
+			<a href="/u/{post.author.username}" class="font-semibold text-fg no-underline"
+				>{post.author.username}</a
+			>
+			{post.caption}
+		</p>{/if}
 </article>

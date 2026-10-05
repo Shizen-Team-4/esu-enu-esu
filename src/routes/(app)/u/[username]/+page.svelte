@@ -4,6 +4,7 @@
 	import PostGrid from '$lib/components/profile/PostGrid.svelte'
 	import PageBar from '$lib/components/ui/PageBar.svelte'
 	import Button from '$lib/components/ui/Button.svelte'
+	import EmptyState from '$lib/components/ui/EmptyState.svelte'
 	import { _ } from 'svelte-i18n'
 	let { data, form } = $props()
 </script>
@@ -14,7 +15,7 @@
 	<ProfileHeader profile={data.profile} errorCode={form?.error?.code ?? null} />
 	<ProfileTabs type={data.type} isMe={data.profile.viewer.isMe} />
 	{#if data.type === 'bookmarks' && !data.posts.items.length}
-		<p class="py-4">{$_('bookmarks.empty')}</p>
+		<EmptyState title={$_('bookmarks.empty')} />
 	{:else}
 		<PostGrid posts={data.posts.items} />
 	{/if}

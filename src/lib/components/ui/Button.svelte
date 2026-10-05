@@ -15,11 +15,11 @@
 
 	const variants: Record<Variant, string> = {
 		primary: 'border-primary bg-primary text-on-primary',
-		secondary: 'border-line bg-surface text-fg hover:bg-elevated',
+		secondary: 'border-transparent bg-bubble-in text-fg hover:opacity-80',
 		ghost: 'border-transparent bg-transparent text-fg hover:bg-elevated',
 	}
 	const base =
-		'inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-control border px-5 py-2 text-body no-underline disabled:cursor-not-allowed disabled:opacity-50 aria-pressed:text-accent'
+		'inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-control border px-5 py-2 text-sm font-semibold no-underline disabled:cursor-not-allowed disabled:opacity-50 aria-pressed:text-accent'
 	const classes = $derived(`${base} ${variants[variant]} ${className}`)
 </script>
 

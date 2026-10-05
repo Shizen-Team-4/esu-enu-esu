@@ -100,6 +100,6 @@
 		form="composer-form"
 		variant="primary"
 		disabled={!canPost}
-		class="max-md:hidden">{$_('post.publish')}</Button
+		class="max-md:hidden">{$_(type === 'story' ? 'story.share' : 'post.publish')}</Button
 	>
 </div>

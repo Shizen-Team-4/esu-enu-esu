@@ -18,8 +18,9 @@
 		me: UserSummary | null
 		error?: ErrorEnvelope['error']
 		initialType?: ComposerType
+		lockType?: boolean
 	}
-	let { me, error: serverError, initialType = 'post' }: Props = $props()
+	let { me, error: serverError, initialType = 'post', lockType = false }: Props = $props()
 
 	// svelte-ignore state_referenced_locally
 	let type = $state<ComposerType>(initialType)
@@ -82,18 +83,20 @@
 	onDestroy(() => items.forEach((item) => URL.revokeObjectURL(item.url)))
 </script>
 
-<CreateHeader {canPost} />
+<CreateHeader {canPost} {type} />
 <div
-	class="mx-auto w-full max-w-[620px] pb-[calc(5rem+env(safe-area-inset-bottom))] md:my-8 md:pb-0"
+	class="mx-auto w-full max-w-[620px] pb-[calc(var(--composer-toolbar-height,5rem)+env(safe-area-inset-bottom))] md:my-8 md:pb-0"
 >
-	<h1 class="mb-4 hidden text-xl font-semibold md:block">{$_('create.title')}</h1>
+	<h1 class="mb-4 hidden text-xl font-semibold md:block">
+		{$_(type === 'story' ? 'story.add' : 'create.title')}
+	</h1>
 	<form
 		id="composer-form"
 		method="POST"
 		action={type === 'story' ? '?/story' : '?/post'}
 		class="grid gap-4 bg-surface p-3.5 md:border md:border-line md:p-6"
 	>
-		<ComposerAuthor {me} bind:type locked={items.length > 0} />
+		<ComposerAuthor {me} bind:type locked={lockType || items.length > 0} />
 		<input type="hidden" name="type" value={type} />
 		{#each ready as item (item.key)}<input type="hidden" name="mediaId" value={item.id} />{/each}
 		{#if type === 'story'}
