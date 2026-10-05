@@ -167,7 +167,7 @@
 		"VALIDATION_FAILED": "Please check the highlighted fields and try again.",
 		"UNAUTHENTICATED": "Please log in to continue.",
 		"FORBIDDEN": "You do not have permission to do that.",
-		"NOT_FOUND": "We could not find what you were looking for.",
+		"NOT_FOUND": "We could not find what you are looking for.",
 		"CONFLICT": "This conflicts with existing data.",
 		"RATE_LIMITED": "Too many attempts. Please wait a moment and try again.",
 		"INTERNAL": "Something went wrong. Please try again.",
