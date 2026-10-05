@@ -57,7 +57,19 @@
 		"Unfollowing",
 		"minmax",
 		"autoincrement",
-		"ខ្មែរ"
+		"onsent",
+		"onpick",
+		"unmute",
+		"Unmute",
+		"ខ្មែរ",
+		"geist",
+		"lucide",
+		"jsdom",
+		"styleguide",
+		"describedby",
+		"unstub",
+		"roledescription",
+		"uppercased"
 	],
 	"ignorePaths": [
 		"**/.git/**",

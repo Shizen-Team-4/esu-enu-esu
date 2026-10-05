@@ -1,24 +1,34 @@
 <script lang="ts">
-	type Size = 'sm' | 'md' | 'lg'
-	let {
-		src = null,
-		name,
-		size = 'md',
-	}: { src?: string | null; name: string; size?: Size } = $props()
+	import type { UserSummary } from '$lib/types/user'
+	import { initials } from '$lib/users/initials'
+	import { cn } from '$lib/ui/class-names'
 
-	const sizes: Record<Size, string> = {
-		sm: 'size-6 text-meta',
-		md: 'size-9 text-body',
-		lg: 'size-16 text-title',
-	}
+	let {
+		user,
+		size = 40,
+		class: className,
+	}: { user: UserSummary; size?: number; class?: string } = $props()
+
+	let failed = $state(false)
+	const showImage = $derived(user.avatarUrl !== null && !failed)
 </script>
 
 <span
-	class="inline-grid shrink-0 place-items-center overflow-hidden rounded-full bg-bubble-in text-fg {sizes[
-		size
-	]}"
+	class={cn(
+		'inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-muted text-sm font-medium text-muted-foreground',
+		className,
+	)}
+	style:width="{size}px"
+	style:height="{size}px"
 >
-	{#if src}<img {src} alt="" class="size-full object-cover" />{:else}<span aria-hidden="true"
-			>{name.slice(0, 1).toUpperCase()}</span
-		>{/if}
+	{#if showImage}
+		<img
+			src={user.avatarUrl}
+			alt={user.displayName}
+			class="size-full object-cover"
+			onerror={() => (failed = true)}
+		/>
+	{:else}
+		<span role="img" aria-label={user.displayName}>{initials(user.displayName)}</span>
+	{/if}
 </span>

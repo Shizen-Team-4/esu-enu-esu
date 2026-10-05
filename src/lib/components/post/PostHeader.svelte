@@ -6,11 +6,18 @@
 
 	let { post }: { post: Post } = $props()
 	const profileHref = $derived(`/u/${encodeURIComponent(post.author.username)}`)
-	const when = $derived(relativeTime(post.createdAt, new Date(), $locale ?? 'en'))
+	let now = $state(new Date())
+	$effect(() => {
+		const id = setInterval(() => {
+			now = new Date()
+		}, 60_000)
+		return () => clearInterval(id)
+	})
+	const when = $derived(relativeTime(post.createdAt, now, $locale ?? 'en'))
 </script>
 
-<header class="flex items-center gap-3 px-gutter pt-3">
-	<Avatar src={post.author.avatarUrl} name={post.author.displayName} />
+<header class="flex items-center gap-3 px-3 py-3">
+	<Avatar user={post.author} />
 	<div class="flex min-w-0 flex-wrap items-baseline gap-x-1.5 text-body">
 		<a href={profileHref} class="truncate font-semibold text-fg no-underline"
 			>{post.author.displayName}</a

@@ -5,15 +5,23 @@ describe('nav items', () => {
 	it('lists the five mobile destinations in order', () => {
 		expect(mobileNavItems.map((item) => item.href)).toEqual([
 			'/',
-			'/search',
+			'/reels',
 			'/create',
-			'/notifications',
+			'/messages',
 			'/profile',
 		])
 	})
 
 	it('lists the sidebar destinations', () => {
-		expect(sidebarNavItems.map((item) => item.key)).toEqual(['home', 'notifications', 'profile'])
+		expect(sidebarNavItems.map((item) => item.key)).toEqual([
+			'home',
+			'reels',
+			'messages',
+			'search',
+			'notifications',
+			'create',
+			'profile',
+		])
 	})
 
 	it('links Profile to the signed-in user without changing other destinations', () => {

@@ -40,7 +40,4 @@
 		flex-direction: column;
 		min-height: calc(100dvh - var(--spacing-app-header));
 	}
-	:global(main:has(.post-comments)) {
-		padding-bottom: 0;
-	}
 </style>

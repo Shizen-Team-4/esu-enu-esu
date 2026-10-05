@@ -3,29 +3,50 @@
 	import { _ } from 'svelte-i18n'
 	import { isActive, sidebarNavItems, withProfileHref } from '$lib/navigation/nav-items'
 	import type { UserSummary } from '$lib/contract'
-	import Button from './ui/Button.svelte'
 	import NavIcon from './NavIcon.svelte'
+	import Avatar from './ui/Avatar.svelte'
+	import AccountMenu from './AccountMenu.svelte'
 	import UnreadBadge from './notifications/UnreadBadge.svelte'
-	let { me, unreadCount = null }: { me: UserSummary | null; unreadCount?: number | null } = $props()
+	let {
+		me,
+		unreadCount = null,
+		messageCount = 0,
+	}: {
+		me: UserSummary | null
+		unreadCount?: number | null
+		messageCount?: number | null
+	} = $props()
 	const items = $derived(withProfileHref(sidebarNavItems, me?.username))
 </script>
 
-<aside class="hidden px-gutter py-6 lg:block" aria-label={$_('nav.label')}>
-	<p class="mb-2 px-3 text-meta text-fg-muted">{$_('nav.yourSpace')}</p>
-	<nav class="grid gap-1">
+<aside data-sidebar class="app-sidebar" aria-label={$_('nav.label')}>
+	<a href="/" class="sidebar-brand" aria-label={$_('app.name')}>
+		<img src="/sns-logo-monochrome.png" alt="SNS" class="sns-logo" />
+	</a>
+	<nav class="sidebar-links">
 		{#each items as item (item.key)}
 			{@const active = isActive(page.url.pathname, item.href)}
 			<a
 				href={item.href}
+				class="sidebar-link"
+				class:active
+				aria-label={$_('nav.' + item.key)}
 				aria-current={active ? 'page' : undefined}
-				class="flex min-h-11 items-center gap-3 border-l-[3px] px-3 text-body no-underline {active
-					? 'border-primary bg-primary-soft text-primary'
-					: 'border-transparent text-fg hover:bg-elevated'}"
+				title={$_('nav.' + item.key)}
 			>
-				<NavIcon path={item.path} size={20} />{$_(`nav.${item.key}`)}
-				{#if item.key === 'notifications'}<UnreadBadge count={unreadCount} />{/if}
+				<span class="relative inline-flex shrink-0">
+					{#if item.key === 'profile' && me}<Avatar user={me} size={32} />{:else}<NavIcon
+							path={item.path}
+							size={26}
+						/>{/if}
+					{#if item.key === 'messages' || item.key === 'notifications'}<span
+							class="absolute -right-2 -top-2"
+							><UnreadBadge count={item.key === 'messages' ? messageCount : unreadCount} /></span
+						>{/if}
+				</span>
+				<span class="sidebar-label">{$_('nav.' + item.key)}</span>
 			</a>
 		{/each}
 	</nav>
-	<Button variant="primary" href="/create" class="mt-6 w-full">{$_('nav.createPost')}</Button>
+	<div class="sidebar-more"><AccountMenu {me} placement="sidebar" /></div>
 </aside>

@@ -70,6 +70,7 @@
 					<CommentItem
 						{comment}
 						branchCount={branchReplies(root, page?.items ?? [], comment.id).length}
+						expanded={comment.id === focusedId}
 						{onReply}
 						{onExpandBranch}
 						{onDeleted}

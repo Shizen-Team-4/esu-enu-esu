@@ -32,7 +32,12 @@
 		"resetSubtitle": "アカウントの新しいパスワードを設定してください。"
 	},
 	"common": {
-		"back": "戻る"
+		"back": "戻る",
+		"close": "閉じる",
+		"retry": "再試行",
+		"loading": "読み込み中",
+		"more": "もっと見る",
+		"less": "折りたたむ"
 	},
 	"post": {
 		"like": "いいね",
@@ -48,7 +53,11 @@
 		"unlike": "いいねを取り消す",
 		"save": "保存",
 		"unsave": "保存を解除",
-		"copied": "リンクをコピーしました"
+		"copied": "リンクをコピーしました",
+		"menu": "投稿オプション",
+		"edit": "編集",
+		"report": "報告",
+		"edited": "編集済み"
 	},
 	"home": {
 		"description": "日常を共有して、コミュニティとつながりましょう。"
@@ -77,7 +86,10 @@
 		"editProfile": "プロフィールを編集",
 		"addBio": "自己紹介を追加",
 		"photoPost": "写真の投稿",
-		"reel": "リール"
+		"reel": "リール",
+		"shareFirst": "最初の写真をシェア",
+		"noPosts": "あなたの世界をシェア",
+		"noPostsHint": "写真や動画がここに表示されます。"
 	},
 	"follows": {
 		"emptyFollowers": "まだフォロワーはいません",
@@ -93,7 +105,21 @@
 		"title": "ストーリー",
 		"next": "次へ",
 		"circle": "あなたの仲間のストーリー",
-		"add": "ストーリーを追加"
+		"add": "ストーリーを追加",
+		"share": "ストーリーをシェア",
+		"yourStory": "ストーリーズ",
+		"views": "閲覧者",
+		"noViews": "まだ閲覧者はいません。",
+		"pause": "一時停止",
+		"play": "再生",
+		"reply": "ストーリーに返信…",
+		"finished": "すべて確認しました",
+		"finishedHint": "現在、新しいストーリーはありません。",
+		"backHome": "フィードに戻る",
+		"viewError": "閲覧者を読み込めません。",
+		"addAnother": "ストーリーを追加",
+		"mute": "動画をミュート",
+		"unmute": "動画の音を出す"
 	},
 	"feed": {
 		"more": "もっと見る",
@@ -104,6 +130,9 @@
 		"emptyAll": "まだ投稿がありません。最初の投稿をシェアしましょう。",
 		"emptyFollowing": "まだ何もありません。ユーザーをフォローして投稿を見ましょう。",
 		"error": "フィードを読み込めませんでした。"
+	},
+	"reels": {
+		"empty": "まだリールがありません。最初に動画をシェアしましょう。"
 	},
 	"bookmarks": {
 		"title": "ブックマーク",
@@ -119,7 +148,9 @@
 		"notifications": "通知",
 		"bookmarks": "ブックマーク",
 		"yourSpace": "マイスペース",
-		"createPost": "投稿を作成"
+		"createPost": "投稿を作成",
+		"messages": "メッセージ",
+		"more": "その他"
 	},
 	"account": {
 		"title": "プロフィール",
@@ -267,5 +298,45 @@
 		"deleted": "コメントを削除しました。",
 		"focused": "選択したコメント",
 		"conversation": "この会話の他の返信"
+	},
+	"messages": {
+		"new": "新しいメッセージ",
+		"conversations": "会話",
+		"sayHello": "挨拶しましょう",
+		"unread": "未読メッセージ",
+		"noConversations": "会話がここに表示されます。",
+		"search": "ユーザーを検索",
+		"noPeople": "ユーザーが見つかりません。",
+		"yourMessages": "メッセージ",
+		"intro": "日常のひとこまを共有しましょう。SNSでプライベートメッセージを送れます。",
+		"placeholder": "メッセージ…",
+		"send": "送信",
+		"sending": "送信中…",
+		"sent": "送信済み",
+		"seen": "既読",
+		"older": "以前のメッセージ",
+		"viewProfile": "プロフィールを見る",
+		"conversation": "会話",
+		"reconnecting": "更新できません。接続後に再試行します…",
+		"emoji": "絵文字",
+		"gif": "GIFスタンプ",
+		"openInbox": "受信箱を開く",
+		"close": "メッセージを閉じる",
+		"stickers": "気持ちを送ろう",
+		"heart": "大好き",
+		"wave": "こんにちは",
+		"celebrate": "お祝い",
+		"star": "すごい"
+	},
+	"media": {
+		"previous": "前へ",
+		"next": "次へ",
+		"position": "{current} / {total}",
+		"loadFailed": "メディアを読み込めませんでした",
+		"gallery": "投稿メディア"
+	},
+	"video": {
+		"play": "動画を再生",
+		"pause": "動画を一時停止"
 	}
 }

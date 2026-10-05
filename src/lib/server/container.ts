@@ -1,4 +1,14 @@
 import { getDb } from './db'
+import { getStoryAudience } from './stories/application/get-story-audience'
+import { replyToStory } from './stories/application/reply-to-story'
+import { createStoryAudience } from './stories/infrastructure/story-audience'
+import { createMessageRepository } from './messages/infrastructure/d1-messages'
+import { startConversation } from './messages/application/start-conversation'
+import { listConversations } from './messages/application/list-conversations'
+import { getConversation } from './messages/application/get-conversation'
+import { sendMessage } from './messages/application/send-message'
+import { readConversation } from './messages/application/read-conversation'
+import { getMessageCount } from './messages/application/get-message-count'
 import { createAuth, type AuthSecrets } from './auth'
 import { getPreferences } from './preferences/application/get-preferences'
 import { updatePreferences } from './preferences/application/update-preferences'
@@ -118,6 +128,7 @@ export function createContainer(
 	const commentPosts = postLookup(posts)
 	const stories = createStoryRepository(db, env.DB, mediaPublicUrl)
 	const notifications = createNotificationRepository(db, env.DB)
+	const messages = createMessageRepository(env.DB)
 	const notifier = createBackgroundNotifier({
 		deliver: createNotifications({
 			notifications,
@@ -128,6 +139,14 @@ export function createContainer(
 		report: (cause) => console.error('Notification delivery failed', cause),
 	})
 	return {
+		messages: {
+			startConversation: startConversation({ messages, clock, ids }),
+			listConversations: listConversations(messages),
+			getConversation: getConversation(messages),
+			sendMessage: sendMessage({ messages, clock }),
+			readConversation: readConversation(messages),
+			getMessageCount: getMessageCount(messages),
+		},
 		notifications: {
 			listNotifications: listNotifications(notifications),
 			getUnreadCount: getUnreadCount(notifications),
@@ -136,6 +155,13 @@ export function createContainer(
 		},
 		health: createHealthCheck({ kv: env.KV, d1: env.DB, db }),
 		stories: {
+			getStoryAudience: getStoryAudience({ stories, audience: createStoryAudience(db), clock }),
+			replyToStory: replyToStory({
+				stories,
+				clock,
+				startConversation: startConversation({ messages, clock, ids }),
+				sendMessage: sendMessage({ messages, clock }),
+			}),
 			createStory: createStory({ stories, clock, ids }),
 			listUserStories: listUserStories({ stories, clock }),
 			listStoryTray: listStoryTray({ stories, clock }),

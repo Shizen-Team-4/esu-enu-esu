@@ -34,12 +34,7 @@
 >
 	<div class="flex items-center">
 		{#if type !== 'reel'}
-			<IconButton
-				label={$_('create.addPhoto')}
-				{disabled}
-				type="button"
-				onclick={() => photoInput?.click()}
-			>
+			<IconButton label={$_('create.addPhoto')} {disabled} onclick={() => photoInput?.click()}>
 				<svg
 					viewBox="0 0 24 24"
 					class="size-6"
@@ -61,12 +56,7 @@
 				onchange={picked}
 			/>
 		{/if}
-		<IconButton
-			label={$_('create.addVideo')}
-			{disabled}
-			type="button"
-			onclick={() => videoInput?.click()}
-		>
+		<IconButton label={$_('create.addVideo')} {disabled} onclick={() => videoInput?.click()}>
 			<svg
 				viewBox="0 0 24 24"
 				class="size-6"
@@ -100,6 +90,6 @@
 		form="composer-form"
 		variant="primary"
 		disabled={!canPost}
-		class="max-md:hidden">{$_('post.publish')}</Button
+		class="max-md:hidden">{$_(type === 'story' ? 'story.share' : 'post.publish')}</Button
 	>
 </div>

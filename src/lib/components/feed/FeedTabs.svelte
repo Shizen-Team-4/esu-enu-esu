@@ -13,5 +13,5 @@
 	items={tabs}
 	label={$_('feed.tabs')}
 	replaceState
-	class="border-b border-line bg-surface max-md:border"
+	class="border-b border-line bg-background"
 />

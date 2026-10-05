@@ -11,6 +11,7 @@ import type { Lang } from '$lib/i18n/config'
 
 // Secrets come from `.env` / `wrangler secret`, so `pnpm types` only sees them when `.env` exists.
 export interface AuthSecrets {
+	BETTER_AUTH_URL?: string
 	BETTER_AUTH_SECRET: string
 	GOOGLE_CLIENT_ID?: string
 	GOOGLE_CLIENT_SECRET?: string
