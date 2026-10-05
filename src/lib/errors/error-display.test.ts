@@ -8,8 +8,8 @@ describe('errorMessageKey', () => {
 })
 
 describe('fieldErrorKey', () => {
-	it('prefixes the code with field.', () => {
-		expect(fieldErrorKey('TOO_LONG')).toBe('field.TOO_LONG')
+	it('prefixes the code with error.field.', () => {
+		expect(fieldErrorKey('TOO_LONG')).toBe('error.field.TOO_LONG')
 	})
 })
 
