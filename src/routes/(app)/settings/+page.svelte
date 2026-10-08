@@ -29,6 +29,9 @@
 	const themeOptions = $derived(
 		themes.map((value) => ({ value, label: $_(`preferences.${value}`), icon: themeIcons[value] })),
 	)
+	const languageOptions = $derived(
+		SUPPORTED_LANGS.map((value) => ({ value, label: $_(`preferences.${value}`) })),
+	)
 
 	function flashSaved() {
 		saved = true
@@ -70,21 +73,16 @@
 		</div>
 		<div class="flex justify-between gap-4 border-t border-line px-4 py-3.5 max-[480px]:flex-col">
 			<div>
-				<label for="settings-language" class="font-semibold">{$_('preferences.language')}</label>
+				<p class="font-semibold">{$_('preferences.language')}</p>
 				<p class="text-meta text-fg-muted">{$_('preferences.languageHint')}</p>
 			</div>
-			<select
-				id="settings-language"
+			<SegmentedControl
 				name="language"
+				label={$_('preferences.language')}
+				options={languageOptions}
 				bind:value={language}
 				onchange={() => formEl.requestSubmit()}
-				aria-describedby={form?.error?.fields?.language ? 'settings-language-error' : undefined}
-				class="field min-h-11 min-w-[140px] px-3"
-			>
-				{#each SUPPORTED_LANGS as lang (lang)}
-					<option value={lang}>{$_(`preferences.${lang}`)}</option>
-				{/each}
-			</select>
+			/>
 		</div>
 		{#if data.signedIn}
 			<a

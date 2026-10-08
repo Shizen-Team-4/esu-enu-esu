@@ -5,13 +5,14 @@ import { toActionFailure, toHttpError } from '$lib/server/shared/http/error-resp
 import { requireServices, requireUser } from '$lib/server/shared/http/guards'
 import type { Actions, PageServerLoad } from './$types'
 
-export const load: PageServerLoad = async ({ locals, params }) => {
+export const load: PageServerLoad = async ({ locals, params, url }) => {
 	const services = requireServices(locals)
 	const viewer = optionalViewer(locals.user)
 	try {
 		return {
 			post: await services.posts.getPost(viewer, params.id),
 			comments: await services.comments.listComments(viewer, { postId: params.id }),
+			edit: url.searchParams.get('edit') === '1',
 		}
 	} catch (cause) {
 		return toHttpError(cause)

@@ -6,11 +6,13 @@
 
 	let {
 		post,
+		editing = false,
 		comments,
 		me,
 		form,
 	}: {
 		post: Post
+		editing?: boolean
 		comments: Page<Comment>
 		me: UserSummary | null
 		form: { error?: ErrorEnvelope['error']; body?: string; parentId?: string } | null
@@ -24,14 +26,16 @@
 
 <div class="post-comments">
 	<PageBar />
-	<PostCard post={current} />
-	<CommentSection
-		postId={post.id}
-		initial={comments}
-		{me}
-		{form}
-		onCountChange={(change) => (delta += change)}
-	/>
+	<PostCard post={current} {editing} />
+	{#if !editing}
+		<CommentSection
+			postId={post.id}
+			initial={comments}
+			{me}
+			{form}
+			onCountChange={(change) => (delta += change)}
+		/>
+	{/if}
 </div>
 
 <style>
