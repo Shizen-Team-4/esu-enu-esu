@@ -24,7 +24,12 @@
 
 <div class="post-comments">
 	<PageBar />
-	<PostCard post={current} />
+	<PostCard
+		post={current}
+		loggedIn={Boolean(me)}
+		onComment={() =>
+			document.querySelector<HTMLTextAreaElement>('[data-root-composer] textarea')?.focus()}
+	/>
 	<CommentSection
 		postId={post.id}
 		initial={comments}

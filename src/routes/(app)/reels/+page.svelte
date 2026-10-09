@@ -8,7 +8,7 @@
 <svelte:head><title>{$_('nav.reels')} · {$_('app.name')}</title></svelte:head>
 <div class="reels-stage" role="region" aria-label={$_('nav.reels')}>
 	<h1 class="sr-only">{$_('nav.reels')}</h1>
-	{#each data.reels.items as post (post.id)}<ReelCard {post} />{/each}
+	{#each data.reels.items as post (post.id)}<ReelCard {post} loggedIn={Boolean(data.me)} />{/each}
 	{#if !data.reels.items.length}<div class="message-empty">
 			<h2 class="mb-3 text-xl font-semibold">{$_('nav.reels')}</h2>
 			<p class="mb-5 text-fg-muted">{$_('reels.empty')}</p>
