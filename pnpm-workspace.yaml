@@ -7,6 +7,8 @@ allowBuilds:
   lefthook: true
   workerd: true
 overrides:
+  source-map-js: 1.2.2
+  sharp: 0.35.5
   cookie@<0.7.0: ^0.7.0
   esbuild@<=0.24.2: ^0.25.0
   undici@>=7.0.0 <7.29.1: ^7.29.1
