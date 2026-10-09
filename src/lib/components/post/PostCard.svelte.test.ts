@@ -139,7 +139,7 @@ describe('PostCard actions', () => {
 		setup(byId('pst_101'), handlers)
 		await user.click(screen.getByRole('button', { name: 'Like' }))
 		await user.click(screen.getByRole('button', { name: 'Comment' }))
-		await user.click(screen.getByRole('button', { name: 'Share' }))
+		await user.click(screen.getByRole('button', { name: 'Repost to feed' }))
 		await user.click(screen.getByRole('button', { name: 'Save' }))
 		for (const handler of Object.values(handlers)) expect(handler).toHaveBeenCalledTimes(1)
 	})

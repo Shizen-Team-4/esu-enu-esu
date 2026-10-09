@@ -2,7 +2,7 @@
 	import Bookmark from '@lucide/svelte/icons/bookmark'
 	import Heart from '@lucide/svelte/icons/heart'
 	import MessageCircle from '@lucide/svelte/icons/message-circle'
-	import Send from '@lucide/svelte/icons/send'
+	import Repeat2 from '@lucide/svelte/icons/repeat-2'
 	import { _, locale } from 'svelte-i18n'
 	import { goto } from '$app/navigation'
 	import { errorMessageKey } from '$lib/errors/error-message'
@@ -106,7 +106,7 @@
 	</div>
 
 	<div class="action-item">
-		<IconButton icon={Send} label={$_('post.share')} onclick={onShare} />
+		<IconButton icon={Repeat2} label={$_('post.repost')} onclick={onShare} />
 	</div>
 
 	{#if postId}

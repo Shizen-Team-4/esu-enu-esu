@@ -222,7 +222,7 @@ Post {
   media: Media[]                     // post: 0–10 (gallery slider if >1); reel: exactly 1 video
   counts: { likes: number; comments: number }   // comments includes replies
   viewer: { liked: boolean; saved: boolean; isAuthor: boolean }
-  shareUrl: string                   // link that can be copied from the Share menu
+  shareUrl: string                   // canonical URL for the post
   repostOfId?: string | null         // set when this feed entry shares another post
   original?: Post | null             // original content; null if removed, no nested reposts
   activity?: { likedBy: UserSummary[] } // up to two liker avatars, followed users first
@@ -409,7 +409,7 @@ Files are uploaded **directly to Cloudflare R2 with a presigned URL**. They do n
 | `listLikers`     |      | `{ id, cursor?, limit? }` | `Page<UserSummary>`               | `NOT_FOUND` |
 
 - Like and save are idempotent. The frontend may update the UI first (optimistic update) and roll back on error.
-- The Share menu offers a repost to the feed or a copied post link. The liker list shows everyone who liked the post; the post card shows up to two liker avatars, prioritizing people the viewer follows. Comment authors appear in the comment thread.
+- The Repost action publishes the post to the user's feed after confirmation. The liker list shows everyone who liked the post; the post card shows up to two liker avatars, prioritizing people the viewer follows. Comment authors appear in the comment thread.
 
 ### 4.6 Comments
 

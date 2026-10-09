@@ -17,7 +17,7 @@ describe('PostActions', () => {
 
 	it('has a button for each action', () => {
 		render(PostActions, { props: base })
-		for (const name of ['Like', 'Comment', 'Share', 'Save']) {
+		for (const name of ['Like', 'Comment', 'Repost to feed', 'Save']) {
 			expect(screen.getByRole('button', { name })).toBeInTheDocument()
 		}
 	})
@@ -42,7 +42,7 @@ describe('PostActions', () => {
 		render(PostActions, { props: { ...base, ...handlers } })
 		await user.click(screen.getByRole('button', { name: 'Like' }))
 		await user.click(screen.getByRole('button', { name: 'Comment' }))
-		await user.click(screen.getByRole('button', { name: 'Share' }))
+		await user.click(screen.getByRole('button', { name: 'Repost to feed' }))
 		await user.click(screen.getByRole('button', { name: 'Save' }))
 		for (const handler of Object.values(handlers)) expect(handler).toHaveBeenCalledTimes(1)
 	})
