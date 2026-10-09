@@ -67,12 +67,25 @@ test.afterAll(() => {
 		DELETE FROM user WHERE id IN ('${friendId}', '${authorId}');`)
 })
 
-test('followed activity leads to a third-party post and it can be reposted', async ({ page }) => {
+test('followed activity leads to a third-party post and it can be reposted', async ({
+	page,
+}, testInfo) => {
 	await page.context().addCookies(cookies)
 	await page.goto('/?scope=following', { waitUntil: 'networkidle' })
 	const post = page.locator('article').filter({ hasText: caption })
 	await expect(post).toBeVisible()
-	await expect(post.getByText('Fixture friend')).toHaveCount(2)
+	await expect(
+		post.locator('[data-activity="like"]').getByRole('img', { name: 'Fixture friend' }),
+	).toBeVisible()
+	await expect(
+		post.locator('[data-activity="like"]').getByRole('link', { name: 'Fixture friend liked this' }),
+	).toBeVisible()
+	await expect(
+		post
+			.locator('[data-activity="comment"]')
+			.getByRole('link', { name: 'Fixture friend commented on this' }),
+	).toBeVisible()
+	await post.screenshot({ path: testInfo.outputPath('post-activity.png') })
 	await post.getByRole('button', { name: 'Share' }).click()
 	await expect(page.getByRole('dialog', { name: 'Share' })).toBeVisible()
 	await page

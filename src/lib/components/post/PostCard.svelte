@@ -71,10 +71,6 @@
 		</div>
 		<PostMenu {post} onAction={menuAction} />
 	</header>
-	{#if post.activity?.likedBy.length || post.activity?.commentedBy.length}
-		<div class="px-4"><PostActivity activity={post.activity} /></div>
-	{/if}
-
 	{#if editing}
 		<form id="post-edit-form" method="POST" action="?/edit" class="px-4">
 			<textarea
@@ -150,6 +146,10 @@
 		<div class="mx-auto w-[calc(100%-2rem)] max-w-sm bg-black" style:aspect-ratio={REEL_RATIO}>
 			<MediaItem media={post.media[0]} {alt} />
 		</div>
+	{/if}
+
+	{#if post.activity?.likedBy.length || post.activity?.commentedBy.length}
+		<div class="px-4"><PostActivity postId={post.id} activity={post.activity} /></div>
 	{/if}
 
 	<div class="px-4">
