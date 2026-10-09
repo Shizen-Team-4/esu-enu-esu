@@ -6,6 +6,7 @@
 	import Sidebar from '$lib/components/Sidebar.svelte'
 	import Toast from '$lib/components/ui/Toast.svelte'
 	import { afterNavigate } from '$app/navigation'
+	import { showToast } from '$lib/toast/toast-state'
 	import { createUnreadCount } from '$lib/notifications/unread-count'
 	import { fetchMessageCount } from '$lib/messages/client'
 	import { fetchUnreadCount } from '$lib/notifications/fetch-notifications'
@@ -38,6 +39,11 @@
 			void unread.refresh()
 			void messages.refresh()
 		}
+	})
+	afterNavigate(({ to }) => {
+		const notice = to?.url.searchParams.get('notice')
+		if (notice === 'deleted') showToast('Post deleted')
+		if (notice === 'edited') showToast('Post updated')
 	})
 </script>
 
