@@ -27,7 +27,7 @@
 			{#each actions as action (action)}
 				<DropdownMenu.Item
 					onSelect={() => onAction?.(action)}
-					class="flex h-10 cursor-pointer items-center rounded-sm px-3 text-sm outline-none data-highlighted:bg-muted {action ===
+					class="flex h-10 cursor-pointer items-center rounded-sm px-3 text-sm outline-none hover:bg-elevated data-highlighted:bg-elevated {action ===
 					'delete'
 						? 'text-destructive'
 						: ''}"

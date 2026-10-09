@@ -4,7 +4,6 @@
 	import EmptyState from '$lib/components/ui/EmptyState.svelte'
 	import ErrorState from '$lib/components/ui/ErrorState.svelte'
 	import PostCard from '$lib/components/post/PostCard.svelte'
-	import HatchBand from '$lib/components/ui/HatchBand.svelte'
 	import type { Page, Post } from '$lib/contract'
 	import { createFeedPager, type FeedPager } from '$lib/feed/feed-pager'
 	import { fetchFeed } from '$lib/feed/fetch-feed'
@@ -40,11 +39,8 @@
 		{/snippet}
 	</EmptyState>
 {:else}
-	<div class="feed-posts post-list">
-		{#each snap.items as post, i (post.id)}
-			{#if i > 0}<HatchBand />{/if}
-			<PostCard {post} />
-		{/each}
+	<div class="feed-posts">
+		{#each snap.items as post (post.id)}<PostCard {post} />{/each}
 	</div>
 	{#if snap.status === 'error'}
 		<ErrorState

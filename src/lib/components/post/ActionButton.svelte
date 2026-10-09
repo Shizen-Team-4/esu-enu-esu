@@ -23,7 +23,7 @@
 	}: Props = $props()
 
 	const classes = $derived(
-		`inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center gap-1.5 rounded-xl border-0 bg-transparent px-2 text-meta no-underline hover:bg-elevated disabled:cursor-not-allowed disabled:opacity-50 ${tone}`,
+		`inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center gap-1.5 rounded-full border-0 bg-transparent px-2 text-meta no-underline transition-transform hover:scale-110 disabled:cursor-not-allowed disabled:opacity-50 ${tone}`,
 	)
 </script>
 

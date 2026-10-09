@@ -6,5 +6,11 @@
 
 <svelte:head><title>@{data.post.author.username} · {$_('app.name')}</title></svelte:head>
 {#key data.post.id}
-	<PostComments post={data.post} comments={data.comments} me={data.me} {form} />
+	<PostComments
+		post={data.post}
+		comments={data.comments}
+		me={data.me}
+		{form}
+		editing={data.edit && data.post.viewer.isAuthor}
+	/>
 {/key}
