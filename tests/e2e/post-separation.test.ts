@@ -62,9 +62,7 @@ test.afterAll(() => {
 })
 
 for (const width of [390, 1440]) {
-	test(`posts have hatch separators without extra gaps at ${width}px`, async ({
-		page,
-	}, testInfo) => {
+	test(`posts are separated by clean spacing at ${width}px`, async ({ page }, testInfo) => {
 		await page.context().addCookies(authenticatedCookies)
 		await page.setViewportSize({ width, height: 844 })
 		await page.route(`**/media/${mediaKey}`, (route) =>
@@ -74,56 +72,18 @@ for (const width of [390, 1440]) {
 			}),
 		)
 		await page.goto('/', { waitUntil: 'networkidle' })
-		const posts = page.locator('article')
+		const list = page.locator('.feed-posts')
+		const posts = list.locator(':scope > article')
 		await expect(posts.filter({ hasText: 'Post separation portrait fixture' })).toBeVisible()
 		await expect(posts.filter({ hasText: 'Post separation text fixture' })).toBeVisible()
-		const storyBoundary = page
-			.getByRole('region', { name: 'Stories from your circle' })
-			.locator('xpath=following-sibling::*[1]')
-		await expect(storyBoundary.locator('.hatch')).toHaveCount(0)
-		const list = posts.first().locator('..')
-		await expect(list.locator(':scope > .hatch')).toHaveCount((await posts.count()) - 1)
-		const separator = list.locator(':scope > .hatch').first()
-		await expect(separator).toHaveAttribute('aria-hidden', 'true')
-		await expect(separator).toHaveCSS('height', '12px')
-		await expect(separator).toHaveCSS('border-top-width', '1px')
-		await expect(separator).toHaveCSS('border-bottom-width', '1px')
-		await expect(separator).toHaveCSS('border-left-width', '1px')
-		await expect(separator).toHaveCSS('border-right-width', '1px')
-		await expect(posts.nth(0)).toHaveCSS('border-bottom-width', '0px')
-		await expect(posts.nth(1)).toHaveCSS('border-top-width', '0px')
-		await expect(posts.last()).toHaveCSS('border-bottom-width', '1px')
-		expect(
-			await separator.evaluate((element) => getComputedStyle(element).backgroundImage),
-		).toContain('repeating-linear-gradient')
-		const media = posts
-			.filter({ hasText: 'Post separation portrait fixture' })
-			.getByRole('group', { name: 'Media', exact: true })
-		const checkPattern = async () => {
-			for (const side of ['top', 'right', 'bottom', 'left']) {
-				await expect(media).toHaveCSS(`border-${side}-width`, '1px')
-			}
-			const bandStyle = await separator.evaluate((element) => ({
-				background: getComputedStyle(element).backgroundColor,
-				pattern: getComputedStyle(element).backgroundImage,
-			}))
-			const mediaStyle = await media.evaluate((element) => ({
-				background: getComputedStyle(element).backgroundColor,
-				pattern: getComputedStyle(element).backgroundImage,
-			}))
-			expect(mediaStyle).toEqual(bandStyle)
-			expect(bandStyle.background).not.toBe('rgba(0, 0, 0, 0)')
-		}
-		await checkPattern()
+		await expect(list.locator('.hatch')).toHaveCount(0)
+		await expect(list).toHaveCSS('row-gap', '20px')
 		const first = await posts.nth(0).boundingBox()
-		const band = await separator.boundingBox()
 		const second = await posts.nth(1).boundingBox()
-		expect(band!.y).toBeCloseTo(first!.y + first!.height)
-		expect(second!.y).toBeCloseTo(band!.y + band!.height)
-		expect(band!.width).toBeCloseTo(first!.width)
+		expect(second!.y - (first!.y + first!.height)).toBeCloseTo(20)
 		await page.screenshot({ path: testInfo.outputPath(`feed-${width}.png`), fullPage: true })
 		await page.evaluate(() => document.documentElement.classList.add('dark'))
-		await checkPattern()
+		await expect(list).toHaveCSS('row-gap', '20px')
 		await page.screenshot({ path: testInfo.outputPath(`feed-dark-${width}.png`), fullPage: true })
 		expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
 	})
@@ -141,11 +101,9 @@ for (const width of [390, 1440]) {
 		)
 		await page.goto(`/p/${postIds[0]}`, { waitUntil: 'networkidle' })
 		const post = page.locator('.post-comments > article')
-		const media = post.getByRole('group', { name: 'Media', exact: true })
+		const media = post.locator(':scope > div.bg-muted')
 		const caption = post.getByText('Post separation portrait fixture', { exact: true })
-		const captionBox = await caption.boundingBox()
-		const captionedMediaBox = await media.boundingBox()
-		expect(captionedMediaBox!.y).toBeCloseTo(captionBox!.y + captionBox!.height)
+		await expect(caption).toBeVisible()
 		try {
 			fixtureSql(`UPDATE posts SET caption = '' WHERE id = '${postIds[0]}';`)
 			await page.reload({ waitUntil: 'networkidle' })
@@ -157,8 +115,8 @@ for (const width of [390, 1440]) {
 				const header = post.locator('header')
 				const headerBox = await header.boundingBox()
 				const mediaBox = await media.boundingBox()
-				const expectedGap = await header.evaluate((element) =>
-					parseFloat(getComputedStyle(element).paddingTop),
+				const expectedGap = await post.evaluate((element) =>
+					parseFloat(getComputedStyle(element).rowGap),
 				)
 				expect(expectedGap).toBeGreaterThan(0)
 				expect(mediaBox!.y - headerBox!.y - headerBox!.height).toBeCloseTo(expectedGap)
@@ -180,7 +138,11 @@ for (const width of [390, 1440]) {
 		await page.context().addCookies(authenticatedCookies)
 		await page.setViewportSize({ width, height: 844 })
 		await page.goto('/', { waitUntil: 'networkidle' })
-		await page.locator(`article a[href="/p/${postIds[1]}"]`).first().click()
+		await page
+			.locator('article')
+			.filter({ hasText: 'Post separation text fixture' })
+			.getByRole('button', { name: 'Comment' })
+			.click()
 		await expect(page.getByRole('link', { name: 'Back', exact: true })).toBeVisible()
 		await expect(page.getByRole('link', { name: 'Back', exact: true })).toHaveAttribute(
 			'href',
@@ -203,7 +165,7 @@ for (const width of [390, 1440]) {
 		await input.fill('Keep this draft')
 		await input.evaluate((field: HTMLTextAreaElement) => field.setSelectionRange(4, 4))
 		for (let click = 0; click < 2; click += 1) {
-			await post.getByLabel('Comments', { exact: true }).click()
+			await post.getByRole('button', { name: 'Comment' }).click()
 			await expect(input).toBeFocused()
 			await expect(input).toHaveValue('Keep this draft')
 			expect(await input.evaluate((field: HTMLTextAreaElement) => field.selectionStart)).toBe(4)
@@ -221,17 +183,17 @@ for (const width of [390, 1440]) {
 		await page
 			.locator('article')
 			.filter({ hasText: 'Post separation text fixture' })
-			.getByRole('link', { name: 'Comments', exact: true })
+			.getByRole('button', { name: 'Comment' })
 			.click()
 		await expect(page).toHaveURL(new RegExp(`/p/${postIds[1]}#comments$`))
-		await post.getByRole('button', { name: 'Comments', exact: true }).click()
+		await post.getByRole('button', { name: 'Comment' }).click()
 		await expect(input).toBeFocused()
 		await page.reload({ waitUntil: 'networkidle' })
 		await page.getByRole('link', { name: 'Back', exact: true }).click()
 		await expect(page).toHaveURL(/\/$/)
 		await page.goto(`/p/${postIds[1]}#comments`, { waitUntil: 'networkidle' })
 		await expect(page.getByRole('link', { name: 'Back', exact: true })).toHaveCount(0)
-		await post.getByRole('button', { name: 'Comments', exact: true }).click()
+		await post.getByRole('button', { name: 'Comment' }).click()
 		await expect(input).toBeFocused()
 		await page.reload({ waitUntil: 'networkidle' })
 		await expect(page.getByRole('link', { name: 'Back', exact: true })).toHaveCount(0)

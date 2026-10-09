@@ -4,18 +4,22 @@
 	import { _ } from 'svelte-i18n'
 	import { BACK_HISTORY_CONTEXT, followHistoryBack } from '$lib/navigation/back-history'
 
-	let { title, trailing }: { title?: string; trailing?: Snippet } = $props()
+	let { title, trailing, backTo }: { title?: string; trailing?: Snippet; backTo?: string } =
+		$props()
 	const backHref = getContext<Readable<string | null>>(BACK_HISTORY_CONTEXT)
+	const href = $derived(backTo ?? $backHref)
 </script>
 
-{#if $backHref || title || trailing}
+{#if href || title || trailing}
 	<header
 		class="-mx-gutter flex min-h-16 items-center gap-3 border-b border-line bg-surface px-gutter"
 	>
-		{#if $backHref}
+		{#if href}
 			<a
-				href={$backHref}
-				onclick={(event) => followHistoryBack(event, () => window.history.back())}
+				{href}
+				onclick={backTo
+					? undefined
+					: (event) => followHistoryBack(event, () => window.history.back())}
 				class="inline-flex min-h-11 items-center gap-3 text-base font-semibold text-fg no-underline"
 			>
 				<svg

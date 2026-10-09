@@ -7,6 +7,8 @@
 	import FieldError from '$lib/components/FieldError.svelte'
 	import { errorMessageKey } from '$lib/errors/error-message'
 	import { SUPPORTED_LANGS } from '$lib/i18n/config'
+	import { applyTheme } from '$lib/theme/apply-theme'
+	import type { Theme } from '$lib/server/preferences/domain/preferences'
 
 	const FLASH_MS = 2000
 	const themeIcons: Record<string, string> = {
@@ -43,7 +45,7 @@
 </script>
 
 <svelte:head><title>{$_('preferences.title')} · {$_('app.name')}</title></svelte:head>
-<PageBar title={$_('preferences.title')} />
+<PageBar title={$_('preferences.title')} backTo="/" />
 <div class="mx-auto my-7 w-full max-w-[520px] px-gutter">
 	<form
 		bind:this={formEl}
@@ -68,7 +70,10 @@
 				label={$_('preferences.theme')}
 				options={themeOptions}
 				bind:value={theme}
-				onchange={() => formEl.requestSubmit()}
+				onchange={(value) => {
+					applyTheme(value as Theme)
+					formEl.requestSubmit()
+				}}
 			/>
 		</div>
 		<div class="flex justify-between gap-4 border-t border-line px-4 py-3.5 max-[480px]:flex-col">

@@ -1,21 +1,18 @@
 <script lang="ts">
 	import '../app.css'
+	import { applyTheme } from '$lib/theme/apply-theme'
+	import NavigationHistory from '$lib/components/NavigationHistory.svelte'
 
-	let { children, data } = $props()
+	let { data, children } = $props()
 
 	$effect(() => {
-		const root = document.documentElement
-		const media = window.matchMedia('(prefers-color-scheme: dark)')
-		const applyTheme = () => {
-			const dark = data.theme === 'dark' || (data.theme === 'system' && media.matches)
-			root.dataset.theme = data.theme
-			root.classList.toggle('dark', dark)
-		}
-
-		applyTheme()
-		if (data.theme === 'system') media.addEventListener('change', applyTheme)
-		return () => media.removeEventListener('change', applyTheme)
+		const theme = data.theme
+		const preference = window.matchMedia('(prefers-color-scheme: dark)')
+		const update = () => applyTheme(theme, preference.matches)
+		update()
+		if (theme === 'system') preference.addEventListener('change', update)
+		return () => preference.removeEventListener('change', update)
 	})
 </script>
 
-{@render children()}
+<NavigationHistory>{@render children()}</NavigationHistory>

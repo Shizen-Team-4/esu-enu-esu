@@ -1,12 +1,13 @@
 <script lang="ts">
+	import { untrack } from 'svelte'
 	import Bookmark from '@lucide/svelte/icons/bookmark'
 	import Heart from '@lucide/svelte/icons/heart'
 	import MessageCircle from '@lucide/svelte/icons/message-circle'
 	import Repeat2 from '@lucide/svelte/icons/repeat-2'
 	import { _, locale } from 'svelte-i18n'
-	import { goto } from '$app/navigation'
 	import { errorMessageKey } from '$lib/errors/error-message'
 	import { likeFromData, saveFromData } from '$lib/posts/reaction-result'
+	import { toggleLike, toggleSave } from '$lib/posts/optimistic-toggle'
 	import { showToast } from '$lib/toast/toast-state'
 	import IconButton from '$lib/components/ui/IconButton.svelte'
 	import { formatCount } from '$lib/posts/format-count'
@@ -17,7 +18,7 @@
 		counts,
 		viewer,
 		postId,
-		loggedIn = true,
+		loggedIn = false,
 		onLike,
 		onComment,
 		onShare,
@@ -34,14 +35,17 @@
 	} = $props()
 
 	const lang = $derived($locale ?? 'en')
-	const filled = 'text-accent [&_svg]:fill-current'
-	// The action state is intentionally local so the button responds before the server action completes.
-	// svelte-ignore state_referenced_locally
-	let liked = $state(viewer.liked)
-	// svelte-ignore state_referenced_locally
-	let saved = $state(viewer.saved)
-	// svelte-ignore state_referenced_locally
-	let likes = $state(counts.likes)
+	const filled = 'text-destructive [&_svg]:fill-current'
+	let liked = $state(untrack(() => viewer.liked))
+	let saved = $state(untrack(() => viewer.saved))
+	let likes = $state(untrack(() => counts.likes))
+	let likeBefore = { liked: false, likes: 0 }
+	let saveBefore = { saved: false }
+	$effect(() => {
+		liked = viewer.liked
+		likes = counts.likes
+		saved = viewer.saved
+	})
 
 	function failure(code: string) {
 		showToast($_(errorMessageKey(code)))
@@ -58,21 +62,23 @@
 				label={$_('post.like')}
 				icon="heart"
 				filled={liked}
-				tone={liked ? 'text-accent' : 'text-fg-muted'}
+				tone="text-fg"
 				{loggedIn}
 				onbegin={() => {
-					liked = !liked
+					likeBefore = { liked, likes }
+					;({ liked, likes } = toggleLike(likeBefore))
 					onLike?.()
 				}}
 				onsuccess={(data) => {
 					const result = likeFromData(data)
-					if (result) {
-						liked = result.liked
-						likes = result.likes
+					if (result) ({ liked, likes } = result)
+					else {
+						;({ liked, likes } = likeBefore)
+						failure('INTERNAL')
 					}
 				}}
 				onfailure={(code) => {
-					liked = !liked
+					;({ liked, likes } = likeBefore)
 					failure(code)
 				}}
 			/>
@@ -80,9 +86,9 @@
 			<IconButton
 				icon={Heart}
 				label={$_('post.like')}
-				pressed={viewer.liked}
+				pressed={liked}
 				onclick={onLike}
-				class={viewer.liked ? filled : ''}
+				class={liked ? filled : ''}
 			/>
 		{/if}
 		{#if postId}<a
@@ -118,18 +124,23 @@
 				label={$_('post.save')}
 				icon="bookmark"
 				filled={saved}
-				tone="text-fg-muted"
+				tone="text-fg"
 				{loggedIn}
 				onbegin={() => {
-					saved = !saved
+					saveBefore = { saved }
+					;({ saved } = toggleSave(saveBefore))
 					onSave?.()
 				}}
 				onsuccess={(data) => {
 					const result = saveFromData(data)
-					if (result) saved = result.saved
+					if (result) ({ saved } = result)
+					else {
+						;({ saved } = saveBefore)
+						failure('INTERNAL')
+					}
 				}}
 				onfailure={(code) => {
-					saved = !saved
+					;({ saved } = saveBefore)
 					failure(code)
 				}}
 			/>
@@ -139,9 +150,9 @@
 			<IconButton
 				icon={Bookmark}
 				label={$_('post.save')}
-				pressed={viewer.saved}
+				pressed={saved}
 				onclick={onSave}
-				class={viewer.saved ? '[&_svg]:fill-current' : ''}
+				class={saved ? '[&_svg]:fill-current' : ''}
 			/>
 		</div>
 	{/if}

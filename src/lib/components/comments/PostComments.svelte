@@ -26,7 +26,13 @@
 
 <div class="post-comments">
 	<PageBar />
-	<PostCard post={current} {editing} />
+	<PostCard
+		post={current}
+		{editing}
+		loggedIn={Boolean(me)}
+		onComment={() =>
+			document.querySelector<HTMLTextAreaElement>('[data-root-composer] textarea')?.focus()}
+	/>
 	{#if !editing}
 		<CommentSection
 			postId={post.id}
@@ -43,5 +49,8 @@
 		display: flex;
 		flex-direction: column;
 		min-height: calc(100dvh - var(--spacing-app-header));
+	}
+	:global(.post-comments > article) {
+		border-bottom: 1px solid var(--line);
 	}
 </style>

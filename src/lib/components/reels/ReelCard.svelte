@@ -9,7 +9,7 @@
 	import Avatar from '$lib/components/ui/Avatar.svelte'
 	import ConfirmationDialog from '$lib/components/ui/ConfirmationDialog.svelte'
 	import PostMenu from '$lib/components/post/PostMenu.svelte'
-	let { post }: { post: Post } = $props()
+	let { post, loggedIn = false }: { post: Post; loggedIn?: boolean } = $props()
 	const media = $derived(post.media[0])
 	let deleteDialogOpen = $state(false)
 	let shareDialogOpen = $state(false)
@@ -50,6 +50,7 @@
 			counts={post.counts}
 			viewer={post.viewer}
 			postId={post.id}
+			{loggedIn}
 			onComment={() => void goto(`/p/${post.id}#comments`)}
 			onShare={() => (shareDialogOpen = true)}
 		/>

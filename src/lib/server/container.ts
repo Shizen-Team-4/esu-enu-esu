@@ -37,6 +37,7 @@ import { createComment } from './comments/application/create-comment'
 import { deleteComment } from './comments/application/delete-comment'
 import type { PostLookup } from './comments/application/ports'
 import { createMailtrapSender, type MailConfig } from './auth/infrastructure/mailtrap-email'
+import { createDevelopmentEmailSender } from './auth/infrastructure/development-email'
 import type { Lang } from '$lib/i18n/config'
 import { createUserRepository } from './users/infrastructure/drizzle-users'
 import { getMe } from './users/application/get-me'
@@ -190,9 +191,9 @@ export function createContainer(
 			db,
 			{
 				...env,
-				BETTER_AUTH_URL: env.BETTER_AUTH_URL || (development ? 'http://localhost:5173' : undefined),
+				BETTER_AUTH_URL: development ? origin : env.BETTER_AUTH_URL,
 			},
-			createMailtrapSender(env),
+			development ? createDevelopmentEmailSender() : createMailtrapSender(env),
 			language,
 			development,
 		),

@@ -23,8 +23,8 @@ describe('tileKind', () => {
 			url: 't.jpg',
 		})
 	})
-	it('falls back to text for a video without thumbnail', () => {
-		expect(tileKind(media({ type: 'video' }))).toEqual({ kind: 'text' })
+	it('keeps a video without a thumbnail distinct from a text status', () => {
+		expect(tileKind(media({ type: 'video' }))).toEqual({ kind: 'video' })
 	})
 	it('falls back to text when there is no media', () => {
 		expect(tileKind(undefined)).toEqual({ kind: 'text' })

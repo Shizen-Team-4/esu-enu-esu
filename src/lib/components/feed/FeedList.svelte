@@ -40,7 +40,9 @@
 	</EmptyState>
 {:else}
 	<div class="feed-posts">
-		{#each snap.items as post (post.id)}<PostCard {post} />{/each}
+		{#each snap.items as post (post.id)}
+			<PostCard {post} loggedIn />
+		{/each}
 	</div>
 	{#if snap.status === 'error'}
 		<ErrorState

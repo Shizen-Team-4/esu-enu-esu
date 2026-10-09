@@ -20,6 +20,7 @@
 	let {
 		post,
 		editing = false,
+		loggedIn,
 		now = new Date(),
 		onLike,
 		onComment,
@@ -29,6 +30,7 @@
 	}: {
 		post: Post
 		editing?: boolean
+		loggedIn?: boolean
 		/** Reference time for "3 hours ago"; pass a fixed date for deterministic output. */
 		now?: Date
 		onLike?: () => void
@@ -158,7 +160,8 @@
 		<PostActions
 			counts={post.counts}
 			viewer={post.viewer}
-			postId={post.id}
+			postId={loggedIn === undefined ? undefined : post.id}
+			loggedIn={Boolean(loggedIn)}
 			{onLike}
 			onComment={onComment ?? (() => void goto(`/p/${post.id}#comments`))}
 			onShare={onShare ?? (() => (shareDialogOpen = true))}
