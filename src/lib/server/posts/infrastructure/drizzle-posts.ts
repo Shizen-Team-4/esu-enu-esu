@@ -42,7 +42,7 @@ export function createPostRepository(
 			rows.map((row) => sql`${row.id}`),
 			sql`, `,
 		)
-		const [media, liked, saved, likers, commenters] = await Promise.all([
+		const [media, liked, saved, likers] = await Promise.all([
 			db.all<MediaRow>(
 				sql`SELECT pm.post_id AS postId, m.id, m.type, m.r2_key AS key, m.thumbnail_r2_key AS thumbnail, m.width, m.height, m.duration_sec AS duration FROM post_media pm JOIN media m ON m.id = pm.media_id WHERE pm.post_id IN (${ids}) ORDER BY pm.position`,
 			),
@@ -62,13 +62,6 @@ export function createPostRepository(
 				FROM likes l JOIN user u ON u.id = l.user_id AND u.banned = 0
 				LEFT JOIN follows f ON f.followee_id = u.id AND f.follower_id = ${viewerId}
 				WHERE l.post_id IN (${ids})
-			) WHERE rank <= 2`),
-			db.all<ActivityRow>(sql`SELECT postId, id, username, name, image FROM (
-				SELECT recent.postId, u.id, u.username, u.name, u.image,
-				ROW_NUMBER() OVER (PARTITION BY recent.postId ORDER BY CASE WHEN f.followee_id IS NULL THEN 1 ELSE 0 END, recent.latest DESC) AS rank
-				FROM (SELECT post_id AS postId, author_id, MAX(created_at) AS latest FROM comments WHERE post_id IN (${ids}) GROUP BY post_id, author_id) recent
-				JOIN user u ON u.id = recent.author_id AND u.banned = 0
-				LEFT JOIN follows f ON f.followee_id = u.id AND f.follower_id = ${viewerId}
 			) WHERE rank <= 2`),
 		])
 		const summaries = (activity: ActivityRow[], postId: string) =>
@@ -120,10 +113,7 @@ export function createPostRepository(
 					saved: savedIds.has(row.id),
 					viewerId,
 					origin: urls.origin,
-					activity: {
-						likedBy: summaries(likers, row.id),
-						commentedBy: summaries(commenters, row.id),
-					},
+					activity: { likedBy: summaries(likers, row.id) },
 				}),
 			)
 			.map((post) =>

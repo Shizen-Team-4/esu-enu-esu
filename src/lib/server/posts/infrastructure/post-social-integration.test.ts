@@ -50,10 +50,7 @@ describe('reposts and social activity', () => {
 			UPDATE posts SET like_count = 1, comment_count = 1 WHERE id = 'pst_other';`)
 		const feed = await posts.list({ viewerId: 'usr_a', scope: 'following', limit: 20 })
 		expect(feed.items.map((post) => post.id)).toEqual(['pst_other'])
-		expect(feed.items[0].activity).toMatchObject({
-			likedBy: [{ username: 'bob' }],
-			commentedBy: [{ username: 'bob' }],
-		})
+		expect(feed.items[0].activity).toMatchObject({ likedBy: [{ username: 'bob' }] })
 	})
 
 	it('reposts an original without copying its media and lists its likers', async () => {

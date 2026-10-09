@@ -42,7 +42,7 @@
 				><Avatar user={post.author} /><span>{post.author.username}</span></a
 			>
 			{#if post.caption}<p class="mt-3 line-clamp-3 text-sm">{post.caption}</p>{/if}
-			<PostActivity postId={post.id} activity={post.activity} reel />
+			<PostActivity postId={post.id} activity={post.activity} likeCount={post.counts.likes} reel />
 		</div>
 	</div>
 	<div class="reel-actions">

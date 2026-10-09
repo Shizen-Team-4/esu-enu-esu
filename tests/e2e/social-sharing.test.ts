@@ -74,17 +74,10 @@ test('followed activity leads to a third-party post and it can be reposted', asy
 	await page.goto('/?scope=following', { waitUntil: 'networkidle' })
 	const post = page.locator('article').filter({ hasText: caption })
 	await expect(post).toBeVisible()
-	await expect(
-		post.locator('[data-activity="like"]').getByRole('img', { name: 'Fixture friend' }),
-	).toBeVisible()
-	await expect(
-		post.locator('[data-activity="like"]').getByRole('link', { name: 'Fixture friend liked this' }),
-	).toBeVisible()
-	await expect(
-		post
-			.locator('[data-activity="comment"]')
-			.getByRole('link', { name: 'Fixture friend commented on this' }),
-	).toBeVisible()
+	const likers = post.getByRole('group', { name: 'Liked by' })
+	await expect(likers.getByRole('img', { name: 'Fixture friend' })).toBeVisible()
+	await expect(likers.getByRole('link', { name: 'Fixture friend' })).toBeVisible()
+	await expect(post.getByText('Fixture friend commented on this')).toHaveCount(0)
 	await post.screenshot({ path: testInfo.outputPath('post-activity.png') })
 	await post.getByRole('button', { name: 'Share' }).click()
 	await expect(page.getByRole('dialog', { name: 'Share' })).toBeVisible()

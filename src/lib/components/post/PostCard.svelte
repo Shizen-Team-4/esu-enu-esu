@@ -148,8 +148,10 @@
 		</div>
 	{/if}
 
-	{#if post.activity?.likedBy.length || post.activity?.commentedBy.length}
-		<div class="px-4"><PostActivity postId={post.id} activity={post.activity} /></div>
+	{#if post.activity?.likedBy.length}
+		<div class="px-4">
+			<PostActivity postId={post.id} activity={post.activity} likeCount={post.counts.likes} />
+		</div>
 	{/if}
 
 	<div class="px-4">
