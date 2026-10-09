@@ -188,7 +188,7 @@ export function createContainer(
 			db,
 			{
 				...env,
-				BETTER_AUTH_URL: env.BETTER_AUTH_URL || (development ? 'http://localhost:5173' : undefined),
+				BETTER_AUTH_URL: development ? origin : env.BETTER_AUTH_URL,
 			},
 			development ? createDevelopmentEmailSender() : createMailtrapSender(env),
 			language,
