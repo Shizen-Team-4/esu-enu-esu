@@ -12,11 +12,19 @@ export interface PostRow {
 	commentCount: number
 	createdAt: number
 	editedAt: number | null
+	repostOfId?: string | null
 }
 
 export function toPost(
 	row: PostRow,
-	data: { media: Media[]; liked: boolean; saved: boolean; viewerId: string | null; origin: string },
+	data: {
+		media: Media[]
+		liked: boolean
+		saved: boolean
+		viewerId: string | null
+		origin: string
+		activity?: Post['activity']
+	},
 ): Post {
 	return {
 		id: row.id,
@@ -32,6 +40,8 @@ export function toPost(
 		counts: { likes: row.likeCount, comments: row.commentCount },
 		viewer: { liked: data.liked, saved: data.saved, isAuthor: data.viewerId === row.authorId },
 		shareUrl: `${data.origin}/p/${row.id}`,
+		...(row.repostOfId ? { repostOfId: row.repostOfId } : {}),
+		...(data.activity ? { activity: data.activity } : {}),
 		createdAt: new Date(row.createdAt).toISOString(),
 		editedAt: row.editedAt === null ? null : new Date(row.editedAt).toISOString(),
 	}

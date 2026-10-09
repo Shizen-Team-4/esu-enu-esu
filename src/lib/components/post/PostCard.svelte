@@ -4,19 +4,18 @@
 	import Button from '$lib/components/ui/Button.svelte'
 	import Avatar from '$lib/components/ui/Avatar.svelte'
 	import ConfirmationDialog from '$lib/components/ui/ConfirmationDialog.svelte'
-	import { errorMessageKey } from '$lib/errors/error-message'
 	import { REEL_RATIO, frameRatio } from '$lib/posts/aspect-ratio'
 	import { isLongCaption } from '$lib/posts/caption'
 	import { formatRelativeTime } from '$lib/posts/format-relative-time'
 	import { postLayout } from '$lib/posts/post-layout'
-	import { sharePost } from '$lib/posts/share-post'
-	import { showToast } from '$lib/toast/toast-state'
 	import type { PostMenuAction } from '$lib/posts/post-menu'
 	import type { Post } from '$lib/types/post'
 	import MediaGallery from './MediaGallery.svelte'
 	import MediaItem from './MediaItem.svelte'
 	import PostActions from './PostActions.svelte'
+	import PostActivity from './PostActivity.svelte'
 	import PostMenu from './PostMenu.svelte'
+	import SharePostDialog from './SharePostDialog.svelte'
 
 	let {
 		post,
@@ -41,20 +40,12 @@
 
 	let expanded = $state(false)
 	let deleteDialogOpen = $state(false)
+	let shareDialogOpen = $state(false)
 
 	const layout = $derived(postLayout(post))
 	const lang = $derived($locale ?? 'en')
 	const alt = $derived(post.caption || post.author.displayName)
 	const long = $derived(isLongCaption(post.caption))
-
-	async function share() {
-		const outcome = await sharePost(post.shareUrl, post.caption || post.author.displayName, {
-			share: navigator.share?.bind(navigator),
-			clipboard: navigator.clipboard,
-		})
-		if (outcome === 'copied') showToast($_('post.copied'))
-		if (outcome === 'failed') showToast($_(errorMessageKey('INTERNAL')))
-	}
 
 	function menuAction(action: PostMenuAction) {
 		if (onMenuAction) {
@@ -80,6 +71,9 @@
 		</div>
 		<PostMenu {post} onAction={menuAction} />
 	</header>
+	{#if post.activity?.likedBy.length || post.activity?.commentedBy.length}
+		<div class="px-4"><PostActivity activity={post.activity} /></div>
+	{/if}
 
 	{#if editing}
 		<form id="post-edit-form" method="POST" action="?/edit" class="px-4">
@@ -108,6 +102,42 @@
 		</div>
 	{/if}
 
+	{#if post.repostOfId}
+		{#if post.original}
+			<div class="mx-4 rounded-lg border border-line bg-surface p-4">
+				<a href="/p/{post.original.id}" class="flex items-center gap-3 text-fg no-underline">
+					<Avatar user={post.original.author} size={32} />
+					<span class="min-w-0"
+						><strong class="block truncate text-sm">{post.original.author.displayName}</strong><span
+							class="text-xs text-fg-muted">@{post.original.author.username}</span
+						></span
+					>
+				</a>
+				{#if post.original.caption}<p
+						class="mt-3 line-clamp-4 whitespace-pre-wrap break-words text-sm"
+					>
+						{post.original.caption}
+					</p>{/if}
+				{#if post.original.media[0]}
+					<div
+						class="mt-3 max-w-sm overflow-hidden rounded bg-muted"
+						style:aspect-ratio={frameRatio(post.original.media[0])}
+					>
+						<MediaItem
+							media={post.original.media[0]}
+							alt={post.original.caption || post.original.author.displayName}
+						/>
+					</div>
+				{/if}
+				<a href="/p/{post.original.id}" class="mt-3 inline-block text-sm text-fg-muted"
+					>{$_('post.viewOriginal')}</a
+				>
+			</div>
+		{:else}
+			<p class="mx-4 text-sm text-fg-muted">{$_('post.originalUnavailable')}</p>
+		{/if}
+	{/if}
+
 	{#if layout === 'single'}
 		<div class="mx-4 bg-muted" style:aspect-ratio={frameRatio(post.media[0])}>
 			<MediaItem media={post.media[0]} {alt} />
@@ -129,7 +159,7 @@
 			postId={post.id}
 			{onLike}
 			onComment={onComment ?? (() => void goto(`/p/${post.id}#comments`))}
-			onShare={onShare ?? share}
+			onShare={onShare ?? (() => (shareDialogOpen = true))}
 			{onSave}
 		/>
 	</div>
@@ -142,6 +172,8 @@
 		</div>
 	{/if}
 </article>
+
+<SharePostDialog {post} open={shareDialogOpen} onclose={() => (shareDialogOpen = false)} />
 
 <ConfirmationDialog
 	open={deleteDialogOpen}

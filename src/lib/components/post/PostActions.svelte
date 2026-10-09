@@ -85,14 +85,24 @@
 				class={viewer.liked ? filled : ''}
 			/>
 		{/if}
-		<span class="action-count min-w-6 text-sm tabular-nums">{formatCount(likes, lang)}</span>
+		{#if postId}<a
+				href="/p/{postId}/likes"
+				class="action-count min-w-6 text-sm tabular-nums text-fg no-underline"
+				aria-label="{likes} {$_('post.likes')}">{formatCount(likes, lang)}</a
+			>{:else}<span class="action-count min-w-6 text-sm tabular-nums"
+				>{formatCount(likes, lang)}</span
+			>{/if}
 	</div>
 
 	<div class="action-item">
 		<IconButton icon={MessageCircle} label={$_('post.comment')} onclick={onComment} />
-		<span class="action-count min-w-6 text-sm tabular-nums"
-			>{formatCount(counts.comments, lang)}</span
-		>
+		{#if postId}<a
+				href="/p/{postId}#comments"
+				class="action-count min-w-6 text-sm tabular-nums text-fg no-underline"
+				aria-label="{counts.comments} {$_('post.comments')}">{formatCount(counts.comments, lang)}</a
+			>{:else}<span class="action-count min-w-6 text-sm tabular-nums"
+				>{formatCount(counts.comments, lang)}</span
+			>{/if}
 	</div>
 
 	<div class="action-item">

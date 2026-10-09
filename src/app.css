@@ -722,6 +722,16 @@
 	text-align: center;
 	width: 100%;
 }
+.reel-actions .action-item .action-count {
+	min-height: auto;
+	min-width: 0;
+	padding: 0;
+	color: #fff;
+	font-size: 1rem;
+	line-height: 1.2;
+	text-align: center;
+	width: 100%;
+}
 .reel-actions .reel-menu button {
 	min-height: 48px;
 	min-width: 48px;

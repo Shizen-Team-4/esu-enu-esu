@@ -181,6 +181,9 @@ export const posts = sqliteTable(
 			.references(() => user.id, { onDelete: 'cascade' }),
 		type: text('type', { enum: ['post', 'reel'] }).notNull(),
 		caption: text('caption').notNull().default(''),
+		repostOfId: text('repost_of_id').references((): AnySQLiteColumn => posts.id, {
+			onDelete: 'set null',
+		}),
 		likeCount: integer('like_count').notNull().default(0),
 		commentCount: integer('comment_count').notNull().default(0), // includes replies
 		createdAt: ts('created_at').notNull().default(now),
@@ -191,6 +194,7 @@ export const posts = sqliteTable(
 		index('posts_author_idx').on(t.authorId, t.createdAt, t.id), // profile grid, following feed
 		index('posts_feed_idx').on(t.createdAt, t.id), // listFeed scope: all
 		index('posts_reels_idx').on(t.type, t.createdAt, t.id), // listReels
+		index('posts_repost_idx').on(t.repostOfId),
 	],
 )
 

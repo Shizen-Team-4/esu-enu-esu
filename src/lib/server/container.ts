@@ -15,7 +15,9 @@ import { updatePreferences } from './preferences/application/update-preferences'
 import { createPreferencesRepository } from './preferences/infrastructure/drizzle-preferences'
 import { createPreferencesCache } from './preferences/infrastructure/kv-preferences'
 import { createPostRepository } from './posts/infrastructure/drizzle-posts'
+import { createPostSocialRepository } from './posts/infrastructure/drizzle-post-social'
 import { createPost } from './posts/application/create-post'
+import { repostPost } from './posts/application/repost-post'
 import { getPost } from './posts/application/get-post'
 import { updatePost } from './posts/application/update-post'
 import { deletePost } from './posts/application/delete-post'
@@ -116,6 +118,7 @@ export function createContainer(
 		origin,
 		media: mediaPublicUrl,
 	})
+	const postSocial = createPostSocialRepository(db, env.DB)
 	const ids = {
 		generate: (prefix: string) => `${prefix}_${crypto.randomUUID().replaceAll('-', '')}`,
 	}
@@ -209,6 +212,8 @@ export function createContainer(
 		},
 		posts: {
 			createPost: createPost({ posts, clock, ids, notifier }),
+			repostPost: repostPost({ posts, social: postSocial, clock, ids, notifier }),
+			listLikers: postSocial.listLikers,
 			getPost: getPost(posts),
 			updatePost: updatePost({ posts, clock }),
 			deletePost: deletePost({ posts, clock }),

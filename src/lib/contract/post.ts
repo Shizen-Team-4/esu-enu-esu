@@ -10,6 +10,10 @@ export interface Post {
 	counts: { likes: number; comments: number }
 	viewer: { liked: boolean; saved: boolean; isAuthor: boolean }
 	shareUrl: string
+	/** Set for a repost. The original is null if it has been removed. */
+	repostOfId?: string | null
+	original?: Post | null
+	activity?: { likedBy: UserSummary[]; commentedBy: UserSummary[] }
 	createdAt: string
 	editedAt: string | null
 }

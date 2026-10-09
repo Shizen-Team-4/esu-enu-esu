@@ -59,9 +59,12 @@ describe('post persistence', () => {
 			},
 			{ rows: [{ id: 'pst_2' }] },
 			{ rows: [{ id: 'pst_2' }] },
+			{ rows: [{ postId: 'pst_2', id: 'usr_3', username: 'sokha', name: 'Sokha', image: null }] },
+			{ rows: [] },
 		)
 		const post = await posts.find('pst_2', 'usr_1')
 		expect(post?.viewer).toEqual({ liked: true, saved: true, isAuthor: false })
+		expect(post?.activity?.likedBy.map((user) => user.username)).toEqual(['sokha'])
 		expect(post?.media.map((media) => media.thumbnailUrl)).toEqual([
 			'https://media.example.com/poster.webp',
 			null,
@@ -77,7 +80,14 @@ describe('post persistence', () => {
 		'lists %s with stable cursor pagination',
 		async (scope) => {
 			const { d1, posts } = setup()
-			d1.respond({ rows: [row, { ...row, id: 'pst_1' }] }, { rows: [] }, { rows: [] }, { rows: [] })
+			d1.respond(
+				{ rows: [row, { ...row, id: 'pst_1' }] },
+				{ rows: [] },
+				{ rows: [] },
+				{ rows: [] },
+				{ rows: [] },
+				{ rows: [] },
+			)
 			const result = await posts.list({
 				scope,
 				viewerId: 'usr_1',
@@ -93,7 +103,7 @@ describe('post persistence', () => {
 	)
 	it('skips viewer queries for anonymous listing and handles empty lists', async () => {
 		const { d1, posts } = setup()
-		d1.respond({ rows: [row] }, { rows: [] }, { rows: [] })
+		d1.respond({ rows: [row] }, { rows: [] }, { rows: [] }, { rows: [] }, { rows: [] })
 		expect((await posts.list({ scope: 'all', viewerId: null, limit: 20 })).nextCursor).toBeNull()
 		expect(await posts.list({ scope: 'all', viewerId: null, limit: 20 })).toEqual({
 			items: [],

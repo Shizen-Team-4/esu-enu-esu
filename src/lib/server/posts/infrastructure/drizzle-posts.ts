@@ -7,11 +7,12 @@ import {
 	CREATION_RATE_WINDOW_MS,
 } from '../../shared/domain/creation-rate-limit'
 import type { PostRepository } from '../application/ports'
-import type { Media } from '../domain/post'
+import type { Media, Post } from '../domain/post'
 import { toPost, type PostRow } from './post-mapper'
 
 const columns = sql`p.id, p.type, p.caption, p.author_id AS authorId, u.username, u.name, u.image,
-	p.like_count AS likeCount, p.comment_count AS commentCount, p.created_at AS createdAt, p.edited_at AS editedAt`
+	p.like_count AS likeCount, p.comment_count AS commentCount, p.created_at AS createdAt, p.edited_at AS editedAt,
+	p.repost_of_id AS repostOfId`
 type MediaRow = {
 	postId: string
 	id: string
@@ -22,19 +23,26 @@ type MediaRow = {
 	height: number
 	duration: number | null
 }
+type ActivityRow = {
+	postId: string
+	id: string
+	username: string | null
+	name: string
+	image: string | null
+}
 
 export function createPostRepository(
 	db: ReturnType<typeof getDb>,
 	d1: D1Database,
 	urls: { origin: string; media: string },
 ): PostRepository {
-	async function hydrate(rows: PostRow[], viewerId: string | null) {
+	async function hydrate(rows: PostRow[], viewerId: string | null, includeOriginal = true) {
 		if (!rows.length) return []
 		const ids = sql.join(
 			rows.map((row) => sql`${row.id}`),
 			sql`, `,
 		)
-		const [media, liked, saved] = await Promise.all([
+		const [media, liked, saved, likers, commenters] = await Promise.all([
 			db.all<MediaRow>(
 				sql`SELECT pm.post_id AS postId, m.id, m.type, m.r2_key AS key, m.thumbnail_r2_key AS thumbnail, m.width, m.height, m.duration_sec AS duration FROM post_media pm JOIN media m ON m.id = pm.media_id WHERE pm.post_id IN (${ids}) ORDER BY pm.position`,
 			),
@@ -48,7 +56,30 @@ export function createPostRepository(
 						sql`SELECT post_id AS id FROM saves WHERE user_id = ${viewerId} AND post_id IN (${ids})`,
 					)
 				: [],
+			db.all<ActivityRow>(sql`SELECT postId, id, username, name, image FROM (
+				SELECT l.post_id AS postId, u.id, u.username, u.name, u.image,
+				ROW_NUMBER() OVER (PARTITION BY l.post_id ORDER BY CASE WHEN f.followee_id IS NULL THEN 1 ELSE 0 END, l.created_at DESC) AS rank
+				FROM likes l JOIN user u ON u.id = l.user_id AND u.banned = 0
+				LEFT JOIN follows f ON f.followee_id = u.id AND f.follower_id = ${viewerId}
+				WHERE l.post_id IN (${ids})
+			) WHERE rank <= 2`),
+			db.all<ActivityRow>(sql`SELECT postId, id, username, name, image FROM (
+				SELECT recent.postId, u.id, u.username, u.name, u.image,
+				ROW_NUMBER() OVER (PARTITION BY recent.postId ORDER BY CASE WHEN f.followee_id IS NULL THEN 1 ELSE 0 END, recent.latest DESC) AS rank
+				FROM (SELECT post_id AS postId, author_id, MAX(created_at) AS latest FROM comments WHERE post_id IN (${ids}) GROUP BY post_id, author_id) recent
+				JOIN user u ON u.id = recent.author_id AND u.banned = 0
+				LEFT JOIN follows f ON f.followee_id = u.id AND f.follower_id = ${viewerId}
+			) WHERE rank <= 2`),
 		])
+		const summaries = (activity: ActivityRow[], postId: string) =>
+			activity
+				.filter((row) => row.postId === postId)
+				.map((row) => ({
+					id: row.id,
+					username: row.username ?? '',
+					displayName: row.name,
+					avatarUrl: row.image,
+				}))
 		const likedIds = new Set(liked.map((row) => row.id))
 		const savedIds = new Set(saved.map((row) => row.id))
 		const mediaByPost = new Map<string, Media[]>()
@@ -65,15 +96,39 @@ export function createPostRepository(
 			})
 			mediaByPost.set(row.postId, items)
 		}
-		return rows.map((row) =>
-			toPost(row, {
-				media: mediaByPost.get(row.id) ?? [],
-				liked: likedIds.has(row.id),
-				saved: savedIds.has(row.id),
-				viewerId,
-				origin: urls.origin,
-			}),
-		)
+		const originals = new Map<string, Post>()
+		if (includeOriginal) {
+			const originalIds = [
+				...new Set(rows.map((row) => row.repostOfId).filter((id): id is string => !!id)),
+			]
+			if (originalIds.length) {
+				const sourceRows = await db.all<PostRow>(
+					sql`SELECT ${columns} FROM posts p JOIN user u ON u.id = p.author_id WHERE p.id IN (${sql.join(
+						originalIds.map((id) => sql`${id}`),
+						sql`, `,
+					)}) AND p.deleted_at IS NULL AND u.banned = 0`,
+				)
+				for (const source of await hydrate(sourceRows, viewerId, false))
+					originals.set(source.id, source)
+			}
+		}
+		return rows
+			.map((row) =>
+				toPost(row, {
+					media: mediaByPost.get(row.id) ?? [],
+					liked: likedIds.has(row.id),
+					saved: savedIds.has(row.id),
+					viewerId,
+					origin: urls.origin,
+					activity: {
+						likedBy: summaries(likers, row.id),
+						commentedBy: summaries(commenters, row.id),
+					},
+				}),
+			)
+			.map((post) =>
+				post.repostOfId ? { ...post, original: originals.get(post.repostOfId) ?? null } : post,
+			)
 	}
 	return {
 		async find(id, viewerId) {
@@ -84,12 +139,19 @@ export function createPostRepository(
 		},
 		async list(input) {
 			const saved = input.scope === 'saved'
-			const sort = saved ? sql`s.created_at` : sql`p.created_at`
+			const socialTime = sql`MAX(p.created_at,
+				COALESCE((SELECT MAX(l.created_at) FROM likes l JOIN follows f ON f.followee_id = l.user_id WHERE f.follower_id = ${input.viewerId} AND l.post_id = p.id), 0),
+				COALESCE((SELECT MAX(c.created_at) FROM comments c JOIN follows f ON f.followee_id = c.author_id WHERE f.follower_id = ${input.viewerId} AND c.post_id = p.id), 0))`
+			const sort = saved
+				? sql`s.created_at`
+				: input.scope === 'following'
+					? socialTime
+					: sql`p.created_at`
 			const conditions = [sql`p.deleted_at IS NULL`, sql`u.banned = 0`]
 			if (saved) conditions.push(sql`s.user_id = ${input.viewerId}`)
 			if (input.scope === 'following')
 				conditions.push(
-					sql`(p.author_id = ${input.viewerId} OR EXISTS (SELECT 1 FROM follows WHERE follower_id = ${input.viewerId} AND followee_id = p.author_id))`,
+					sql`(p.author_id = ${input.viewerId} OR EXISTS (SELECT 1 FROM follows WHERE follower_id = ${input.viewerId} AND followee_id = p.author_id) OR EXISTS (SELECT 1 FROM likes l JOIN follows f ON f.followee_id = l.user_id WHERE f.follower_id = ${input.viewerId} AND l.post_id = p.id) OR EXISTS (SELECT 1 FROM comments c JOIN follows f ON f.followee_id = c.author_id WHERE f.follower_id = ${input.viewerId} AND c.post_id = p.id))`,
 				)
 			if (input.type) conditions.push(sql`p.type = ${input.type}`)
 			if (input.authorId) conditions.push(sql`p.author_id = ${input.authorId}`)

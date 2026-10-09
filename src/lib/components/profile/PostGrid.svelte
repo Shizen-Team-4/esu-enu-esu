@@ -5,12 +5,17 @@
 	let { posts }: { posts: Post[] } = $props()
 
 	const name = (post: Post) =>
-		post.caption || $_(post.type === 'reel' ? 'profile.reel' : 'profile.photoPost')
+		post.caption ||
+		post.original?.caption ||
+		$_(
+			post.repostOfId ? 'post.repost' : post.type === 'reel' ? 'profile.reel' : 'profile.photoPost',
+		)
 </script>
 
 <ul class="m-0 grid list-none grid-cols-3 gap-[3px] p-0">
 	{#each posts as post (post.id)}
-		{@const tile = tileKind(post.media[0])}
+		{@const preview = post.media[0] ?? post.original?.media[0]}
+		{@const tile = tileKind(preview)}
 		<li class="min-w-0">
 			<a
 				href={post.shareUrl}
@@ -22,13 +27,13 @@
 			>
 				{#if tile.kind === 'text'}
 					<span class="line-clamp-5 break-words p-4 text-center text-meta md:text-body"
-						>{post.caption}</span
+						>{post.caption || post.original?.caption || $_('post.repost')}</span
 					>
 				{:else}
 					<img
 						src={tile.url}
-						width={post.media[0].width}
-						height={post.media[0].height}
+						width={preview?.width}
+						height={preview?.height}
 						alt=""
 						loading="lazy"
 						class="size-full object-contain"

@@ -22,6 +22,15 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
 export const actions: Actions = {
 	like,
 	save,
+	repost: async ({ locals, params }) => {
+		const user = requireUser(locals)
+		try {
+			await requireServices(locals).posts.repostPost(optionalViewer(user), params.id)
+		} catch (cause) {
+			return toActionFailure(cause)
+		}
+		redirect(303, '/')
+	},
 	edit: async ({ locals, params, request }) => {
 		const user = requireUser(locals)
 		const services = requireServices(locals)

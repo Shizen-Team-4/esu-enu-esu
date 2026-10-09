@@ -1,27 +1,18 @@
 <script lang="ts">
 	import { _ } from 'svelte-i18n'
 	import { goto } from '$app/navigation'
-	import { errorMessageKey } from '$lib/errors/error-message'
-	import { sharePost } from '$lib/posts/share-post'
-	import { showToast } from '$lib/toast/toast-state'
 	import type { Post } from '$lib/contract'
 	import { playVisible } from '$lib/media/play-visible'
 	import PostActions from '$lib/components/post/PostActions.svelte'
+	import PostActivity from '$lib/components/post/PostActivity.svelte'
+	import SharePostDialog from '$lib/components/post/SharePostDialog.svelte'
 	import Avatar from '$lib/components/ui/Avatar.svelte'
 	import ConfirmationDialog from '$lib/components/ui/ConfirmationDialog.svelte'
 	import PostMenu from '$lib/components/post/PostMenu.svelte'
 	let { post }: { post: Post } = $props()
 	const media = $derived(post.media[0])
 	let deleteDialogOpen = $state(false)
-
-	async function share() {
-		const outcome = await sharePost(post.shareUrl, post.caption || post.author.displayName, {
-			share: navigator.share?.bind(navigator),
-			clipboard: navigator.clipboard,
-		})
-		if (outcome === 'copied') showToast($_('post.copied'))
-		if (outcome === 'failed') showToast($_(errorMessageKey('INTERNAL')))
-	}
+	let shareDialogOpen = $state(false)
 
 	function menuAction(action: 'edit' | 'delete' | 'report') {
 		if (action === 'edit') void goto(`/p/${post.id}?edit=1`)
@@ -51,6 +42,7 @@
 				><Avatar user={post.author} /><span>{post.author.username}</span></a
 			>
 			{#if post.caption}<p class="mt-3 line-clamp-3 text-sm">{post.caption}</p>{/if}
+			<PostActivity activity={post.activity} reel />
 		</div>
 	</div>
 	<div class="reel-actions">
@@ -59,11 +51,13 @@
 			viewer={post.viewer}
 			postId={post.id}
 			onComment={() => void goto(`/p/${post.id}#comments`)}
-			onShare={share}
+			onShare={() => (shareDialogOpen = true)}
 		/>
 		<div class="reel-menu"><PostMenu {post} onAction={menuAction} /></div>
 	</div>
 </article>
+
+<SharePostDialog {post} open={shareDialogOpen} onclose={() => (shareDialogOpen = false)} />
 
 <ConfirmationDialog
 	open={deleteDialogOpen}

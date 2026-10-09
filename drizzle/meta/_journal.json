@@ -41,6 +41,13 @@
       "when": 1791200000000,
       "tag": "0005_direct_messages",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1791539653527,
+      "tag": "0006_dapper_dreaming_celestial",
+      "breakpoints": true
     }
   ],
   "version": "7",

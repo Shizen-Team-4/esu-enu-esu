@@ -159,7 +159,7 @@ Values are per user, or per IP when logged out. Going over the limit → `RATE_L
 | Sign-up                                    | 3 / hour    |
 | Password reset / resend verification email | 3 / hour    |
 | Report a post                              | 10 / hour   |
-| Create post, reel, story                   | 30 / hour   |
+| Create post, reel, story, or repost        | 30 / hour   |
 | Create comment                             | 60 / hour   |
 
 ---
@@ -222,7 +222,10 @@ Post {
   media: Media[]                     // post: 0–10 (gallery slider if >1); reel: exactly 1 video
   counts: { likes: number; comments: number }   // comments includes replies
   viewer: { liked: boolean; saved: boolean; isAuthor: boolean }
-  shareUrl: string                   // link for the share button (copy / Web Share API)
+  shareUrl: string                   // link that can be copied from the Share menu
+  repostOfId?: string | null         // set when this feed entry shares another post
+  original?: Post | null             // original content; null if removed, no nested reposts
+  activity?: { likedBy: UserSummary[]; commentedBy: UserSummary[] } // up to two recent users each, followed users first
   createdAt: string
   editedAt: string | null            // not null → UI shows "edited"
 }
@@ -379,6 +382,7 @@ Files are uploaded **directly to Cloudflare R2 with a presigned URL**. They do n
 | Operation       | Auth | Input                                                                            | Result                             | Errors                                                     |
 | --------------- | ---- | -------------------------------------------------------------------------------- | ---------------------------------- | ---------------------------------------------------------- |
 | `createPost`    | 🔒   | `{ type: "post" \| "reel", caption, mediaIds: string[] }`                        | `Post`                             | `VALIDATION_FAILED`                                        |
+| `repostPost`    | 🔒   | `{ id }`                                                                         | `Post` referencing the original    | `NOT_FOUND`, `RATE_LIMITED`                                |
 | `getPost`       |      | `{ id }`                                                                         | `Post`                             | `NOT_FOUND`                                                |
 | `updatePost`    | 🔒   | `{ id, caption }`. **Media cannot be changed**                                   | `Post` (`editedAt` set)            | `VALIDATION_FAILED`, `FORBIDDEN`, `NOT_FOUND`              |
 | `deletePost`    | 🔒   | `{ id }`                                                                         | `void`                             | `FORBIDDEN`, `NOT_FOUND`                                   |
@@ -388,22 +392,24 @@ Files are uploaded **directly to Cloudflare R2 with a presigned URL**. They do n
 
 - `mediaIds` order = gallery order.
 - Each media must be uploaded by the same user, finished with `completeUpload`, and not used by another post yet.
-- `scope: "following"` = posts and reels by people you follow, plus your own posts. `scope: "all"` = all posts and reels.
+- `scope: "following"` = posts and reels by people you follow, your own posts, and public posts liked or commented on by people you follow. Those interactions can bring an older post to the top. `scope: "all"` = all posts and reels.
+- Reposts appear as new posts by the sharing user, with a preview and link to the original. Likes and comments on a repost belong to the repost; the original retains its own reactions.
 - The home feed contains **both posts and reels**. The wireframe shows reel cards in the feed, and tapping one opens the full reel view. The Reels tab uses `listReels`.
 - All posts and reels are public. Editing and deletion remain author-only, enforced on the server.
 
 ### 4.5 Like, save, share
 
-| Operation        | Auth | Input                 | Result                            | Errors      |
-| ---------------- | ---- | --------------------- | --------------------------------- | ----------- |
-| `likePost`       | 🔒   | `{ id }`              | `{ liked: true, likes: number }`  | `NOT_FOUND` |
-| `unlikePost`     | 🔒   | `{ id }`              | `{ liked: false, likes: number }` | `NOT_FOUND` |
-| `savePost`       | 🔒   | `{ id }`              | `{ saved: true }`                 | `NOT_FOUND` |
-| `unsavePost`     | 🔒   | `{ id }`              | `{ saved: false }`                | `NOT_FOUND` |
-| `listSavedPosts` | 🔒   | `{ cursor?, limit? }` | `Page<Post>` (newest saved first) | none        |
+| Operation        | Auth | Input                     | Result                            | Errors      |
+| ---------------- | ---- | ------------------------- | --------------------------------- | ----------- |
+| `likePost`       | 🔒   | `{ id }`                  | `{ liked: true, likes: number }`  | `NOT_FOUND` |
+| `unlikePost`     | 🔒   | `{ id }`                  | `{ liked: false, likes: number }` | `NOT_FOUND` |
+| `savePost`       | 🔒   | `{ id }`                  | `{ saved: true }`                 | `NOT_FOUND` |
+| `unsavePost`     | 🔒   | `{ id }`                  | `{ saved: false }`                | `NOT_FOUND` |
+| `listSavedPosts` | 🔒   | `{ cursor?, limit? }`     | `Page<Post>` (newest saved first) | none        |
+| `listLikers`     |      | `{ id, cursor?, limit? }` | `Page<UserSummary>`               | `NOT_FOUND` |
 
 - Like and save are idempotent. The frontend may update the UI first (optimistic update) and roll back on error.
-- **Share** has no server operation. The UI uses `Post.shareUrl` with the Web Share API, or copies it to the clipboard.
+- The Share menu offers a repost to the feed or a copied post link. The liker list shows everyone who liked the post; the post card highlights up to two people who liked or commented, prioritizing people the viewer follows.
 
 ### 4.6 Comments
 
