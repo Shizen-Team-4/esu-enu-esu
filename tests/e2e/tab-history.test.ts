@@ -36,8 +36,7 @@ for (const width of [390, 768, 1440]) {
 		const errors: string[] = []
 		page.on('pageerror', (error) => errors.push(error.message))
 		await page.goto('/', { waitUntil: 'networkidle' })
-		await page.getByRole('button', { name: 'Account menu' }).click()
-		await page.locator('#avatar-menu').getByRole('link', { name: 'Profile', exact: true }).click()
+		await page.getByRole('link', { name: 'Profile', exact: true }).first().click()
 		await expect(page).toHaveURL(/\/u\/sns_demo$/)
 		const length = await page.evaluate(() => history.length)
 		const tabs = page.getByRole('navigation', { name: 'Profile content' })
@@ -56,14 +55,14 @@ for (const width of [390, 768, 1440]) {
 		})
 		await back.click()
 		await expect(page).toHaveURL(/\/$/)
-		await page.goForward()
+		await page.goBack()
 		await expect(page).toHaveURL(/\/u\/sns_demo\?type=post$/)
 		await back.click()
 		await expect(page).toHaveURL(/\/$/)
 		expect(errors).toEqual([])
 	})
 
-	test(`direct profile tab switches do not invent Back at ${width}px`, async ({ page }) => {
+	test(`direct profile tab switches keep Back to Home at ${width}px`, async ({ page }) => {
 		await page.setViewportSize({ width, height: 844 })
 		await page.goto('/u/sns_demo', { waitUntil: 'networkidle' })
 		const length = await page.evaluate(() => history.length)
@@ -72,10 +71,10 @@ for (const width of [390, 768, 1440]) {
 		for (const name of ['Reels', 'Posts']) {
 			await tabs.getByRole('link', { name, exact: true }).click()
 			await expect(page).toHaveURL(new RegExp(`\\?type=${name === 'Reels' ? 'reel' : 'post'}$`))
-			await expect(back).toHaveCount(0)
+			await expect(back).toHaveAttribute('href', '/')
 		}
 		await page.reload({ waitUntil: 'networkidle' })
-		await expect(back).toHaveCount(0)
+		await expect(back).toHaveAttribute('href', '/')
 		expect(await page.evaluate(() => history.length)).toBe(length)
 		await page
 			.getByRole('main')
@@ -85,7 +84,20 @@ for (const width of [390, 768, 1440]) {
 		await expect(back).toHaveAttribute('href', /\/u\/sns_demo\?type=post$/)
 		await back.click()
 		await expect(page).toHaveURL(/\/u\/sns_demo\?type=post$/)
-		await expect(back).toHaveCount(0)
+		await expect(back).toHaveAttribute('href', '/')
+		await back.click()
+		await expect(page).toHaveURL(/\/$/)
+	})
+
+	test(`Preferences and Edit Profile Back go to Home at ${width}px`, async ({ page }) => {
+		await page.setViewportSize({ width, height: 844 })
+		for (const path of ['/settings', '/settings/profile']) {
+			await page.goto(path, { waitUntil: 'networkidle' })
+			const back = page.getByRole('main').getByRole('link', { name: 'Back', exact: true })
+			await expect(back).toHaveAttribute('href', '/')
+			await back.click()
+			await expect(page).toHaveURL(/\/$/)
+		}
 	})
 
 	test(`Home tab switches preserve the prior page at ${width}px`, async ({ page }, testInfo) => {

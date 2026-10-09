@@ -32,7 +32,7 @@ export function createAuth(
 		secret: env.BETTER_AUTH_SECRET,
 		baseURL: env.BETTER_AUTH_URL,
 		trustedOrigins: development
-			? ['http://localhost:5173', 'http://127.0.0.1:5173']
+			? [env.BETTER_AUTH_URL ?? 'http://localhost:5173', 'http://127.0.0.1:5173']
 			: env.BETTER_AUTH_URL
 				? [env.BETTER_AUTH_URL]
 				: [],

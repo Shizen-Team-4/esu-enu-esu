@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { dev } from '$app/environment'
 	import Button from '$lib/components/ui/Button.svelte'
 	import { _ } from 'svelte-i18n'
 	import { goto } from '$app/navigation'
@@ -38,10 +39,14 @@
 	>
 	{#if success}
 		<p role="status">{$_(operation === 'register' ? 'auth.checkEmail' : 'auth.success')}</p>
+		{#if dev && operation === 'register'}
+			<p class="text-sm text-fg-muted">{$_('auth.localVerificationHint')}</p>
+		{/if}
 		{#if operation === 'register'}<ResendVerification email={submittedEmail} />{/if}
 	{/if}
 	{#if errorCode}<p role="alert">{$_(errorMessageKey(errorCode))}</p>{/if}
 	{#if operation === 'login' && errorCode === 'EMAIL_NOT_VERIFIED'}
+		{#if dev}<p class="text-sm text-fg-muted">{$_('auth.localVerificationHint')}</p>{/if}
 		<ResendVerification email={submittedEmail} />
 	{/if}
 </form>

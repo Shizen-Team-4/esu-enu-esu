@@ -4,7 +4,7 @@
 	import { playVisible } from '$lib/media/play-visible'
 	import PostActions from '$lib/components/post/PostActions.svelte'
 	import Avatar from '$lib/components/ui/Avatar.svelte'
-	let { post }: { post: Post } = $props()
+	let { post, loggedIn = false }: { post: Post; loggedIn?: boolean } = $props()
 	const media = $derived(post.media[0])
 </script>
 
@@ -34,5 +34,13 @@
 			>
 		</div>
 	</div>
-	<div class="reel-actions"><PostActions counts={post.counts} viewer={post.viewer} /></div>
+	<div class="reel-actions">
+		<PostActions
+			counts={post.counts}
+			viewer={post.viewer}
+			postId={post.id}
+			shareUrl={post.shareUrl}
+			{loggedIn}
+		/>
+	</div>
 </article>
